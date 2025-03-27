@@ -26,21 +26,63 @@ public class FrmInicio extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        btnAjustes = new javax.swing.JLabel();
+        btnPlay = new javax.swing.JLabel();
+        btnExit = new javax.swing.JLabel();
+        fondo = new javax.swing.JLabel();
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setUndecorated(true);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        btnAjustes.setIcon(new javax.swing.ImageIcon(getClass().getResource("/BtnAjustes.png"))); // NOI18N
+        btnAjustes.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAjustes.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnAjustesMouseClicked(evt);
+            }
+        });
+        getContentPane().add(btnAjustes, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 100, -1, -1));
+
+        btnPlay.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btnPlay.png"))); // NOI18N
+        btnPlay.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnPlay.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnPlayMouseClicked(evt);
+            }
+        });
+        getContentPane().add(btnPlay, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 260, -1, -1));
+
+        btnExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btnExit.png"))); // NOI18N
+        btnExit.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnExit.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnExitMouseClicked(evt);
+            }
+        });
+        getContentPane().add(btnExit, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 320, -1, -1));
+
+        fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Frame 1.png"))); // NOI18N
+        getContentPane().add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnExitMouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_btnExitMouseClicked
+
+    private void btnPlayMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPlayMouseClicked
+        // TODO add your handling code here:
+        FrmMenuPartida frmMP = new FrmMenuPartida();
+        frmMP.setVisible(true);
+    }//GEN-LAST:event_btnPlayMouseClicked
+
+    private void btnAjustesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAjustesMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAjustesMouseClicked
 
     /**
      * @param args the command line arguments
@@ -78,5 +120,9 @@ public class FrmInicio extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel btnAjustes;
+    private javax.swing.JLabel btnExit;
+    private javax.swing.JLabel btnPlay;
+    private javax.swing.JLabel fondo;
     // End of variables declaration//GEN-END:variables
 }
