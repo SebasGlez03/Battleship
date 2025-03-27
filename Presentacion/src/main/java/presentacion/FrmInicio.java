@@ -78,6 +78,7 @@ public class FrmInicio extends javax.swing.JFrame {
         // TODO add your handling code here:
         FrmMenuPartida frmMP = new FrmMenuPartida();
         frmMP.setVisible(true);
+        dispose();
     }//GEN-LAST:event_btnPlayMouseClicked
 
     private void btnAjustesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAjustesMouseClicked
