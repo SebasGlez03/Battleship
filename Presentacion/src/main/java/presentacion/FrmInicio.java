@@ -71,7 +71,7 @@ public class FrmInicio extends javax.swing.JFrame {
 
     private void btnExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnExitMouseClicked
         // TODO add your handling code here:
-        
+        dispose();
     }//GEN-LAST:event_btnExitMouseClicked
 
     private void btnPlayMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPlayMouseClicked
@@ -83,6 +83,9 @@ public class FrmInicio extends javax.swing.JFrame {
 
     private void btnAjustesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAjustesMouseClicked
         // TODO add your handling code here:
+        FrmAjustes frmAjuste = new FrmAjustes();
+        frmAjuste.setVisible(true);
+ 
     }//GEN-LAST:event_btnAjustesMouseClicked
 
     /**
