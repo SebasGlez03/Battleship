@@ -145,16 +145,22 @@ public class PruebaColocarNave extends JFrame {
     }
     
     
-    private Color obtenerColor(String nombreColor) {
-        switch (nombreColor.toLowerCase()) {
-            case "azul": return Color.BLUE;
-            case "rojo": return Color.RED;
-            case "verde": return Color.GREEN;
-            case "amarillo": return Color.YELLOW;
-            case "gris": return Color.GRAY;
-            default: return Color.CYAN;
-        }
+    private Color obtenerColor(Color color) {
+    if (color.equals(Color.BLUE)) {
+        return Color.BLUE;   // Azul
+    } else if (color.equals(Color.RED)) {
+        return Color.RED;    // Rojo
+    } else if (color.equals(Color.GREEN)) {
+        return Color.GREEN;  // Verde
+    } else if (color.equals(Color.YELLOW)) {
+        return Color.YELLOW; // Amarillo
+    } else if (color.equals(Color.GRAY)) {
+        return Color.GRAY;   // Gris
+    } else {
+        return Color.CYAN;
     }
+}
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new PruebaColocarNave().setVisible(true));

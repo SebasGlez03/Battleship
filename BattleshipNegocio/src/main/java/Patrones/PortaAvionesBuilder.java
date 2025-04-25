@@ -6,6 +6,7 @@ package Patrones;
 
 import EntidadesDTO.NaveDTO;
 import EntidadesDTO.PortaAvionesDTO;
+import java.awt.Color;
 
 /**
  *
@@ -27,7 +28,7 @@ public class PortaAvionesBuilder implements NaveBuilder {
     }
 
     public void construirColor() {
-        portaaviones.color = "Gris";
+        portaaviones.color = Color.GREEN;
     }
 
     public NaveDTO getNave() {

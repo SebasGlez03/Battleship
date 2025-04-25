@@ -90,6 +90,17 @@ public class TableroDTO implements Observable {
     }
     return true; // Si todas las casillas ocupadas han sido atacadas, todos los barcos están hundidos
 }
+    
+    // Método para reiniciar el tablero (limpiar todos los barcos)
+    public void reiniciarTablero() {
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                casillas[i][j].setOcupada(false);  // Limpiar las casillas ocupadas
+                casillas[i][j].setAtacada(false);  // Limpiar el estado de ataque
+                casillas[i][j].setDisponible(true); // Hacer la casilla disponible
+            }
+        }
+    }
 
 }
 

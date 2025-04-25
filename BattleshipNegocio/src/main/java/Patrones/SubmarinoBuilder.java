@@ -6,6 +6,7 @@ package Patrones;
 
 import EntidadesDTO.NaveDTO;
 import EntidadesDTO.SubmarinoDTO;
+import java.awt.Color;
 
 /**
  *
@@ -27,7 +28,7 @@ public class SubmarinoBuilder implements NaveBuilder {
     }
 
     public void construirColor() {
-        submarino.color = "Gris";
+        submarino.color = Color.GREEN;
     }
 
     public NaveDTO getNave() {

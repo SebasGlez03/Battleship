@@ -6,6 +6,7 @@ package Patrones;
 
 import EntidadesDTO.BarcoDTO;
 import EntidadesDTO.NaveDTO;
+import java.awt.Color;
 
 /**
  *
@@ -27,7 +28,7 @@ public class BarcoBuilder implements NaveBuilder {
     }
 
     public void construirColor() {
-        barco.color = "Gris";
+        barco.color = Color.GREEN;
     }
 
     public NaveDTO getNave() {

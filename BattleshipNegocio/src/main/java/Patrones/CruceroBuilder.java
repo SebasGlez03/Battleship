@@ -6,6 +6,7 @@ package Patrones;
 
 import EntidadesDTO.CruceroDTO;
 import EntidadesDTO.NaveDTO;
+import java.awt.Color;
 
 /**
  *
@@ -27,7 +28,7 @@ public class CruceroBuilder implements NaveBuilder {
     }
 
     public void construirColor() {
-        crucero.color = "Gris";
+        crucero.color = Color.GREEN;
     }
 
     public NaveDTO getNave() {

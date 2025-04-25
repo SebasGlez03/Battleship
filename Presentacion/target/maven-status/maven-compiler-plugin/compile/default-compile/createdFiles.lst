@@ -1,7 +1,6 @@
 presentacion\FrmInicio$4.class
 presentacion\FrmInicio.class
 Pruebas\PruebaColocarNave.class
-Pruebas\Prueba2tableros.class
 presentacion\FrmInicio$3.class
 presentacion\FrmInicio$2.class
 presentacion\FrmMenuPartida.class
@@ -13,6 +12,7 @@ Pruebas\pruebaTurno.class
 Pruebas\Atacar.class
 presentacion\FrmAjustes$1.class
 presentacion\FrmInicio$1.class
+Pruebas\AtacarCoordenada.class
 presentacion\FrmPartida$1.class
 presentacion\FrmAjustes.class
 presentacion\FrmPartida.class

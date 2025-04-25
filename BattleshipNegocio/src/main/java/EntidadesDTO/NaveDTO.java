@@ -5,6 +5,7 @@
 package EntidadesDTO;
 
 import Entidades.Casilla;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public abstract class NaveDTO {
 
     public String nombre;
     public int tamano;
-    public String color;
+    public Color color;
     protected List<CasillaDTO> posiciones = new ArrayList<>();
     protected boolean esHorizontal; // Para almacenar la orientación (horizontal o vertical)
     private boolean hundido;
@@ -39,7 +40,7 @@ public abstract class NaveDTO {
         return tamano;
     }
 
-    public String getColor() {
+    public Color getColor() {
         return color;
     }
 

@@ -4,6 +4,8 @@
  */
 package EntidadesDTO;
 
+import java.awt.Color;
+
 /**
  *
  * @author Carlo
@@ -17,7 +19,7 @@ public class SubmarinoDTO extends NaveDTO {
     public void construir() {
         this.nombre = "Submarino";
         this.tamano = 2;
-        this.color = "Gris";
+        this.color = Color.GREEN;
         // Nota: Las posiciones se deben asignar desde la lógica del juego según la colocación en el tablero
     }
 }
