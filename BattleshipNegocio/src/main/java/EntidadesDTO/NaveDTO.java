@@ -4,7 +4,9 @@
  */
 package EntidadesDTO;
 
-import Entidades.Casilla;
+
+import PatronObserver.*;
+import PatronState.*;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,19 +15,26 @@ import java.util.List;
  *
  * @author Carlo
  */
-public abstract class NaveDTO {
+public abstract class NaveDTO implements Observer {
 
     public String nombre;
     public int tamano;
     public Color color;
     protected List<CasillaDTO> posiciones = new ArrayList<>();
-    protected boolean esHorizontal; // Para almacenar la orientación (horizontal o vertical)
+    protected boolean esHorizontal;
     private boolean hundido;
+
+    private EstadoNave estado;
+
+    public NaveDTO() {
+        estado = new EstadoNaveActiva();
+    }
 
     public abstract void construir();
 
     public void agregarCasilla(CasillaDTO c) {
         posiciones.add(c);
+        c.agregarObservador(this); // 🔥 Se suscribe como observador
     }
 
     public List<CasillaDTO> getPosiciones() {
@@ -44,36 +53,61 @@ public abstract class NaveDTO {
         return color;
     }
 
-    // Método para obtener la coordenada X de la primera casilla (posición inicial)
     public int getXInicio() {
-        return posiciones.isEmpty() ? -1 : posiciones.get(0).getX(); // Retorna la X de la primera casilla
+        return posiciones.isEmpty() ? -1 : posiciones.get(0).getX();
     }
 
-    // Método para obtener la coordenada Y de la primera casilla (posición inicial)
     public int getYInicio() {
-        return posiciones.isEmpty() ? -1 : posiciones.get(0).getY(); // Retorna la Y de la primera casilla
+        return posiciones.isEmpty() ? -1 : posiciones.get(0).getY();
     }
 
     public boolean isHundido() {
         return hundido;
     }
 
-    // Método para marcar el barco como hundido
     public void setHundido(boolean hundido) {
         this.hundido = hundido;
+        estado = new EstadoNaveHundida();
     }
 
-    // Método para verificar si el barco es horizontal
     public boolean isHorizontal() {
         if (posiciones.size() < 2) {
-            return true; // Si solo hay una casilla, se asume que está horizontal
+            return true;
         }
 
-        // Verifica si las casillas están en la misma fila (horizontal)
         int deltaX = Math.abs(posiciones.get(0).getX() - posiciones.get(1).getX());
         int deltaY = Math.abs(posiciones.get(0).getY() - posiciones.get(1).getY());
 
-        esHorizontal = (deltaY == 0); // Si deltaY es 0, significa que están en la misma fila (horizontal)
+        esHorizontal = (deltaY == 0);
         return esHorizontal;
+    }
+
+    public void cambiarEstado() {
+        estado.cambiarEstado(this);
+    }
+
+    public void mostrarEstado() {
+        estado.mostrarEstado();
+    }
+
+    public void setEstado(EstadoNave estado) {
+        this.estado = estado;
+    }
+
+    // Método de Observer
+    @Override
+    public void actualizar() {
+        boolean todasImpactadas = true;
+        for (CasillaDTO c : posiciones) {
+            if (!c.estaImpactada()) {
+                todasImpactadas = false;
+                break;
+            }
+        }
+
+        if (todasImpactadas && !hundido) {
+            setHundido(true);
+            System.out.println("🚢 ¡El barco " + nombre + " ha sido hundido!");
+        }
     }
 }

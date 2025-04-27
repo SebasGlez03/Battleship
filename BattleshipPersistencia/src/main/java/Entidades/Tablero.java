@@ -11,7 +11,7 @@ import java.util.List;
  * @author Carlo
  */
 public class Tablero {
-     private List<Nave> naves;
+    private List<Nave> naves;
 
     public Tablero() {}
 

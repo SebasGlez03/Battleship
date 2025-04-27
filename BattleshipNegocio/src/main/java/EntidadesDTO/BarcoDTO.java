@@ -4,6 +4,7 @@
  */
 package EntidadesDTO;
 
+
 import java.awt.Color;
 
 /**

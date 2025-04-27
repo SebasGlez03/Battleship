@@ -9,10 +9,11 @@ presentacion\FrmColocarBarco.class
 Pruebas\pruebaTurno$1.class
 presentacion\FrmMenuPartida$1.class
 Pruebas\pruebaTurno.class
-Pruebas\Atacar.class
 presentacion\FrmAjustes$1.class
 presentacion\FrmInicio$1.class
 Pruebas\AtacarCoordenada.class
 presentacion\FrmPartida$1.class
 presentacion\FrmAjustes.class
 presentacion\FrmPartida.class
+Pruebas\ColocarNavesFrame.class
+Pruebas\PruebaBatalla.class
