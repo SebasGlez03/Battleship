@@ -18,6 +18,5 @@ public class CruceroDTO extends NaveDTO {
         this.nombre = "Crucero";
         this.tamano = 3;
         this.color = Color.GREEN;
-        // Nota: Las posiciones se deben asignar desde la lógica del juego según la colocación en el tablero
     }
 }

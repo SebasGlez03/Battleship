@@ -52,7 +52,7 @@ public class CasillaDTO implements Subject {
 
     public void cambiarEstado() {
         estado.cambiarEstado(this);
-        notificarObservadores(); // 🔥 Al cambiar estado, notificamos
+        notificarObservadores();
     }
 
     // Métodos de Observer Pattern

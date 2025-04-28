@@ -14,7 +14,7 @@ public class EstadoCasillaImpactada implements EstadoCasilla {
 
     @Override
     public void cambiarEstado(CasillaDTO casilla) {
-        // Ya está impactada, no cambia más
+        // Si ya esta impactada, no cambia más
     }
 
     @Override
