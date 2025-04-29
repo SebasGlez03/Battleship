@@ -2,12 +2,14 @@ presentacion\FrmInicio$4.class
 presentacion\FrmInicio.class
 Pruebas\PruebaColocarNave.class
 presentacion\FrmInicio$3.class
+Pruebas\Turno.class
 presentacion\FrmInicio$2.class
 presentacion\FrmMenuPartida.class
 presentacion\FrmColocarBarco$1.class
 presentacion\FrmColocarBarco.class
 presentacion\FrmMenuPartida$1.class
-Pruebas\pruebaTurno.class
+Pruebas\Turno$1.class
+Pruebas\Turno$2.class
 presentacion\FrmAjustes$1.class
 presentacion\FrmInicio$1.class
 Pruebas\AtacarCoordenada.class
