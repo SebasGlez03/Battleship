@@ -17,6 +17,6 @@ public class Main {
         
         FrmInicioB  frmInicioB=new FrmInicioB();
         frmInicioB.setVisible(true);
-        
+        System.out.println("Probar");
     }
 }
