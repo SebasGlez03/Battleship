@@ -5,20 +5,17 @@
 package PatronBuilder;
 
 import EntidadesDTO.NaveDTO;
+import EntidadesDTO.TipoNave;
 
 /**
  *
  * @author Carlo
  */
 public class Director {
-    private NaveBuilder builder;
 
-    public void setBuilder(NaveBuilder builder) {
-        this.builder = builder;
-    }
-
-    public NaveDTO construirNave() {
-        builder.construirColor();
-        return builder.getNave();
+    public NaveDTO construirNave(TipoNave tipo) {
+        return new NaveBuilder()
+            .setTipoNave(tipo)
+            .build();
     }
 }

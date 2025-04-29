@@ -4,6 +4,7 @@
  */
 package main;
 
+import pantallas.FrmInicioB;
 import presentacion.FrmInicio;
 
 /**
@@ -14,8 +15,8 @@ public class Main {
     public static void main(String[] args) {
         
         
-        FrmInicio  frmInicio=new FrmInicio();
-        frmInicio.setVisible(true);
+        FrmInicioB  frmInicioB=new FrmInicioB();
+        frmInicioB.setVisible(true);
         
     }
 }
