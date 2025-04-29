@@ -12,14 +12,14 @@ import java.awt.Color;
  * @author Carlo
  */
 public class BarcoDTO extends NaveDTO {
-    
-    public BarcoDTO() {
+     public BarcoDTO() {
         construir();
     }
 
     @Override
     public void construir() {
-        this.tipoNave = TipoNave.BARCO;
+        this.nombre = "Barco";
+        this.tamano = 1;
         this.color = Color.GREEN;
     }
 }

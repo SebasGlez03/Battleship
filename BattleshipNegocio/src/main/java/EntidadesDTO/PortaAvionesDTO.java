@@ -17,7 +17,8 @@ public class PortaAvionesDTO extends NaveDTO {
 
     @Override
     public void construir() {
-        this.tipoNave = TipoNave.PORTAAVIONES;
+        this.nombre = "Porta Aviones";
+        this.tamano = 4;
         this.color = Color.GREEN;
     }
 }

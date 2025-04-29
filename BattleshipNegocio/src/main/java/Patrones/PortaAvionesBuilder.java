@@ -19,12 +19,18 @@ public class PortaAvionesBuilder implements NaveBuilder {
         portaaviones = new PortaAvionesDTO();
     }
 
-    @Override
+    public void construirNombre() {
+        portaaviones.nombre = "Submarino";
+    }
+
+    public void construirTamano() {
+        portaaviones.tamano = 4;
+    }
+
     public void construirColor() {
         portaaviones.color = Color.GREEN;
     }
 
-    @Override
     public NaveDTO getNave() {
         return portaaviones;
     }

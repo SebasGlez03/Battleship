@@ -19,12 +19,18 @@ public class SubmarinoBuilder implements NaveBuilder {
         submarino = new SubmarinoDTO();
     }
 
-    @Override
+    public void construirNombre() {
+        submarino.nombre = "Submarino";
+    }
+
+    public void construirTamano() {
+        submarino.tamano = 2;
+    }
+
     public void construirColor() {
         submarino.color = Color.GREEN;
     }
 
-    @Override
     public NaveDTO getNave() {
         return submarino;
     }

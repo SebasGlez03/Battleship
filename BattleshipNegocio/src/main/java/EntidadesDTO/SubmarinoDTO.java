@@ -17,7 +17,8 @@ public class SubmarinoDTO extends NaveDTO {
 
     @Override
     public void construir() {
-        this.tipoNave = TipoNave.SUBMARINO;
+        this.nombre = "Submarino";
+        this.tamano = 2;
         this.color = Color.GREEN;
     }
 }

@@ -19,12 +19,18 @@ public class CruceroBuilder implements NaveBuilder {
         crucero = new CruceroDTO();
     }
 
-    @Override
+    public void construirNombre() {
+        crucero.nombre = "Submarino";
+    }
+
+    public void construirTamano() {
+        crucero.tamano = 3;
+    }
+
     public void construirColor() {
         crucero.color = Color.GREEN;
     }
 
-    @Override
     public NaveDTO getNave() {
         return crucero;
     }
