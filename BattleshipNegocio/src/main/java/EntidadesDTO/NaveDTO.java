@@ -15,8 +15,7 @@ import java.util.List;
  */
 public abstract class NaveDTO {
 
-    public String nombre;
-    public int tamano;
+    public TipoNave tipoNave;
     public Color color;
     protected List<CasillaDTO> posiciones = new ArrayList<>();
     protected boolean esHorizontal; // Para almacenar la orientación (horizontal o vertical)
@@ -33,11 +32,11 @@ public abstract class NaveDTO {
     }
 
     public String getNombre() {
-        return nombre;
+        return tipoNave.toString(); // Se utilizo el enumerador
     }
 
     public int getTamano() {
-        return tamano;
+        return tipoNave.getTamanio();  // Se utilizo el enumerador
     }
 
     public Color getColor() {

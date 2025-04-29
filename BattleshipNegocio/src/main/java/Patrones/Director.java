@@ -18,8 +18,6 @@ public class Director {
     }
 
     public NaveDTO construirNave() {
-        builder.construirNombre();
-        builder.construirTamano();
         builder.construirColor();
         return builder.getNave();
     }

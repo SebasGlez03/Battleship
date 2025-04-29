@@ -11,8 +11,6 @@ import EntidadesDTO.NaveDTO;
  * @author Carlo
  */
 public interface NaveBuilder {
-    void construirNombre();
-    void construirTamano();
     void construirColor();
     NaveDTO getNave();
 }
