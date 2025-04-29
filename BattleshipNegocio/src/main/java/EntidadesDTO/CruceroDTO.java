@@ -15,8 +15,7 @@ public class CruceroDTO extends NaveDTO {
 
     @Override
     public void construir() {
-        this.nombre = "Crucero";
-        this.tamano = 3;
+        this.tipoNave = tipoNave.CRUCERO;
         this.color = Color.GREEN;
         // Nota: Las posiciones se deben asignar desde la lógica del juego según la colocación en el tablero
     }

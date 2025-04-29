@@ -17,8 +17,7 @@ import java.util.List;
  */
 public abstract class NaveDTO implements Observer {
 
-    public String nombre;
-    public int tamano;
+    public TipoNave tipoNave;
     public Color color;
     protected List<CasillaDTO> posiciones = new ArrayList<>();
     protected boolean esHorizontal;
@@ -42,11 +41,11 @@ public abstract class NaveDTO implements Observer {
     }
 
     public String getNombre() {
-        return nombre;
+        return tipoNave.toString();
     }
 
     public int getTamano() {
-        return tamano;
+        return tipoNave.getTamanio();
     }
 
     public Color getColor() {

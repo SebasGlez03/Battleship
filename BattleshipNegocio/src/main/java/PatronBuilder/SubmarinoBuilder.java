@@ -13,26 +13,20 @@ import java.awt.Color;
  * @author Carlo
  */
 public class SubmarinoBuilder implements NaveBuilder {
+
     private SubmarinoDTO submarino;
 
     public SubmarinoBuilder() {
         submarino = new SubmarinoDTO();
     }
 
-    public void construirNombre() {
-        submarino.nombre = "Submarino";
-    }
-
-    public void construirTamano() {
-        submarino.tamano = 2;
-    }
-
+    @Override
     public void construirColor() {
         submarino.color = Color.GREEN;
     }
 
+    @Override
     public NaveDTO getNave() {
         return submarino;
     }
 }
-

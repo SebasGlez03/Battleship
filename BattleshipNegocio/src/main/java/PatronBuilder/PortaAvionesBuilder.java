@@ -13,24 +13,19 @@ import java.awt.Color;
  * @author Carlo
  */
 public class PortaAvionesBuilder implements NaveBuilder {
+
     private PortaAvionesDTO portaaviones;
 
     public PortaAvionesBuilder() {
         portaaviones = new PortaAvionesDTO();
     }
 
-    public void construirNombre() {
-        portaaviones.nombre = "Submarino";
-    }
-
-    public void construirTamano() {
-        portaaviones.tamano = 4;
-    }
-
+    @Override
     public void construirColor() {
         portaaviones.color = Color.GREEN;
     }
 
+    @Override
     public NaveDTO getNave() {
         return portaaviones;
     }

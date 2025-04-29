@@ -17,8 +17,7 @@ public class PortaAvionesDTO extends NaveDTO {
 
     @Override
     public void construir() {
-        this.nombre = "Porta Aviones";
-        this.tamano = 4;
+        this.tipoNave = tipoNave.PORTAAVIONES;
         this.color = Color.GREEN;
         // Nota: Las posiciones se deben asignar desde la lógica del juego según la colocación en el tablero
     }
