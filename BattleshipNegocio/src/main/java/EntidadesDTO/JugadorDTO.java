@@ -17,7 +17,7 @@ public class JugadorDTO {
     private String color;
     private TableroDTO tableroPrincipal;
     private TableroDTO tableroDisparos;
-    private List<NaveDTO> naves; //para registrar sus naves
+    private List<NaveDTO> naves; // <-- NUEVO: para registrar sus naves
 
     public JugadorDTO(String nombre, String color) {
         this.nombre = nombre;

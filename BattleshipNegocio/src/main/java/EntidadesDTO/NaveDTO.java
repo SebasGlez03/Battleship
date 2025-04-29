@@ -34,7 +34,7 @@ public abstract class NaveDTO implements Observer {
 
     public void agregarCasilla(CasillaDTO c) {
         posiciones.add(c);
-        c.agregarObservador(this);
+        c.agregarObservador(this); // 🔥 Se suscribe como observador
     }
 
     public List<CasillaDTO> getPosiciones() {

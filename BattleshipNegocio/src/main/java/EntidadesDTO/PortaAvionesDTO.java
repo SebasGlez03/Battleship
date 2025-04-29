@@ -20,6 +20,7 @@ public class PortaAvionesDTO extends NaveDTO {
         this.nombre = "Porta Aviones";
         this.tamano = 4;
         this.color = Color.GREEN;
+        // Nota: Las posiciones se deben asignar desde la lógica del juego según la colocación en el tablero
     }
 }
 

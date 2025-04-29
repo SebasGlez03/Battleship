@@ -21,5 +21,6 @@ public class BarcoDTO extends NaveDTO {
         this.nombre = "Barco";
         this.tamano = 1;
         this.color = Color.GREEN;
+        // Nota: Las posiciones se deben asignar desde la lógica del juego según la colocación en el tablero
     }
 }

@@ -20,5 +20,6 @@ public class SubmarinoDTO extends NaveDTO {
         this.nombre = "Submarino";
         this.tamano = 2;
         this.color = Color.GREEN;
+        // Nota: Las posiciones se deben asignar desde la lógica del juego según la colocación en el tablero
     }
 }

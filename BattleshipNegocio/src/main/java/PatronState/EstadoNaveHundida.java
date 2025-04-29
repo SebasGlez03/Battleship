@@ -13,7 +13,7 @@ import EntidadesDTO.NaveDTO;
 public class EstadoNaveHundida implements EstadoNave {
     @Override
     public void cambiarEstado(NaveDTO nave) {
-        System.out.println("La nave ya esta hundida y no puede cambiar de estado.");
+        System.out.println("La nave ya está hundida y no puede cambiar de estado.");
     }
 
     @Override
