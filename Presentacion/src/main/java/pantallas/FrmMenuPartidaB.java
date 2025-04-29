@@ -4,6 +4,8 @@
  */
 package pantallas;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Oley
@@ -48,6 +50,11 @@ public class FrmMenuPartidaB extends javax.swing.JFrame {
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/START.png"))); // NOI18N
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
         getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 180, -1, -1));
 
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/BACK.png"))); // NOI18N
@@ -75,6 +82,12 @@ public class FrmMenuPartidaB extends javax.swing.JFrame {
 
         jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/azul.png"))); // NOI18N
         getContentPane().add(jButton8, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 290, -1, -1));
+
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
         getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 170, 210, 60));
         getContentPane().add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 162, 210, 60));
 
@@ -112,6 +125,21 @@ this.setVisible(false);
 
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+if(jTextField1.getText().trim().isEmpty()|| jTextField2.getText().trim().isEmpty()){
+    JOptionPane.showMessageDialog(null, "Debe selecionar dos nombres", "Advertencia", JOptionPane.WARNING_MESSAGE);
+
+}else{
+        
+        }
+
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     
 
