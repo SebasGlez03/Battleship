@@ -4,7 +4,8 @@
  */
 package PatronBuilder;
 
-import EntidadesDTO.*;
+import EntidadesDTO.NaveDTO;
+import EntidadesDTO.SubmarinoDTO;
 import java.awt.Color;
 
 /**
@@ -12,11 +13,26 @@ import java.awt.Color;
  * @author Carlo
  */
 public class SubmarinoBuilder implements NaveBuilder {
+    private SubmarinoDTO submarino;
 
-    @Override
-    public NaveDTO construir() {
-        return new SubmarinoDTO();
+    public SubmarinoBuilder() {
+        submarino = new SubmarinoDTO();
     }
-   
+
+    public void construirNombre() {
+        submarino.nombre = "Submarino";
+    }
+
+    public void construirTamano() {
+        submarino.tamano = 2;
+    }
+
+    public void construirColor() {
+        submarino.color = Color.GREEN;
+    }
+
+    public NaveDTO getNave() {
+        return submarino;
+    }
 }
 

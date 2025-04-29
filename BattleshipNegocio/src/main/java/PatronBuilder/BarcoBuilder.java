@@ -13,8 +13,25 @@ import java.awt.Color;
  * @author Carlo
  */
 public class BarcoBuilder implements NaveBuilder {
-    @Override
-    public NaveDTO construir() {
-        return new BarcoDTO();
+    private BarcoDTO barco;
+
+    public BarcoBuilder() {
+        barco = new BarcoDTO();
+    }
+
+    public void construirNombre() {
+        barco.nombre = "Submarino";
+    }
+
+    public void construirTamano() {
+        barco.tamano = 1;
+    }
+
+    public void construirColor() {
+        barco.color = Color.GREEN;
+    }
+
+    public NaveDTO getNave() {
+        return barco;
     }
 }

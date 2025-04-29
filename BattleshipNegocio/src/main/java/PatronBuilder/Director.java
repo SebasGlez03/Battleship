@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package Patrones;
+package PatronBuilder;
 
 import EntidadesDTO.NaveDTO;
 
@@ -18,8 +18,6 @@ public class Director {
     }
 
     public NaveDTO construirNave() {
-        builder.construirNombre();
-        builder.construirTamano();
         builder.construirColor();
         return builder.getNave();
     }

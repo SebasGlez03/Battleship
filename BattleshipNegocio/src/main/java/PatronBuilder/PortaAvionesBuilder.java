@@ -4,7 +4,8 @@
  */
 package PatronBuilder;
 
-import EntidadesDTO.*;
+import EntidadesDTO.NaveDTO;
+import EntidadesDTO.PortaAvionesDTO;
 import java.awt.Color;
 
 /**
@@ -12,8 +13,25 @@ import java.awt.Color;
  * @author Carlo
  */
 public class PortaAvionesBuilder implements NaveBuilder {
-    @Override
-    public NaveDTO construir() {
-        return new PortaAvionesDTO();
+    private PortaAvionesDTO portaaviones;
+
+    public PortaAvionesBuilder() {
+        portaaviones = new PortaAvionesDTO();
+    }
+
+    public void construirNombre() {
+        portaaviones.nombre = "Submarino";
+    }
+
+    public void construirTamano() {
+        portaaviones.tamano = 4;
+    }
+
+    public void construirColor() {
+        portaaviones.color = Color.GREEN;
+    }
+
+    public NaveDTO getNave() {
+        return portaaviones;
     }
 }

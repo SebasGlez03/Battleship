@@ -4,7 +4,8 @@
  */
 package PatronBuilder;
 
-import EntidadesDTO.*;
+import EntidadesDTO.CruceroDTO;
+import EntidadesDTO.NaveDTO;
 import java.awt.Color;
 
 /**
@@ -12,8 +13,25 @@ import java.awt.Color;
  * @author Carlo
  */
 public class CruceroBuilder implements NaveBuilder {
-   @Override
-    public NaveDTO construir() {
-        return new CruceroDTO();
+    private CruceroDTO crucero;
+
+    public CruceroBuilder() {
+        crucero = new CruceroDTO();
+    }
+
+    public void construirNombre() {
+        crucero.nombre = "Submarino";
+    }
+
+    public void construirTamano() {
+        crucero.tamano = 3;
+    }
+
+    public void construirColor() {
+        crucero.color = Color.GREEN;
+    }
+
+    public NaveDTO getNave() {
+        return crucero;
     }
 }
