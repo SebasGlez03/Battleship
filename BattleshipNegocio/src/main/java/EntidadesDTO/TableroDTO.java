@@ -4,14 +4,12 @@
  */
 package EntidadesDTO;
 
-
-
-
 /**
  *
  * @author Carlo
  */
 public class TableroDTO {
+
     private CasillaDTO[][] casillas = new CasillaDTO[10][10];
 
     public TableroDTO() {
@@ -23,8 +21,11 @@ public class TableroDTO {
     }
 
     public CasillaDTO getCasilla(int x, int y) {
-        if (x < 0 || x >= 10 || y < 0 || y >= 10) return null;
+        if (x < 0 || x >= 10 || y < 0 || y >= 10) {
+            return null;
+        }
         return casillas[x][y];
     }
 }
 
+    
