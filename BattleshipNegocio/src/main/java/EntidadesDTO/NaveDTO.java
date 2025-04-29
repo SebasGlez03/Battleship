@@ -15,26 +15,22 @@ import java.util.List;
  *
  * @author Carlo
  */
-public abstract class NaveDTO implements Observer {
+public class NaveDTO implements Observer {
 
-    public String nombre;
-    public int tamano;
-    public Color color;
-    protected List<CasillaDTO> posiciones = new ArrayList<>();
-    protected boolean esHorizontal;
+    private TipoNave tipo;
+    private List<CasillaDTO> posiciones = new ArrayList<>();
+    private boolean esHorizontal;
     private boolean hundido;
-
     private EstadoNave estado;
 
-    public NaveDTO() {
-        estado = new EstadoNaveActiva();
+    public NaveDTO(TipoNave tipo) {
+        this.tipo = tipo;
+        this.estado = new EstadoNaveActiva();
     }
-
-    public abstract void construir();
 
     public void agregarCasilla(CasillaDTO c) {
         posiciones.add(c);
-        c.agregarObservador(this); // 🔥 Se suscribe como observador
+        c.agregarObservador(this);
     }
 
     public List<CasillaDTO> getPosiciones() {
@@ -42,15 +38,15 @@ public abstract class NaveDTO implements Observer {
     }
 
     public String getNombre() {
-        return nombre;
+        return tipo.getNombre();
     }
 
     public int getTamano() {
-        return tamano;
+        return tipo.getTamano();
     }
 
     public Color getColor() {
-        return color;
+        return tipo.getColor();
     }
 
     public int getXInicio() {
@@ -67,17 +63,15 @@ public abstract class NaveDTO implements Observer {
 
     public void setHundido(boolean hundido) {
         this.hundido = hundido;
-        estado = new EstadoNaveHundida();
+        this.estado = new EstadoNaveHundida();
     }
 
     public boolean isHorizontal() {
         if (posiciones.size() < 2) {
             return true;
         }
-
         int deltaX = Math.abs(posiciones.get(0).getX() - posiciones.get(1).getX());
         int deltaY = Math.abs(posiciones.get(0).getY() - posiciones.get(1).getY());
-
         esHorizontal = (deltaY == 0);
         return esHorizontal;
     }
@@ -94,7 +88,7 @@ public abstract class NaveDTO implements Observer {
         this.estado = estado;
     }
 
-    // Método de Observer
+    // Método del Observer
     @Override
     public void actualizar() {
         boolean todasImpactadas = true;
@@ -104,10 +98,14 @@ public abstract class NaveDTO implements Observer {
                 break;
             }
         }
-
         if (todasImpactadas && !hundido) {
             setHundido(true);
-            System.out.println("🚢 ¡El barco " + getNombre() + " ha sido hundido!");
+            System.out.println("¡El barco " + getNombre() + " ha sido hundido!");
         }
+    }
+
+    // Nuevo: obtener el tipo directamente
+    public TipoNave getTipo() {
+        return tipo;
     }
 }

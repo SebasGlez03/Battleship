@@ -4,11 +4,7 @@
  */
 package Pruebas;
 
-import PatronBuilder.SubmarinoBuilder;
 import PatronBuilder.Director;
-import PatronBuilder.CruceroBuilder;
-import PatronBuilder.BarcoBuilder;
-import PatronBuilder.PortaAvionesBuilder;
 import EntidadesDTO.*;
 import java.awt.*;
 import javax.swing.*;
@@ -50,7 +46,7 @@ public class PruebaColocarNave extends JFrame {
         JPanel panelTablero = new JPanel(new GridLayout(10, 10));
         JPanel panelControles = new JPanel();
 
-        // Crear botones de tablero
+        // Crear botones del tablero
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 final int x = i;
@@ -80,40 +76,53 @@ public class PruebaColocarNave extends JFrame {
         panelControles.add(btnOrientacion);
         panelControles.add(lblOrientacion);
 
-        // Layout principal
         setLayout(new BorderLayout());
         add(panelTablero, BorderLayout.CENTER);
         add(panelControles, BorderLayout.SOUTH);
 
-        // Inicializa con el primer barco
-        seleccionarBarco();
+        seleccionarBarco(); // Inicializa con la primera nave
     }
 
     private void seleccionarBarco() {
-        String tipo = (String) selectorBarco.getSelectedItem();
-        Director director = null;
+    String tipo = (String) selectorBarco.getSelectedItem();
+    Director director = new Director();
 
-        switch (tipo) {
-            case "Submarino":
-                director = new Director(new SubmarinoBuilder());
-                break;
-            case "Crucero":
-                director = new Director(new CruceroBuilder());
-                break;
-            case "Porta Aviones":
-                director = new Director(new PortaAvionesBuilder());
-                break;
-            case "Barco":
-                director = new Director(new BarcoBuilder());
-                break;
-            default:
-                JOptionPane.showMessageDialog(this, "Tipo de nave desconocido.");
+    switch (tipo) {
+        case "Submarino":
+            if (contadorSubmarinos >= MAX_SUBMARINOS) {
+                JOptionPane.showMessageDialog(this, "Ya has colocado todos los Submarinos disponibles.");
                 return;
-        }
-
-        naveActual = director.construir();
-        System.out.println("[Seleccion] Nave seleccionada: " + naveActual.getNombre() + ", Tamano: " + naveActual.getTamano());
+            }
+            naveActual = director.construirNave(TipoNave.SUBMARINO);
+            break;
+        case "Crucero":
+            if (contadorCruceros >= MAX_CRUCEROS) {
+                JOptionPane.showMessageDialog(this, "Ya has colocado todos los Cruceros disponibles.");
+                return;
+            }
+            naveActual = director.construirNave(TipoNave.CRUCERO);
+            break;
+        case "Porta Aviones":
+            if (contadorPortaAviones >= MAX_PORTA_AVIONES) {
+                JOptionPane.showMessageDialog(this, "Ya has colocado todos los Porta Aviones disponibles.");
+                return;
+            }
+            naveActual = director.construirNave(TipoNave.PORTAAVIONES);
+            break;
+        case "Barco":
+            if (contadorBarcos >= MAX_BARCOS) {
+                JOptionPane.showMessageDialog(this, "Ya has colocado todos los Barcos disponibles.");
+                return;
+            }
+            naveActual = director.construirNave(TipoNave.BARCO);
+            break;
+        default:
+            JOptionPane.showMessageDialog(this, "Tipo de nave desconocido.");
+            return;
     }
+
+    System.out.println("[Seleccion] Nave seleccionada: " + naveActual.getNombre() + ", Tamano: " + naveActual.getTamano());
+}
 
     private void colocarBarco(int x, int y) {
         if (naveActual == null) {
@@ -129,33 +138,32 @@ public class PruebaColocarNave extends JFrame {
             (tipo.equals("Barco") && contadorBarcos >= MAX_BARCOS)) {
 
             JOptionPane.showMessageDialog(this, "Ya has colocado todos los " + tipo + " disponibles.");
-            System.out.println("[Limite] No puedes colocar más " + tipo + ".");
+            System.out.println("[Limite] No puedes colocar mas " + tipo + ".");
             return;
         }
 
         int tamano = naveActual.getTamano();
-        System.out.println("[Colocar] Intentando colocar " + naveActual.getNombre() + " en (" + x + ", " + y + ") con Orientacion " + (esHorizontal ? "Horizontal" : "Vertical"));
+        System.out.println("[Colocar] Intentando colocar " + tipo + " en (" + x + ", " + y + ") con orientacion " + (esHorizontal ? "Horizontal" : "Vertical"));
 
-        // Verificar si cabe en el tablero
         if ((esHorizontal && y + tamano > 10) || (!esHorizontal && x + tamano > 10)) {
-            System.out.println("[Error] No cabe en esa Orientacion.");
-            JOptionPane.showMessageDialog(this, "No cabe en esa Orientacion");
+            JOptionPane.showMessageDialog(this, "No cabe en esa orientacion");
+            System.out.println("[Error] No cabe en esa orientacion.");
             return;
         }
 
-        // Verificar que todas las casillas estén disponibles
+        // Verificar disponibilidad de casillas
         for (int i = 0; i < tamano; i++) {
             int xi = esHorizontal ? x : x + i;
             int yi = esHorizontal ? y + i : y;
             CasillaDTO casilla = tablero.getCasilla(xi, yi);
             if (casilla == null || !casilla.estaDisponible()) {
-                System.out.println("[Error] Casilla ocupada en (" + xi + ", " + yi + ")");
                 JOptionPane.showMessageDialog(this, "Casillas ocupadas");
+                System.out.println("[Error] Casilla ocupada en (" + xi + ", " + yi + ")");
                 return;
             }
         }
 
-        // Si pasa la validación, colocamos el barco
+        // Colocar la nave
         naveActual.getPosiciones().clear();
         Color colorCasilla = obtenerColor(naveActual.getColor());
 
@@ -163,48 +171,32 @@ public class PruebaColocarNave extends JFrame {
             int xi = esHorizontal ? x : x + i;
             int yi = esHorizontal ? y + i : y;
             CasillaDTO casilla = tablero.getCasilla(xi, yi);
-
-            casilla.cambiarEstado(); // De EstadoDisponible -> EstadoOcupada
-            System.out.println("[Estado] Casilla (" + xi + ", " + yi + ") marcada como OCUPADA.");
-
+            casilla.cambiarEstado();
             naveActual.agregarCasilla(casilla);
             botones[xi][yi].setBackground(colorCasilla);
         }
 
-        // Aumentamos contador correspondiente
+        // Actualizar contadores
         switch (tipo) {
-            case "Porta Aviones":
-                contadorPortaAviones++;
-                break;
-            case "Crucero":
-                contadorCruceros++;
-                break;
-            case "Submarino":
-                contadorSubmarinos++;
-                break;
-            case "Barco":
-                contadorBarcos++;
-                break;
+            case "Porta Aviones": contadorPortaAviones++; break;
+            case "Crucero":       contadorCruceros++;     break;
+            case "Submarino":     contadorSubmarinos++;   break;
+            case "Barco":         contadorBarcos++;       break;
         }
 
-        JOptionPane.showMessageDialog(this, naveActual.getNombre() + " colocado");
-        System.out.println("[Colocado exitoso] " + naveActual.getNombre() + " colocado en tablero.\n");
+        JOptionPane.showMessageDialog(this, tipo + " colocado");
+        System.out.println("[Colocado exitoso] " + tipo + " colocado.\n");
     }
 
     private Color obtenerColor(Color color) {
-        if (color.equals(Color.BLUE)) {
-            return Color.BLUE;
-        } else if (color.equals(Color.RED)) {
-            return Color.RED;
-        } else if (color.equals(Color.GREEN)) {
-            return Color.GREEN;
-        } else if (color.equals(Color.YELLOW)) {
-            return Color.YELLOW;
-        } else if (color.equals(Color.GRAY)) {
-            return Color.GRAY;
-        } else {
-            return Color.CYAN;
-        }
+        return switch (color.getRGB()) {
+            case -16776961 -> Color.BLUE;
+            case -65536    -> Color.RED;
+            case -16711936 -> Color.GREEN;
+            case -256      -> Color.YELLOW;
+            case -8355712  -> Color.GRAY;
+            default        -> Color.CYAN;
+        };
     }
 
     public static void main(String[] args) {

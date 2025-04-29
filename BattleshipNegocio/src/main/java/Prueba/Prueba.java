@@ -6,10 +6,8 @@ package Prueba;
 
 import EntidadesDTO.*;
 import EntidadesDTO.PartidaDTO;
-import PatronBuilder.BarcoBuilder;
 import PatronBuilder.Director;
 import PatronBuilder.NaveBuilder;
-import PatronBuilder.SubmarinoBuilder;
 
 /**
  *

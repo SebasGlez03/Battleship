@@ -5,7 +5,7 @@
 package EntidadesDTO;
 
 import Entidades.Jugador;
-import PatronBuilder.State.*;
+//import PatronBuilder.State.*;
 
 
 /**
@@ -16,14 +16,14 @@ public class PartidaDTO {
     private JugadorDTO jugador1;
     private JugadorDTO jugador2;
     private JugadorDTO jugadorActual;
-    private EstadoPartida estado;
+//    private EstadoPartida estado;
     private JugadorDTO ganador;
 
     public PartidaDTO(JugadorDTO jugador1, JugadorDTO jugador2) {
         this.jugador1 = jugador1;
         this.jugador2 = jugador2;
         this.jugadorActual = jugador1;
-        this.estado = new EnCurso();
+//        this.estado = new EnCurso();
     }
 
     public JugadorDTO getJugador1() {
@@ -42,21 +42,21 @@ public class PartidaDTO {
         return ganador;
     }
 
-    public void setEstado(EstadoPartida estado) {
-        this.estado = estado;
-    }
+//    public void setEstado(EstadoPartida estado) {
+//        this.estado = estado;
+//    }
 
-    public void ejecutarTurno() {
-        estado.manejarTurno(this);
-    }
+//    public void ejecutarTurno() {
+//        estado.manejarTurno(this);
+//    }
 
     public void cambiarTurno() {
         jugadorActual = (jugadorActual == jugador1) ? jugador2 : jugador1;
     }
 
-    public void finalizarPartida(JugadorDTO ganador) {
-        this.ganador = ganador;
-        setEstado(new Finalizada());
-    }
+//    public void finalizarPartida(JugadorDTO ganador) {
+//        this.ganador = ganador;
+//        setEstado(new Finalizada());
+//    }
 }
 

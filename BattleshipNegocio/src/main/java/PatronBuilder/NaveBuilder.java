@@ -5,13 +5,22 @@
 package PatronBuilder;
 
 import EntidadesDTO.NaveDTO;
+import EntidadesDTO.TipoNave;
 
 /**
  *
  * @author Carlo
  */
-public interface NaveBuilder {
-    void construirColor();
-    NaveDTO getNave();
+public class NaveBuilder {
+    private TipoNave tipoNave;
+
+    public NaveBuilder setTipoNave(TipoNave tipoNave) {
+        this.tipoNave = tipoNave;
+        return this;
+    }
+
+    public NaveDTO build() {
+        return new NaveDTO(tipoNave);
+    }
 }
 
