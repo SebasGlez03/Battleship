@@ -106,7 +106,7 @@ public abstract class NaveDTO implements Observer {
 
         if (todasImpactadas && !hundido) {
             setHundido(true);
-            System.out.println("🚢 ¡El barco " + nombre + " ha sido hundido!");
+            System.out.println("🚢 ¡El barco " + getNombre() + " ha sido hundido!");
         }
     }
 }
