@@ -4,8 +4,7 @@
  */
 package main;
 
-import pantallas.FrmInicioB;
-import presentacion.FrmInicio;
+
 
 /**
  *
@@ -15,8 +14,6 @@ public class Main {
     public static void main(String[] args) {
         
         
-        FrmInicioB  frmInicioB=new FrmInicioB();
-        frmInicioB.setVisible(true);
-        System.out.println("Probar");
+ 
     }
 }
