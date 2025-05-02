@@ -4,9 +4,7 @@
  */
 package EntidadesDTO;
 
-import Entidades.Tablero;
-import java.util.ArrayList;
-import java.util.List;
+
 
 /**
  *

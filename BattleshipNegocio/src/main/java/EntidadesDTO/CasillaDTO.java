@@ -52,9 +52,16 @@ public class CasillaDTO implements Subject {
 
     public void cambiarEstado() {
         estado.cambiarEstado(this);
-        notificarObservadores(); // 🔥 Al cambiar estado, notificamos
+        notificarObservadores();
     }
 
+    
+    // Método para reiniciar el estado de la casilla
+    public void reiniciarEstado() {
+        this.estado = new EstadoCasillaDisponible(); // Restablece al estado inicial
+        notificarObservadores(); // Notifica a los observadores del cambio
+    }
+    
     // Métodos de Observer Pattern
 
     @Override
