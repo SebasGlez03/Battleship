@@ -19,22 +19,24 @@ public class SocketCliente {
     private BufferedReader entrada;
     private PrintWriter salida;
 
-    public void conectar(String host, int puerto) throws IOException {
-        socket = new Socket(host, puerto);
+    public void conectar(String ip, int puerto) throws IOException {
+        socket = new Socket(ip, puerto);
         System.out.println("Conectado al servidor.");
         entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         salida = new PrintWriter(socket.getOutputStream(), true);
     }
 
-    public void enviarMensaje(String mensaje) {
+    public void enviar(String mensaje) {
         salida.println(mensaje);
     }
 
-    public String recibirMensaje() throws IOException {
+    public String recibir() throws IOException {
         return entrada.readLine();
     }
 
     public void cerrar() throws IOException {
+        entrada.close();
+        salida.close();
         socket.close();
     }
 }
