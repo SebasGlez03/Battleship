@@ -16,31 +16,33 @@ import java.net.Socket;
  * @author Carlo
  */
 public class SocketServidor {
-    private ServerSocket serverSocket;
-    private Socket clientSocket;
+   private ServerSocket serverSocket;
+    private Socket socket;
     private BufferedReader entrada;
     private PrintWriter salida;
 
     public void iniciarServidor(int puerto) throws IOException {
         serverSocket = new ServerSocket(puerto);
-        System.out.println("Esperando conexion del jugador 2...");
-        clientSocket = serverSocket.accept();
-        System.out.println("Jugador 2 conectado.");
+        System.out.println("Esperando conexion del jugador...");
+        socket = serverSocket.accept();
+        System.out.println("Jugador conectado.");
 
-        entrada = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        salida = new PrintWriter(clientSocket.getOutputStream(), true);
+        entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        salida = new PrintWriter(socket.getOutputStream(), true);
     }
 
-    public void enviarMensaje(String mensaje) {
+    public void enviar(String mensaje) {
         salida.println(mensaje);
     }
 
-    public String recibirMensaje() throws IOException {
+    public String recibir() throws IOException {
         return entrada.readLine();
     }
 
     public void cerrar() throws IOException {
-        clientSocket.close();
+        entrada.close();
+        salida.close();
+        socket.close();
         serverSocket.close();
     }
 }
