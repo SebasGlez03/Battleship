@@ -4,8 +4,8 @@
  */
 package PatronBuilder;
 
-import EntidadesDTO.Nave;
-import EntidadesDTO.TipoNave;
+import Entidades.Nave;
+import Entidades.TipoNave;
 
 /**
  *

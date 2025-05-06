@@ -4,7 +4,7 @@
  */
 package PatronState;
 
-import EntidadesDTO.Casilla;
+import Entidades.Casilla;
 
 /**
  *

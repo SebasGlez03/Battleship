@@ -4,7 +4,7 @@
  */
 package Pruebas;
 
-import EntidadesDTO.Tablero;
+import Entidades.Tablero;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;

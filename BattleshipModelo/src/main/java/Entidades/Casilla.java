@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package EntidadesDTO;
+package Entidades;
 
 import PatronObserver.*;
 import PatronState.*;
@@ -23,7 +23,7 @@ public class Casilla implements Subject {
     public Casilla(int x, int y) {
         this.x = x;
         this.y = y;
-        this.estado = new EstadoCasillaDisponible(); // Empieza como disponible
+        this.estado = new EstadoCasillaDisponible();
     }
 
     public int getX() {
@@ -55,15 +55,27 @@ public class Casilla implements Subject {
         notificarObservadores();
     }
 
-    
-    // Método para reiniciar el estado de la casilla
     public void reiniciarEstado() {
-        this.estado = new EstadoCasillaDisponible(); // Restablece al estado inicial
-        notificarObservadores(); // Notifica a los observadores del cambio
+        this.estado = new EstadoCasillaDisponible();
+        notificarObservadores();
     }
-    
-    // Métodos de Observer Pattern
 
+    public String convertirATexto() {
+        if (estado instanceof EstadoCasillaDisponible) {
+            return "Disponible";
+        } else if (estado instanceof EstadoCasillaOcupada) {
+            return "Ocupada";
+        } else if (estado instanceof EstadoCasillaImpactada) {
+            return "Impactada";
+        }
+        return "Desconocido";
+    }
+
+    public boolean tieneNave() {
+        return estado instanceof EstadoCasillaOcupada;
+    }
+
+    // Métodos del patrón Observer
     @Override
     public void agregarObservador(Observer o) {
         observadores.add(o);
@@ -81,5 +93,3 @@ public class Casilla implements Subject {
         }
     }
 }
-
-

@@ -4,11 +4,19 @@
  */
 package Pruebas;
 
+import Sockets.SocketCliente;
+import Sockets.SocketServidor;
+import java.io.IOException;
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
+
 /**
  *
  * @author Oley
  */
 public class InicioSesion extends javax.swing.JFrame {
+
+    private SocketCliente cliente;
 
     /**
      * Creates new form InicioSesion
@@ -52,28 +60,27 @@ public class InicioSesion extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(137, 137, 137)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(63, 63, 63)
+                        .addGap(27, 27, 27)
                         .addComponent(jLabel1))
+                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(36, 36, 36)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(48, 48, 48)
+                        .addGap(12, 12, 12)
                         .addComponent(jButton1)))
-                .addContainerGap(64, Short.MAX_VALUE))
+                .addContainerGap(158, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(76, 76, 76)
+                .addGap(106, 106, 106)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(51, 51, 51)
                 .addComponent(jButton1)
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addContainerGap(155, Short.MAX_VALUE))
         );
 
         pack();
@@ -84,7 +91,38 @@ public class InicioSesion extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+         try {
+        jButton1.setEnabled(false);
+        cliente = new SocketCliente();
+        cliente.conectar("127.0.0.1", 12345);
+
+        String nombreJugador1 = jTextField2.getText().trim();
+        if (nombreJugador1.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingresa tu nombre.");
+            jButton1.setEnabled(true);
+            return;
+        }
+
+        // Enviar nombre del jugador 2 al servidor
+        cliente.enviar(nombreJugador1);
+
+        // Recibir el nombre del jugador 1 desde el servidor
+        String nombreRival = cliente.recibir();
+        JOptionPane.showMessageDialog(this, "Conectado con: " + nombreRival);
+
+//        // Confirmar que el jugador 2 está listo
+//        cliente.enviar("READY");
+
+        // Abrir ventana para colocar las naves
+        ColocarNave2 ventana = new ColocarNave2(nombreJugador1, cliente);
+        ventana.setVisible(true);
+        dispose();
+
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, "Error al conectar: " + e.getMessage());
+        e.printStackTrace();
+        jButton1.setEnabled(true);
+    }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

@@ -4,11 +4,18 @@
  */
 package Pruebas;
 
+import Sockets.SocketCliente;
+import java.io.IOException;
+import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
+
 /**
  *
  * @author Oley
  */
 public class InicioSesion2 extends javax.swing.JFrame {
+
+    private SocketCliente cliente;
 
     /**
      * Creates new form InicioSesion2
@@ -35,38 +42,77 @@ public class InicioSesion2 extends javax.swing.JFrame {
         jLabel1.setText("Player 2");
 
         jButton1.setText("Start");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(33, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(115, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(23, 23, 23))
+                    .addComponent(jTextField1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(71, 71, 71))
+                        .addGap(48, 48, 48))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jButton1)
-                        .addGap(58, 58, 58))))
+                        .addGap(35, 35, 35)))
+                .addGap(111, 111, 111))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(27, 27, 27)
+                .addGap(108, 108, 108)
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
                 .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(26, 26, 26)
                 .addComponent(jButton1)
-                .addContainerGap(41, Short.MAX_VALUE))
+                .addContainerGap(159, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        try {
+        jButton1.setEnabled(false);
+        cliente = new SocketCliente();
+        cliente.conectar("127.0.0.1", 12345);
+
+        String nombreJugador2 = jTextField1.getText().trim();
+        if (nombreJugador2.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingresa tu nombre.");
+            jButton1.setEnabled(true);
+            return;
+        }
+
+        // Enviar nombre del jugador 2 al servidor
+        cliente.enviar(nombreJugador2);
+
+        // Recibir el nombre del jugador 1 desde el servidor
+        String nombreRival = cliente.recibir();
+        JOptionPane.showMessageDialog(this, "Conectado con: " + nombreRival);
+
+//        // Confirmar que el jugador 2 está listo
+//        cliente.enviar("READY");
+
+        // Abrir ventana para colocar las naves
+        ColocarNave2 ventana = new ColocarNave2(nombreJugador2, cliente);
+        ventana.setVisible(true);
+        dispose();
+
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, "Error al conectar: " + e.getMessage());
+        e.printStackTrace();
+        jButton1.setEnabled(true);
+    }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments

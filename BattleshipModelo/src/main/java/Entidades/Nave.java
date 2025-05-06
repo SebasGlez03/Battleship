@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package EntidadesDTO;
+package Entidades;
 
 
 import PatronObserver.*;
@@ -108,4 +108,6 @@ public class Nave implements Observer {
     public TipoNave getTipo() {
         return tipo;
     }
+    
+    
 }

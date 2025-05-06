@@ -4,8 +4,8 @@
  */
 package Pruebas;
 
-import EntidadesDTO.Jugador;
-import EntidadesDTO.TurnoManager;
+import Entidades.Jugador;
+import Entidades.TurnoManager;
 import javax.swing.JOptionPane;
 
 /**
@@ -21,9 +21,9 @@ public class Turno extends javax.swing.JFrame {
      * Creates new form Turno
      */
     public Turno() {
-        turnoManager = new TurnoManager();
-        initComponents();
-        labelTurno.setText("Turno de: " + turnoManager.getTurnoActual());
+//        turnoManager = new TurnoManager();
+//        initComponents();
+//        labelTurno.setText("Turno de: " + turnoManager.getTurnoActual());
     }
 
     /**
@@ -125,102 +125,102 @@ public class Turno extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAtacarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtacarActionPerformed
-        atacar();
+//        atacar();
     }//GEN-LAST:event_btnAtacarActionPerformed
 
     
     
     
-    private void atacar() {
-        String xText = txtX.getText();
-        String yText = txtY.getText();
-
-        if (xText.isEmpty() || yText.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor ingrese ambas coordenadas.");
-            return;
-        }
-
-        int x, y;
-        try {
-            x = Integer.parseInt(xText);
-            y = Integer.parseInt(yText);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Las coordenadas deben ser números enteros.");
-            return;
-        }
-
-        // Aquí validamos el turno
-        if (turnoManager.esTurno(Jugador.JUGADOR_1)) {
-            System.out.println("Jugador 1 ataca en (" + x + ", " + y + ")");
-            turnoManager.cambiarTurno();
-            actualizarTurno();
-        } else if (turnoManager.esTurno(Jugador.JUGADOR_2)) {
-            System.out.println("Jugador 2 ataca en (" + x + ", " + y + ")");
-            turnoManager.cambiarTurno();
-            actualizarTurno();
-        } else {
-            JOptionPane.showMessageDialog(this, "No es tu turno.");
-        }
-
-        // Limpiar los campos después de atacar
-        txtX.setText("");
-        txtY.setText("");
-    }
+//    private void atacar() {
+//        String xText = txtX.getText();
+//        String yText = txtY.getText();
+//
+//        if (xText.isEmpty() || yText.isEmpty()) {
+//            JOptionPane.showMessageDialog(this, "Por favor ingrese ambas coordenadas.");
+//            return;
+//        }
+//
+//        int x, y;
+//        try {
+//            x = Integer.parseInt(xText);
+//            y = Integer.parseInt(yText);
+//        } catch (NumberFormatException e) {
+//            JOptionPane.showMessageDialog(this, "Las coordenadas deben ser números enteros.");
+//            return;
+//        }
+//
+//        // Aquí validamos el turno
+//        if (turnoManager.esTurno(Jugador.JUGADOR_1)) {
+//            System.out.println("Jugador 1 ataca en (" + x + ", " + y + ")");
+//            turnoManager.cambiarTurno();
+//            actualizarTurno();
+//        } else if (turnoManager.esTurno(Jugador.JUGADOR_2)) {
+//            System.out.println("Jugador 2 ataca en (" + x + ", " + y + ")");
+//            turnoManager.cambiarTurno();
+//            actualizarTurno();
+//        } else {
+//            JOptionPane.showMessageDialog(this, "No es tu turno.");
+//        }
+//
+//        // Limpiar los campos después de atacar
+//        txtX.setText("");
+//        txtY.setText("");
+//    }
+//    
+//    
+//    
+//    
+//    
+//    
+//    private void actualizarTurno() {
+//        labelTurno.setText("Turno de: " + turnoManager.getTurnoActual());
+//    }
     
     
     
     
     
     
-    private void actualizarTurno() {
-        labelTurno.setText("Turno de: " + turnoManager.getTurnoActual());
-    }
     
     
     
     
     
     
-    
-    
-    
-    
-    
-    
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Turno.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Turno.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Turno.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Turno.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Turno().setVisible(true);
-            }
-        });
-    }
+//    /**
+//     * @param args the command line arguments
+//     */
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(Turno.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(Turno.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(Turno.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(Turno.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new Turno().setVisible(true);
+//            }
+//        });
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAtacar;

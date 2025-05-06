@@ -4,7 +4,7 @@
  */
 package Sockets;
 
-import EntidadesDTO.Tablero;
+import Entidades.Tablero;
 import java.io.IOException;
 
 /**

@@ -4,7 +4,7 @@
  */
 package PatronState;
 
-import EntidadesDTO.*;
+import Entidades.Nave;
 
 /**
  *
