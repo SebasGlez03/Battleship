@@ -10,5 +10,14 @@
         <maven.compiler.release>21</maven.compiler.release>
         <exec.mainClass>com.mycompany.battleshipnegocio.BattleshipNegocio</exec.mainClass>
     </properties>
+    
     <name>BattleshipModelo</name>
+    
+    <dependencies>
+        <dependency>
+            <groupId>javazoom</groupId>
+            <artifactId>jlayer</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+    </dependencies>
 </project>
