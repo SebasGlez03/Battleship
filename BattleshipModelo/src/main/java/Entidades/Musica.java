@@ -14,11 +14,27 @@ import javazoom.jl.player.Player;
  *
  * @author Oley
  */
+/**
+ * Clase que permite cargar, reproducir, pausar, detener y controlar el volumen
+ * de un archivo de audio usando la API javax.sound.sampled.
+ */
 public class Musica {
-       private Clip clip;
+    // Objeto para reproducir el audio
+
+    private Clip clip;
+    // Control para ajustar el volumen del clip
+
     private FloatControl volumenControl;
+    // Archivo de audio actualmente cargado
+
     private File archivoActual;
 
+    /**
+     * Carga un archivo de audio desde la ruta especificada.
+     *
+     * @param ruta Ruta del archivo de audio.
+     * @return true si se cargó correctamente, false si hubo un error.
+     */
     public boolean cargarArchivo(String ruta) {
         try {
             archivoActual = new File(ruta);
@@ -37,6 +53,9 @@ public class Musica {
         }
     }
 
+    /**
+     * Reproduce el archivo de audio desde el inicio.
+     */
     public void reproducir() {
         if (clip != null) {
             clip.setFramePosition(0); // desde el inicio
@@ -44,12 +63,18 @@ public class Musica {
         }
     }
 
+    /**
+     * Pausa la reproducción si está corriendo.
+     */
     public void pausar() {
         if (clip != null && clip.isRunning()) {
             clip.stop();
         }
     }
 
+    /**
+     * Detiene y cierra la reproducción del audio.
+     */
     public void detener() {
         if (clip != null) {
             clip.stop();
@@ -57,6 +82,11 @@ public class Musica {
         }
     }
 
+    /**
+     * Ajusta el volumen del audio.
+     *
+     * @param volumen Valor entre 0.0  y 1.0.
+     */
     public void setVolumen(float volumen) {
         if (volumenControl != null) {
             if (volumen <= 0f) {
@@ -70,10 +100,13 @@ public class Musica {
         }
     }
 
+    /**
+     * Devuelve el archivo de audio actualmente cargado.
+     *
+     * @return Archivo de audio actual.
+     */
     public File getArchivoActual() {
         return archivoActual;
     }
 
-
-    
 }

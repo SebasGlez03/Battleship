@@ -4,7 +4,7 @@
  */
 package Musica;
 
-import  EntidadesDTO.Musica;
+import EntidadesDTO.Musica;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import javax.sound.sampled.FloatControl;
@@ -13,13 +13,25 @@ import javax.sound.sampled.FloatControl;
  *
  * @author Oley
  */
+/**
+ * Clase que actúa como controlador para la reproducción de música. Se encarga
+ * de manejar las acciones del usuario y controlar el modelo Musica.
+ */
 public class MusicaControlador {
-      private Musica modelo;
+    // Modelo que gestiona la reproducción de audio
 
-    public MusicaControlador( ) {
+    private Musica modelo;
+
+    /**
+     * Constructor del controlador. Inicializa el modelo de música.
+     */
+    public MusicaControlador() {
         this.modelo = new Musica();
     }
-
+ /**
+     * Maneja las acciones ejecutadas por el usuario (simulado).
+     * @param e Acción que contiene el comando a ejecutar.
+     */
     public void actionPerformed(ActionEvent e) {
         String comando = e.getActionCommand();
 
@@ -41,6 +53,7 @@ public class MusicaControlador {
                 break;
         }
     }
+    // Reproduce el archivo si hay uno cargado
 
     private void reproducir() {
         if (modelo.getArchivoActual() != null) {
@@ -50,17 +63,22 @@ public class MusicaControlador {
             System.out.println("No hay archivo seleccionado");
         }
     }
+    // Pausa la reproducción
 
     private void pausar() {
         modelo.pausar();
         System.out.println("Pausado");
     }
+    // Detiene y cierra el clip
 
     private void detener() {
         modelo.detener();
         System.out.println("Detenido");
     }
-
+/**
+     * Carga un archivo de audio desde una ruta.
+     * @param rutaArchivo Ruta del archivo de audio.
+     */
     private void seleccionarArchivo(String rutaArchivo) {
         if (modelo.cargarArchivo(rutaArchivo)) {
             File archivo = new File(rutaArchivo);
@@ -71,16 +89,19 @@ public class MusicaControlador {
     }
 
     public void ajustarVolumen(float volumen) {
-           modelo.setVolumen(volumen);
+        modelo.setVolumen(volumen);
 
     }
-      public static void main(String[] args) {
+/**
+     * Ajusta el volumen de la reproducción.
+     * @param volumen Valor entre 0.0 y 1.0.
+     */
+    public static void main(String[] args) {
         Musica modelo = new Musica();
         MusicaControlador controlador = new MusicaControlador();
 
         String ruta = "C:\\Users\\Oley\\Documents\\GitHub\\ProyectoDS\\BaseDatos2024_2025\\Battleship\\ambient-piano-logo-165357.mp3";
 
-     
         boolean cargado = modelo.cargarArchivo(ruta);
         if (cargado) {
             System.out.println("Archivo cargado correctamente");
