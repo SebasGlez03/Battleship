@@ -104,7 +104,6 @@ public class Nave implements Observer {
         }
     }
 
-    // Nuevo: obtener el tipo directamente
     public TipoNave getTipo() {
         return tipo;
     }
