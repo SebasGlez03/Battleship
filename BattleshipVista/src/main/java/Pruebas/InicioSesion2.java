@@ -4,10 +4,12 @@
  */
 package Pruebas;
 
+import Sockets.Mensaje;
 import Sockets.SocketCliente;
 import java.io.IOException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingWorker;
+import org.json.JSONObject;
 
 /**
  *
@@ -80,7 +82,8 @@ public class InicioSesion2 extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try {
+        
+    try {
         jButton1.setEnabled(false);
         cliente = new SocketCliente();
         cliente.conectar("127.0.0.1", 12345);
@@ -92,15 +95,17 @@ public class InicioSesion2 extends javax.swing.JFrame {
             return;
         }
 
-        // Enviar nombre del jugador 2 al servidor
-        cliente.enviar(nombreJugador2);
+        // Enviar el nombre del jugador 1 al servidor en un mensaje JSON
+        Mensaje mensajeNombre = new Mensaje("NOMBRE", nombreJugador2);
+        cliente.enviarMensaje(mensajeNombre);
 
-        // Recibir el nombre del jugador 1 desde el servidor
-        String nombreRival = cliente.recibir();
+        // Recibir el nombre del jugador 2 desde el servidor
+        Mensaje mensajeRecibido = cliente.recibirMensaje();
+        String nombreRival = (String) mensajeRecibido.getContenido().toString();
+
         JOptionPane.showMessageDialog(this, "Conectado con: " + nombreRival);
 
-//        // Confirmar que el jugador 2 está listo
-//        cliente.enviar("READY");
+        
 
         // Abrir ventana para colocar las naves
         ColocarNave2 ventana = new ColocarNave2(nombreJugador2, cliente);

@@ -14,12 +14,12 @@ import javax.swing.SwingUtilities;
  *
  * @author nomar
  */
-public class FrmInicio extends javax.swing.JFrame {
+public class FrmInicio2 extends javax.swing.JFrame {
 
     /**
      * Creates new form FrmInicio
      */
-    public FrmInicio() {
+    public FrmInicio2() {
         initComponents();
     }
 
@@ -77,18 +77,9 @@ public class FrmInicio extends javax.swing.JFrame {
     private void btnPlayMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPlayMouseClicked
         // Inicia el servidor en un hilo separado
 
-        new Thread(() -> {
-            try {
-                SocketServidor servidor = new SocketServidor();
-                servidor.iniciarServidor(12345);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
-
         // Abrir las dos ventanas de inicio de sesión
         SwingUtilities.invokeLater(() -> {
-            InicioSesion jugador1 = new InicioSesion();
+            InicioSesion2 jugador1 = new InicioSesion2();
             jugador1.setLocation(100, 100); // Ajusta la posición
             jugador1.setVisible(true);
             this.dispose(); // Cierra FrmInicio
@@ -127,20 +118,21 @@ public class FrmInicio extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FrmInicio2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FrmInicio2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FrmInicio2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FrmInicio2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FrmInicio().setVisible(true);
+                new FrmInicio2().setVisible(true);
             }
         });
     }

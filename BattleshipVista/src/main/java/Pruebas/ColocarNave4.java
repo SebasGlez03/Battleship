@@ -4,253 +4,231 @@
  */
 package Pruebas;
 
-import Entidades.Jugador;
 import Entidades.Casilla;
-import Entidades.Tablero;
-import Entidades.Nave;
-import Juego.JuegoServidor;
-import PatronBuilder.Director;
 import Sockets.Mensaje;
 import Sockets.SocketCliente;
-import Sockets.SocketServidor;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 /**
  *
  * @author Carlo
  */
-public class ColocarNave3 extends javax.swing.JFrame {
+public class ColocarNave4 extends javax.swing.JFrame {
 
-    private Tablero tableroCliente;  // El tablero del jugador
-    private SocketCliente socketCliente;  // La conexión al servidor
-    private String tablero1;
-    private String tablero2;
-    private Socket socket;
-    private SocketServidor socketservidor; // Para el jugador 1
+    private Casilla[][] tablero;
+    private Casilla[][] tableroEnemigo;
+    private List<Point> coordenadasOcupadas = new ArrayList<>();
+    private List<Point> coordenadasOcupadasEnemigo = new ArrayList<>();
+    private String coordenadas;
 
-    private static final int TOTAL_CASILLAS_ESPERADAS = 25;
+    private SocketCliente socketCliente;
 
-    private Jugador jugadorActual;
-    private Jugador jugadorRival;
-    private JuegoServidor juegoServidor;
+//    private JPanel panelTablero;
+    // Constructor que recibe las coordenadas
+    public ColocarNave4(String coordenadas, SocketCliente socketCliente) {
+        this.socketCliente = socketCliente;
+    this.coordenadas = coordenadas;
 
-    private Nave naveSeleccionada;  // Variable para almacenar el barco seleccionado
-    private Director director;
-    private Casilla[][] tablero;  // Tablero de 10x10
-    private boolean[][] casillasOcupadas;
-    
+    initComponents(); // Inicializa los componentes
+    this.coordenadasOcupadas = parseCoordenadas(coordenadas); // Convierte las coordenadas del jugador
 
-    private boolean esHorizontal = true;
-    private JLabel imagenArrastrada;
-    private ImageIcon imagenNaveOriginal;
+    // Inicializar el tablero y marcar las casillas ocupadas
+    tablero = new Casilla[10][10];
+    tableroEnemigo = new Casilla[10][10];
+    panelTablero.setLayout(new GridLayout(10, 10));
+    panelTableroEnemigo.setLayout(new GridLayout(10, 10));
 
-    private String nombreJugador;
+    // Fondo decorativo (si es necesario)
+    ImageIcon fondoIcon = new ImageIcon(getClass().getResource("/imagenes/fondoTablero.jpg"));
+    JLabel labelFondo = new JLabel(fondoIcon);
+    labelFondo.setBounds(0, 0, panelFondoTablero.getWidth(), panelFondoTablero.getHeight());
+    panelFondoTablero.add(labelFondo);
+    panelFondoTablero.setComponentZOrder(labelFondo, panelFondoTablero.getComponentCount() - 1);
 
-    /**
-     * Creates new form ColocarNave
-     */
-    public ColocarNave3(SocketCliente socketCliente) {
-        if (socketCliente == null) {
-            throw new IllegalArgumentException("El socketCliente no puede ser null");
-        }
+    inicializarTablero();
+    inicializarTableroEnemigo();
+    marcarCasillasOcupadas();
 
-        this.socketCliente = socketCliente;  // Asignar el SocketCliente
-        
-        // Inicializa el tablero y las casillas ocupadas
-        this.tablero = new Casilla[10][10];  // Asegúrate de que esto esté en el constructor
-        this.casillasOcupadas = new boolean[10][10];   // Lo mismo para las casillas ocupadas
-
-        // Resto de inicialización de la ventana
-        initComponents();
-        initComponents2();
-        inicializarTablero(); // Esto usa 'tablero' y 'casillasOcupadas', por lo que ahora debería funcionar correctamente
-
-        recibirTableros();
+    // Ahora también debes recibir las coordenadas del enemigo
+    // Puedes llamar a un método para obtener las coordenadas del enemigo desde el servidor
+    try {
+        recibirCoordenadasServidor();  // Este método debería llenar coordenadasOcupadasEnemigo
+    } catch (IOException e) {
+        e.printStackTrace();
     }
 
-    private void initComponents2() {
-        labelNomJugador.setText("Jugador: " + nombreJugador);
-
-        // Crear imagen de fondo
-        ImageIcon fondoIcon = new ImageIcon(getClass().getResource("/imagenes/fondoTablero.jpg"));
-        JLabel labelFondo = new JLabel(fondoIcon);
-        labelFondo.setBounds(0, 0, panelFondoTablero.getWidth(), panelFondoTablero.getHeight());
-
-// Establecer layout nulo para permitir posición absoluta
-        panelFondoTablero.setLayout(null);
-
-// Agregar el fondo como el último componente (al fondo)
-        panelFondoTablero.add(labelFondo);
-        panelFondoTablero.setComponentZOrder(labelFondo, panelFondoTablero.getComponentCount() - 1);
-
-        this.director = new Director();
-        this.tablero = new Casilla[10][10];
-        this.casillasOcupadas = new boolean[10][10];
-        inicializarTablero();
-        
-
-        panelfondo.setBorder(BorderFactory.createLineBorder(Color.BLACK, 5, true));
-
     }
-
 
     private void inicializarTablero() {
-        if (tableroMio.getComponentCount() == 0) {  // Verificar si no se ha agregado nada aún
-            // Usamos GridLayout para organizar las casillas en una cuadrícula de 10x10
-            tableroMio.setLayout(new GridLayout(10, 10));  // 10 filas, 10 columnas
-            
+        // Solo inicializamos el tablero si no ha sido inicializado antes
+        if (panelTablero.getComponentCount() == 0) {
             for (int i = 0; i < 10; i++) {
                 for (int j = 0; j < 10; j++) {
-                    // Crear un botón que representa una casilla
                     JButton casillaButton = new JButton();
-                    casillaButton.setPreferredSize(new Dimension(50, 50));
+                    casillaButton.setPreferredSize(new Dimension(40, 40));
                     casillaButton.setBackground(Color.LIGHT_GRAY);
-                    casillaButton.setContentAreaFilled(false); // No se llena el área con el color de fondo
-                    casillaButton.setFocusPainted(false); // Sin borde de foco
+                    casillaButton.setContentAreaFilled(false); // Sin decoración del SO
+                    casillaButton.setFocusPainted(false);       // Sin contorno de foco
                     casillaButton.setMargin(new Insets(0, 0, 0, 0)); // Sin márgenes
-                    casillaButton.setOpaque(true); // Necesario para que se vea el color de fondo
-                    casillaButton.setBorder(BorderFactory.createLineBorder(Color.black, 1, false)); // Bordes de las casillas
+                    casillaButton.setOpaque(true);               // Necesario para el fondo
+                    casillaButton.setBorder(BorderFactory.createLineBorder(Color.black, 1, false)); // Bordes rectos
 
-                    // Establecer la acción de cada casilla (botón)
-                    casillaButton.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            // Acción que se ejecuta cuando se hace clic en una casilla
-                            // Por ejemplo, puede ser para colocar una nave
-                            JButton source = (JButton) e.getSource();
-                            // Aquí puedes agregar tu lógica de colocar naves
-                        }
-                    });
+                    // Imagen de fondo
+                    ImageIcon icono = new ImageIcon(getClass().getResource("/imagenes/casillaimg2.png"));
+                    Image imagenEscalada = icono.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+                    casillaButton.setIcon(new ImageIcon(imagenEscalada));
 
-                    // Agregar el botón de casilla al panel tableroMio
-                    tableroMio.add(casillaButton);
-
-                    // Asignar un objeto Casilla para cada botón, para manejar las coordenadas
-                    tablero[i][j] = new Casilla(i, j);  // Almacenar las casillas en un array
-                    casillasOcupadas[i][j] = false; // Inicialmente todas las casillas están desocupadas
+                    panelTablero.add(casillaButton);
+                    tablero[i][j] = new Casilla(i, j);  // Asegúrate de tener el objeto Casilla correctamente inicializado
                 }
             }
+        }
+        panelTablero.revalidate();
+        panelTablero.repaint();
+    }
 
-            // Asegurarse de que el panel se actualice correctamente
-            tableroMio.revalidate();  // Vuelve a calcular el layout
-            tableroMio.repaint();  // Vuelve a pintar el panel
+    private void inicializarTableroEnemigo() {
+  if (panelTableroEnemigo.getComponentCount() == 0) {
+            for (int i = 0; i < 10; i++) {
+                for (int j = 0; j < 10; j++) {
+                    JButton casillaButtonEnemigo = new JButton();
+                    casillaButtonEnemigo.setPreferredSize(new Dimension(40, 40));
+                    casillaButtonEnemigo.setBackground(Color.LIGHT_GRAY);
+                    casillaButtonEnemigo.setContentAreaFilled(false);
+                    casillaButtonEnemigo.setFocusPainted(false);
+                    casillaButtonEnemigo.setMargin(new Insets(0, 0, 0, 0));
+                    casillaButtonEnemigo.setOpaque(true);
+                    casillaButtonEnemigo.setBorder(BorderFactory.createLineBorder(Color.black, 1, false));
+
+                    ImageIcon icono = new ImageIcon(getClass().getResource("/imagenes/casillaimg2.png"));
+                    Image imagenEscalada = icono.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+                    casillaButtonEnemigo.setIcon(new ImageIcon(imagenEscalada));
+
+                    panelTableroEnemigo.add(casillaButtonEnemigo);
+                    tableroEnemigo[i][j] = new Casilla(i, j); // Inicialización correcta de Casilla
+                }
+            }
+        }
+        panelTableroEnemigo.revalidate();  // Asegura que el panel se actualice después de la adición de las casillas
+        panelTableroEnemigo.repaint();     // Refresca el panel
+    }
+
+    // Método para recibir las coordenadas del enemigo
+    public void recibirCoordenadasEnemigo(String coordenadasEnemigo) {
+         // Convertir las coordenadas recibidas del enemigo en puntos
+    coordenadasOcupadasEnemigo = parseCoordenadas(coordenadasEnemigo);
+
+    // Verificar que las coordenadas se están procesando correctamente
+    System.out.println("Coordenadas del enemigo recibidas: ");
+    
+    // Mostrar cada coordenada ocupada en la consola
+    for (Point coord : coordenadasOcupadasEnemigo) {
+        System.out.println("Coordenada ocupada en: (" + coord.x + ", " + coord.y + ")");
+    }
+
+    // Marcar las casillas correspondientes en el tablero enemigo
+    for (Point coord : coordenadasOcupadasEnemigo) {
+        int x = coord.x;
+        int y = coord.y;
+
+        // Verificar las coordenadas de cada casilla
+        System.out.println("Marcando casilla en: (" + x + ", " + y + ")");
+
+        // Obtener el botón correspondiente del tablero enemigo
+        JButton casillaButtonEnemigo = (JButton) panelTableroEnemigo.getComponent(y * 10 + x);
+
+        // Cambiar el color o marcar la casilla
+        casillaButtonEnemigo.setBackground(Color.RED); // Cambiar a rojo para marcar como ocupado
+        casillaButtonEnemigo.revalidate();
+        casillaButtonEnemigo.repaint();  // Asegura que la interfaz se actualice
+    }
+    }
+
+    // Método para recibir las coordenadas del servidor
+    public void recibirCoordenadasServidor() throws IOException {
+         // Esperar coordenadas del servidor para el tablero enemigo
+        Mensaje respuestaEnemigo = socketCliente.recibirMensaje();
+        if (respuestaEnemigo != null && respuestaEnemigo.getTipo().equals("coordenadas")) {
+            String coordenadasEnemigo = (String) respuestaEnemigo.getContenido();
+            recibirCoordenadasEnemigo(coordenadasEnemigo);  // Actualizar el tablero enemigo
         }
     }
 
-    private void recibirTableros() {
-        try {
-            // Recibir el tablero del jugador 1
-            Mensaje mensajeTablero1 = socketCliente.recibirMensaje();
-            if (mensajeTablero1 != null && "tablero".equals(mensajeTablero1.getTipo())) {
-                tablero1 = (String) mensajeTablero1.getContenido();
-                System.out.println("Tablero 1 recibido: " + tablero1);
-            }
+    private void marcarCasillasOcupadas() {
+        for (Point coord : coordenadasOcupadas) {
+            // Coordenadas ocupadas
+            int x = coord.x;
+            int y = coord.y;
 
-            // Recibir las coordenadas del jugador 1
-            Mensaje mensajeCoord1 = socketCliente.recibirMensaje();
-            if (mensajeCoord1 != null && "coordenadas".equals(mensajeCoord1.getTipo())) {
-                String coordenadas1 = (String) mensajeCoord1.getContenido();
-                System.out.println("Coordenadas 1 recibidas: " + coordenadas1);
-            }
+            // Obtener el botón correspondiente
+            JButton casillaButton = (JButton) panelTablero.getComponent(y * 10 + x);
 
-            // Recibir el tablero del jugador 2
-            Mensaje mensajeTablero2 = socketCliente.recibirMensaje();
-            if (mensajeTablero2 != null && "tablero".equals(mensajeTablero2.getTipo())) {
-                tablero2 = (String) mensajeTablero2.getContenido();
-                System.out.println("Tablero 2 recibido: " + tablero2);
-            }
+            // Cambiar el color o la imagen del botón
+            casillaButton.setBackground(Color.RED);  // Cambiar a rojo para marcar como ocupada
 
-            // Recibir las coordenadas del jugador 2
-            Mensaje mensajeCoord2 = socketCliente.recibirMensaje();
-            if (mensajeCoord2 != null && "coordenadas".equals(mensajeCoord2.getTipo())) {
-                String coordenadas2 = (String) mensajeCoord2.getContenido();
-                System.out.println("Coordenadas 2 recibidas: " + coordenadas2);
-            }
-
-            // Ahora actualiza la interfaz gráfica con los tableros
-            actualizarTablerosEnPantalla();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Error al recibir los tableros.");
+            // Si prefieres poner una imagen, usa algo como esto:
+            // ImageIcon icono = new ImageIcon(getClass().getResource("/imagenes/casillaOcupada.png"));
+            // casillaButton.setIcon(icono);
         }
     }
 
-     private void actualizarTablerosEnPantalla() {
-    // Aquí asumimos que tablero1 y tablero2 son representaciones en texto de los tableros
-    // Puedes procesar el texto para establecer el estado de las casillas en el JPanel
+   
 
-    // Suponiendo que tablero1 y tablero2 son cadenas que representan los tableros de manera lineal
-    // y que el tablero tiene 10 filas y 10 columnas, lo que significa 100 casillas en total
+    // Método para convertir las coordenadas en una lista de puntos
+    private List<Point> parseCoordenadas(String coordenadas) {
+        List<Point> puntos = new ArrayList<>();
 
-    // Actualizar el tablero del jugador actual (tableroMio)
-    for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 10; j++) {
-            // Accedemos a la casilla correspondiente (suponiendo que los tableros están representados como strings lineales)
-            char estadoCasilla = tablero1.charAt(i * 10 + j);  // tabler1 es un String de longitud 100
+        // Eliminar los corchetes de la cadena
+        coordenadas = coordenadas.substring(1, coordenadas.length() - 1);
 
-            // Obtener el componente en la posición i, j (suponiendo que cada casilla es un JButton en tableroMio)
-            JButton casillaButton = (JButton) tableroMio.getComponent(i * 10 + j);  // Obtener el botón correspondiente
+        // Dividir la cadena por las comas que separan las coordenadas
+        String[] coords = coordenadas.split(",\"");
 
-            // Aquí estamos asumiendo que 'estadoCasilla' es un caracter que representa el estado de la casilla
-            if (estadoCasilla == 'O') {  // Si la casilla está ocupada con un barco
-                casillaButton.setBackground(Color.BLUE);  // Cambiar color a azul o el color que prefieras
-            } else if (estadoCasilla == 'X') {  // Si la casilla está impactada
-                casillaButton.setBackground(Color.RED);  // Rojo si está impactada
-            } else {
-                casillaButton.setBackground(Color.LIGHT_GRAY);  // Gris si la casilla está vacía
+        // Recorremos las coordenadas, eliminando las comillas y procesando
+        for (String coord : coords) {
+            // Limpiar las comillas y espacios
+            coord = coord.replace("\"", "").trim();
+
+            // Dividir el par "x,y" por la coma
+            String[] partes = coord.split(",");
+
+            // Convertir las partes a enteros y crear un objeto Point
+            int x = Integer.parseInt(partes[0]);
+            int y = Integer.parseInt(partes[1]);
+
+            // Validar que las coordenadas estén dentro del rango permitido
+            if (x < 0 || x >= 10 || y < 0 || y >= 10) {
+                System.out.println("Coordenada fuera de rango: (" + x + ", " + y + ")");
+                continue; // Si la coordenada está fuera de rango, no se procesa
             }
+
+            // Agregar el punto a la lista
+            puntos.add(new Point(x, y));
         }
+
+        return puntos;
     }
+    
 
-    // Actualizar el tablero del enemigo (tableroEnemigo)
-    for (int i = 0; i < 10; i++) {
-        for (int j = 0; j < 10; j++) {
-            // Accedemos a la casilla correspondiente del tablero del enemigo (tablero2)
-            char estadoCasilla = tablero2.charAt(i * 10 + j);  // tabler2 es un String de longitud 100
-
-            // Obtener el componente en la posición i, j (suponiendo que cada casilla es un JButton en tableroEnemigo)
-            JButton casillaButton = (JButton) tableroEnemigo.getComponent(i * 10 + j);  // Obtener el botón correspondiente
-
-            // Aquí estamos asumiendo que 'estadoCasilla' es un caracter que representa el estado de la casilla
-            if (estadoCasilla == 'O') {  // Si la casilla está ocupada con un barco
-                casillaButton.setBackground(Color.BLUE);  // Cambiar color a azul o el color que prefieras
-            } else if (estadoCasilla == 'X') {  // Si la casilla está impactada
-                casillaButton.setBackground(Color.RED);  // Rojo si está impactada
-            } else {
-                casillaButton.setBackground(Color.LIGHT_GRAY);  // Gris si la casilla está vacía
-            }
-        }
-    }
-}
+   
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -263,7 +241,7 @@ public class ColocarNave3 extends javax.swing.JFrame {
 
         panelFondoTablero = new javax.swing.JPanel();
         panelfondo = new javax.swing.JPanel();
-        tableroMio = new javax.swing.JPanel();
+        panelTablero = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -284,10 +262,9 @@ public class ColocarNave3 extends javax.swing.JFrame {
         jLabel18 = new javax.swing.JLabel();
         jLabel19 = new javax.swing.JLabel();
         jLabel20 = new javax.swing.JLabel();
-        labelNomJugador = new javax.swing.JLabel();
-        lblEstado = new javax.swing.JLabel();
         panelfondo1 = new javax.swing.JPanel();
-        tableroEnemigo = new javax.swing.JPanel();
+        panelTableroEnemigo = new javax.swing.JPanel();
+        jLabel21 = new javax.swing.JLabel();
         jLabel22 = new javax.swing.JLabel();
         jLabel23 = new javax.swing.JLabel();
         jLabel24 = new javax.swing.JLabel();
@@ -307,22 +284,19 @@ public class ColocarNave3 extends javax.swing.JFrame {
         jLabel38 = new javax.swing.JLabel();
         jLabel39 = new javax.swing.JLabel();
         jLabel40 = new javax.swing.JLabel();
-        jLabel41 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         panelFondoTablero.setBackground(new java.awt.Color(204, 204, 204));
-        panelFondoTablero.setForeground(new java.awt.Color(255, 255, 255));
-        panelFondoTablero.setPreferredSize(new java.awt.Dimension(25, 45));
 
         panelfondo.setBackground(new java.awt.Color(102, 102, 102));
         panelfondo.setEnabled(false);
         panelfondo.setPreferredSize(new java.awt.Dimension(575, 575));
 
-        tableroMio.setBackground(new java.awt.Color(0, 0, 0));
-        tableroMio.setForeground(new java.awt.Color(0, 0, 0));
-        tableroMio.setPreferredSize(new java.awt.Dimension(600, 600));
-        tableroMio.setLayout(new java.awt.GridLayout(10, 10));
+        panelTablero.setBackground(new java.awt.Color(0, 0, 0));
+        panelTablero.setForeground(new java.awt.Color(0, 0, 0));
+        panelTablero.setPreferredSize(new java.awt.Dimension(600, 600));
+        panelTablero.setLayout(new java.awt.GridLayout());
 
         jLabel1.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
@@ -465,7 +439,7 @@ public class ColocarNave3 extends javax.swing.JFrame {
                         .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(tableroMio, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(panelTablero, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(35, Short.MAX_VALUE))
         );
         panelfondoLayout.setVerticalGroup(
@@ -505,122 +479,118 @@ public class ColocarNave3 extends javax.swing.JFrame {
                         .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(tableroMio, javax.swing.GroupLayout.PREFERRED_SIZE, 502, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(panelTablero, javax.swing.GroupLayout.PREFERRED_SIZE, 502, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(35, 35, 35))
         );
 
-        labelNomJugador.setForeground(new java.awt.Color(255, 255, 255));
-
-        lblEstado.setText("jLabel22");
-
         panelfondo1.setBackground(new java.awt.Color(102, 102, 102));
         panelfondo1.setEnabled(false);
-        panelfondo1.setPreferredSize(new java.awt.Dimension(375, 575));
+        panelfondo1.setPreferredSize(new java.awt.Dimension(575, 575));
 
-        tableroEnemigo.setBackground(new java.awt.Color(0, 0, 0));
-        tableroEnemigo.setForeground(new java.awt.Color(0, 0, 0));
-        tableroEnemigo.setPreferredSize(new java.awt.Dimension(600, 600));
-        tableroEnemigo.setLayout(new java.awt.GridLayout(10, 10));
+        panelTableroEnemigo.setBackground(new java.awt.Color(0, 0, 0));
+        panelTableroEnemigo.setForeground(new java.awt.Color(0, 0, 0));
+        panelTableroEnemigo.setPreferredSize(new java.awt.Dimension(600, 600));
+        panelTableroEnemigo.setLayout(new java.awt.GridLayout());
+
+        jLabel21.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
+        jLabel21.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel21.setText("  0");
+        jLabel21.setPreferredSize(new java.awt.Dimension(25, 45));
 
         jLabel22.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel22.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel22.setText("  0");
+        jLabel22.setText("  1");
         jLabel22.setPreferredSize(new java.awt.Dimension(25, 45));
 
         jLabel23.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel23.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel23.setText("  1");
+        jLabel23.setText("  2");
         jLabel23.setPreferredSize(new java.awt.Dimension(25, 45));
 
         jLabel24.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel24.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel24.setText("  2");
+        jLabel24.setText("  3");
         jLabel24.setPreferredSize(new java.awt.Dimension(25, 45));
 
         jLabel25.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel25.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel25.setText("  3");
+        jLabel25.setText("  4");
         jLabel25.setPreferredSize(new java.awt.Dimension(25, 45));
 
         jLabel26.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel26.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel26.setText("  4");
+        jLabel26.setText("  5");
         jLabel26.setPreferredSize(new java.awt.Dimension(25, 45));
 
         jLabel27.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel27.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel27.setText("  5");
+        jLabel27.setText("  6");
         jLabel27.setPreferredSize(new java.awt.Dimension(25, 45));
 
         jLabel28.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel28.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel28.setText("  6");
+        jLabel28.setText("  7");
         jLabel28.setPreferredSize(new java.awt.Dimension(25, 45));
 
         jLabel29.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel29.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel29.setText("  7");
+        jLabel29.setText("  8");
         jLabel29.setPreferredSize(new java.awt.Dimension(25, 45));
 
         jLabel30.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel30.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel30.setText("  8");
+        jLabel30.setText("  9");
         jLabel30.setPreferredSize(new java.awt.Dimension(25, 45));
 
         jLabel31.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel31.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel31.setText("  9");
-        jLabel31.setPreferredSize(new java.awt.Dimension(25, 45));
+        jLabel31.setText("    0");
+        jLabel31.setPreferredSize(new java.awt.Dimension(45, 25));
 
         jLabel32.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel32.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel32.setText("    0");
+        jLabel32.setText("    1");
         jLabel32.setPreferredSize(new java.awt.Dimension(45, 25));
 
         jLabel33.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel33.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel33.setText("    1");
+        jLabel33.setText("    2");
         jLabel33.setPreferredSize(new java.awt.Dimension(45, 25));
 
         jLabel34.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel34.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel34.setText("    2");
+        jLabel34.setText("    3");
         jLabel34.setPreferredSize(new java.awt.Dimension(45, 25));
 
         jLabel35.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel35.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel35.setText("    3");
+        jLabel35.setText("    4");
         jLabel35.setPreferredSize(new java.awt.Dimension(45, 25));
 
         jLabel36.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel36.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel36.setText("    4");
+        jLabel36.setText("    5");
         jLabel36.setPreferredSize(new java.awt.Dimension(45, 25));
 
         jLabel37.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel37.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel37.setText("    5");
+        jLabel37.setText("   6");
         jLabel37.setPreferredSize(new java.awt.Dimension(45, 25));
 
         jLabel38.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel38.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel38.setText("   6");
+        jLabel38.setText("   7");
         jLabel38.setPreferredSize(new java.awt.Dimension(45, 25));
 
         jLabel39.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel39.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel39.setText("   7");
+        jLabel39.setText("   8");
         jLabel39.setPreferredSize(new java.awt.Dimension(45, 25));
 
         jLabel40.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel40.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel40.setText("   8");
+        jLabel40.setText("   9");
         jLabel40.setPreferredSize(new java.awt.Dimension(45, 25));
-
-        jLabel41.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
-        jLabel41.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel41.setText("   9");
-        jLabel41.setPreferredSize(new java.awt.Dimension(45, 25));
 
         javax.swing.GroupLayout panelfondo1Layout = new javax.swing.GroupLayout(panelfondo1);
         panelfondo1.setLayout(panelfondo1Layout);
@@ -631,19 +601,21 @@ public class ColocarNave3 extends javax.swing.JFrame {
                 .addGroup(panelfondo1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelfondo1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(panelfondo1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel25, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel26, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel27, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel28, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel29, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelfondo1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelfondo1Layout.createSequentialGroup()
+                        .addComponent(jLabel31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel32, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel33, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -660,10 +632,8 @@ public class ColocarNave3 extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel39, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel40, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel41, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(tableroEnemigo, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel40, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(panelTableroEnemigo, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(35, Short.MAX_VALUE))
         );
         panelfondo1Layout.setVerticalGroup(
@@ -671,6 +641,7 @@ public class ColocarNave3 extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelfondo1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(panelfondo1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel32, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel33, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel34, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -679,11 +650,12 @@ public class ColocarNave3 extends javax.swing.JFrame {
                     .addComponent(jLabel37, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel38, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel39, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel40, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel41, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel40, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelfondo1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelfondo1Layout.createSequentialGroup()
+                        .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel22, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel23, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -700,10 +672,8 @@ public class ColocarNave3 extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel29, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel31, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(tableroEnemigo, javax.swing.GroupLayout.PREFERRED_SIZE, 502, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel30, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(panelTableroEnemigo, javax.swing.GroupLayout.PREFERRED_SIZE, 502, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(35, 35, 35))
         );
 
@@ -711,45 +681,34 @@ public class ColocarNave3 extends javax.swing.JFrame {
         panelFondoTablero.setLayout(panelFondoTableroLayout);
         panelFondoTableroLayout.setHorizontalGroup(
             panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelFondoTableroLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(labelNomJugador, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(561, 561, 561))
             .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                .addGap(122, 122, 122)
+                .addGap(39, 39, 39)
                 .addComponent(panelfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 576, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(46, 46, 46)
+                .addGap(89, 89, 89)
                 .addComponent(panelfondo1, javax.swing.GroupLayout.PREFERRED_SIZE, 576, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addContainerGap(105, Short.MAX_VALUE))
         );
         panelFondoTableroLayout.setVerticalGroup(
             panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                .addGap(69, 69, 69)
                 .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                        .addGap(511, 511, 511)
-                        .addComponent(lblEstado, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                        .addGap(22, 22, 22)
-                        .addComponent(labelNomJugador, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 59, Short.MAX_VALUE)
-                        .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(panelfondo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(panelfondo1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(112, Short.MAX_VALUE))
+                    .addComponent(panelfondo1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(panelfondo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(135, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelFondoTablero, javax.swing.GroupLayout.DEFAULT_SIZE, 1421, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(panelFondoTablero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelFondoTablero, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
+            .addComponent(panelFondoTablero, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -773,23 +732,20 @@ public class ColocarNave3 extends javax.swing.JFrame {
 //                }
 //            }
 //        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(ColocarNave2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(ColocarNave4.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(ColocarNave2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(ColocarNave4.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(ColocarNave2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(ColocarNave4.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(ColocarNave2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//            java.util.logging.Logger.getLogger(ColocarNave4.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
 //        }
-//        //</editor-fold>
 //        //</editor-fold>
 //
 //        /* Create and display the form */
 //        java.awt.EventQueue.invokeLater(new Runnable() {
 //            public void run() {
-//                String nombreJugador = "Jugador 2";  // Suponiendo que este nombre viene de la interfaz anterior
-//                ColocarNave2 frame = new ColocarNave2(nombreJugador);
-//                frame.setVisible(true);
+//                new ColocarNave4().setVisible(true);
 //            }
 //        });
 //    }
@@ -808,6 +764,7 @@ public class ColocarNave3 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
@@ -829,18 +786,15 @@ public class ColocarNave3 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel39;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel40;
-    private javax.swing.JLabel jLabel41;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JLabel labelNomJugador;
-    private javax.swing.JLabel lblEstado;
     private javax.swing.JPanel panelFondoTablero;
+    private javax.swing.JPanel panelTablero;
+    private javax.swing.JPanel panelTableroEnemigo;
     private javax.swing.JPanel panelfondo;
     private javax.swing.JPanel panelfondo1;
-    private javax.swing.JPanel tableroEnemigo;
-    private javax.swing.JPanel tableroMio;
     // End of variables declaration//GEN-END:variables
 }

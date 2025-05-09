@@ -66,7 +66,7 @@ public class IniciarServidor extends javax.swing.JFrame {
         new Thread(() -> {
             try {
                 SocketServidor servidor = new SocketServidor();
-                servidor.iniciarServidor(12345);  // Aquí se bloquea esperando al cliente
+                servidor.iniciarServidor(12345);
             } catch (IOException e) {
                 e.printStackTrace();
             }
