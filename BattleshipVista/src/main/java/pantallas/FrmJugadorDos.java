@@ -2,27 +2,26 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package Pruebas;
+package pantallas;
 
+import Pruebas.ColocarNave2;
 import Sockets.Mensaje;
 import Sockets.SocketCliente;
 import java.io.IOException;
 import javax.swing.JOptionPane;
-import javax.swing.SwingWorker;
-import org.json.JSONObject;
 
 /**
  *
- * @author Oley
+ * @author nomar
  */
-public class InicioSesion2 extends javax.swing.JFrame {
+public class FrmJugadorDos extends javax.swing.JFrame {
 
     private SocketCliente cliente;
-
+    
     /**
-     * Creates new form InicioSesion2
+     * Creates new form FrmJugadorDos
      */
-    public InicioSesion2() {
+    public FrmJugadorDos() {
         initComponents();
     }
 
@@ -35,55 +34,52 @@ public class InicioSesion2 extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        btnListo = new javax.swing.JLabel();
         campoTextoUsuarioDos = new javax.swing.JTextField();
-        btnListo = new javax.swing.JButton();
+        btnAtras = new javax.swing.JLabel();
+        fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setText("Player 2");
-
-        btnListo.setText("Start");
-        btnListo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnListoActionPerformed(evt);
+        btnListo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btnListo.png"))); // NOI18N
+        btnListo.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnListo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnListoMouseClicked(evt);
             }
         });
+        getContentPane().add(btnListo, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 260, 150, -1));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(115, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(campoTextoUsuarioDos, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(48, 48, 48))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btnListo)
-                        .addGap(35, 35, 35)))
-                .addGap(111, 111, 111))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(108, 108, 108)
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addComponent(campoTextoUsuarioDos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26)
-                .addComponent(btnListo)
-                .addContainerGap(159, Short.MAX_VALUE))
-        );
+        campoTextoUsuarioDos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                campoTextoUsuarioDosActionPerformed(evt);
+            }
+        });
+        getContentPane().add(campoTextoUsuarioDos, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 50, 130, 30));
+
+        btnAtras.setIcon(new javax.swing.ImageIcon(getClass().getResource("/btnAtras.png"))); // NOI18N
+        btnAtras.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAtras.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnAtrasMouseClicked(evt);
+            }
+        });
+        getContentPane().add(btnAtras, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 40, -1, -1));
+
+        fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/PantallaJugador.png"))); // NOI18N
+        getContentPane().add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnListoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListoActionPerformed
-        
-    try {
+    private void btnAtrasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAtrasMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnAtrasMouseClicked
+
+    private void btnListoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnListoMouseClicked
+        // TODO add your handling code here:
+        try {
         btnListo.setEnabled(false);
         cliente = new SocketCliente();
         cliente.conectar("127.0.0.1", 12345);
@@ -112,12 +108,16 @@ public class InicioSesion2 extends javax.swing.JFrame {
         ventana.setVisible(true);
         dispose();
 
-    } catch (IOException e) {
-        JOptionPane.showMessageDialog(this, "Error al conectar: " + e.getMessage());
-        e.printStackTrace();
-        btnListo.setEnabled(true);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al conectar: " + e.getMessage());
+            e.printStackTrace();
+            btnListo.setEnabled(true);
     }
-    }//GEN-LAST:event_btnListoActionPerformed
+    }//GEN-LAST:event_btnListoMouseClicked
+
+    private void campoTextoUsuarioDosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoTextoUsuarioDosActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_campoTextoUsuarioDosActionPerformed
 
     /**
      * @param args the command line arguments
@@ -136,27 +136,28 @@ public class InicioSesion2 extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(InicioSesion2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FrmJugadorDos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(InicioSesion2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FrmJugadorDos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(InicioSesion2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FrmJugadorDos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(InicioSesion2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FrmJugadorDos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new InicioSesion2().setVisible(true);
+                new FrmJugadorDos().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnListo;
+    private javax.swing.JLabel btnAtras;
+    private javax.swing.JLabel btnListo;
     private javax.swing.JTextField campoTextoUsuarioDos;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel fondo;
     // End of variables declaration//GEN-END:variables
 }

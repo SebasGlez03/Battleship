@@ -79,9 +79,9 @@ public class FrmInicio2 extends javax.swing.JFrame {
 
         // Abrir las dos ventanas de inicio de sesión
         SwingUtilities.invokeLater(() -> {
-            InicioSesion2 jugador1 = new InicioSesion2();
-            jugador1.setLocation(100, 100); // Ajusta la posición
-            jugador1.setVisible(true);
+            FrmJugadorDos jugadorDos = new FrmJugadorDos();
+            jugadorDos.setLocation(100, 100); // Ajusta la posición
+            jugadorDos.setVisible(true);
             this.dispose(); // Cierra FrmInicio
 
         });
