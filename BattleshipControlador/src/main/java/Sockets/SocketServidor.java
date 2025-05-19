@@ -19,8 +19,10 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.json.JSONObject;
 
 /**
@@ -33,6 +35,9 @@ public class SocketServidor {
     private Socket socketJugador1, socketJugador2;
     private BufferedReader entradaJugador1, entradaJugador2;
     private PrintWriter salidaJugador1, salidaJugador2;
+
+    private List<String> coordenadasJugador1;
+    private List<String> coordenadasJugador2;
 
     public void iniciarServidor(int puerto) throws IOException {
         serverSocket = new ServerSocket(puerto);
@@ -53,7 +58,6 @@ public class SocketServidor {
         salidaJugador2 = new PrintWriter(new OutputStreamWriter(socketJugador2.getOutputStream(), "UTF-8"), true);
         System.out.println("Jugador 2 conectado.");
 
-        // Leer nombres como JSON
         String mensaje1 = entradaJugador1.readLine();
         String mensaje2 = entradaJugador2.readLine();
         JSONObject json1 = new JSONObject(mensaje1);
@@ -73,7 +77,6 @@ public class SocketServidor {
         System.out.println("Jugador 1: " + nombreJugador1);
         System.out.println("Jugador 2: " + nombreJugador2);
 
-        // Enviar el nombre del rival como JSON
         JSONObject respuesta1 = new JSONObject();
         respuesta1.put("tipo", "rival");
         respuesta1.put("contenido", nombreJugador2);
@@ -102,6 +105,10 @@ public class SocketServidor {
     }
 
     private void procesarTableros() throws IOException {
+
+        this.coordenadasJugador1 = coordenadasJugador1;
+        this.coordenadasJugador2 = coordenadasJugador2;
+
         Mensaje mensaje1 = recibirMensaje(entradaJugador1);
         Mensaje mensaje2 = recibirMensaje(entradaJugador2);
 
@@ -112,61 +119,169 @@ public class SocketServidor {
         }
         System.out.println("Ambos jugadores están listos.");
 
-        // Enviar permiso para que envíen sus tableros
         Mensaje permiso = new Mensaje("permiso", "ENVIAR_TABLERO");
         enviarMensaje(salidaJugador1, permiso);
         enviarMensaje(salidaJugador2, permiso);
 
-        // Recibir tableros y coordenadas
-        Mensaje tablero1 = recibirMensaje(entradaJugador1);  // tipo: "tablero"
-        Mensaje coordenadas1 = recibirMensaje(entradaJugador1);  // tipo: "coordenadas"
+        Mensaje tablero1 = recibirMensaje(entradaJugador1);
+        Mensaje coordenadas1 = recibirMensaje(entradaJugador1);
 
         Mensaje tablero2 = recibirMensaje(entradaJugador2);
         Mensaje coordenadas2 = recibirMensaje(entradaJugador2);
 
-        System.out.println("Tablero jugador 1:\n" + tablero1.getContenido());
-        System.out.println("Coordenadas jugador 1: " + coordenadas1.getContenido());
-
-        System.out.println("Tablero jugador 2:\n" + tablero2.getContenido());
-        System.out.println("Coordenadas jugador 2: " + coordenadas2.getContenido());
-
-        // Convertir las coordenadas recibidas de JSON a List<String>
         Gson gson = new Gson();
         Type listType = new TypeToken<List<String>>() {
         }.getType();
 
-        // Asegúrate de que getContenido() esté devolviendo una cadena (String)
         String coordenadas1Str = (String) coordenadas1.getContenido();
         String coordenadas2Str = (String) coordenadas2.getContenido();
 
         List<String> coordenadasJugador1 = gson.fromJson(coordenadas1Str, listType);
         List<String> coordenadasJugador2 = gson.fromJson(coordenadas2Str, listType);
 
-        // Si la deserialización es exitosa, las coordenadas se han procesado correctamente
         System.out.println("Coordenadas jugador 1: " + coordenadasJugador1);
         System.out.println("Coordenadas jugador 2: " + coordenadasJugador2);
 
-        
-
-        // Paso 4: Confirmación de recepción
         Mensaje confirmacion = new Mensaje("confirmacion", "CONFIRMACION_TABLERO_RECIBIDO");
         enviarMensaje(salidaJugador1, confirmacion);
         enviarMensaje(salidaJugador2, confirmacion);
 
-        // Paso 5: Notificar que ambos tableros están listos
         Mensaje notificacion = new Mensaje("inicio", "TABLEROS_LISTOS");
         enviarMensaje(salidaJugador1, notificacion);
         enviarMensaje(salidaJugador2, notificacion);
 
-        System.out.println("Ambos tableros recibidos y confirmados. Listo para iniciar el juego.");
-        
-        // Enviar las coordenadas del jugador 1 al jugador 2
         Mensaje mensajeCoordenadas1 = new Mensaje("coordenadas", coordenadas1Str);
-        enviarMensaje(salidaJugador2, mensajeCoordenadas1);
-
-        // Enviar las coordenadas del jugador 2 al jugador 1
         Mensaje mensajeCoordenadas2 = new Mensaje("coordenadas", coordenadas2Str);
+        enviarMensaje(salidaJugador2, mensajeCoordenadas1);
         enviarMensaje(salidaJugador1, mensajeCoordenadas2);
+
+        manejarTurnos(coordenadasJugador1, coordenadasJugador2);
+    }
+
+    private void manejarTurnos(List<String> coordenadasJugador1, List<String> coordenadasJugador2) throws IOException {
+        boolean juegoActivo = true;
+        int jugadorActual = 1; // 1 para Jugador 1, 2 para Jugador 2
+
+        // Guardamos las coordenadas ocupadas por cada jugador en Sets para fácil búsqueda
+        Set<String> casillasJugador1 = new HashSet<>(coordenadasJugador1);
+        Set<String> casillasJugador2 = new HashSet<>(coordenadasJugador2);
+
+        Set<String> casillasImpactadasJugador1 = new HashSet<>();
+        Set<String> casillasImpactadasJugador2 = new HashSet<>();
+
+        while (juegoActivo) {
+            if (jugadorActual == 1) {
+                enviarMensaje(salidaJugador1, new Mensaje("tu_turno", null));
+                Mensaje ataqueJ1 = recibirMensaje(entradaJugador1);
+
+                if (ataqueJ1 != null && "ataque".equals(ataqueJ1.getTipo())) {
+                    System.out.println("Jugador 1 atacó: " + ataqueJ1.getContenido());
+                    enviarMensaje(salidaJugador2, new Mensaje("ataque_recibido", ataqueJ1.getContenido()));
+
+                    Mensaje resultadoJ1 = recibirMensaje(entradaJugador2);
+                    if (resultadoJ1 != null && "resultado_ataque".equals(resultadoJ1.getTipo())) {
+                        enviarMensaje(salidaJugador1, resultadoJ1);
+                        System.out.println("Resultado del ataque recibido por el servidor: " + resultadoJ1.getContenido());
+
+                        String contenido = (String) resultadoJ1.getContenido();
+                        // Ejemplo contenido: "x,y,true" o "x,y,false"
+                        String[] datos = contenido.split(",");
+                        boolean acierto = false;
+                        String coordenada = "";
+
+                        if (datos.length >= 3) {
+                            coordenada = datos[0] + "," + datos[1];
+                            acierto = Boolean.parseBoolean(datos[2]);
+                        }
+
+                        if (acierto) {
+                            casillasImpactadasJugador2.add(coordenada);
+
+                            // Verificar si jugador 2 perdió todas sus naves
+                            if (casillasImpactadasJugador2.containsAll(casillasJugador2)) {
+                                // Fin de juego
+                                enviarMensaje(salidaJugador1, new Mensaje("fin_juego", "¡Has ganado!"));
+                                enviarMensaje(salidaJugador2, new Mensaje("fin_juego", "Has perdido."));
+                                juegoActivo = false;
+                                break;
+                            }
+
+                            // impacto: mismo jugador sigue
+                            enviarMensaje(salidaJugador1, new Mensaje("tu_turno", null));
+                        } else {
+                            jugadorActual = 2;
+                            enviarMensaje(salidaJugador2, new Mensaje("tu_turno", null));
+                        }
+                    }
+                } else if (ataqueJ1 != null && "fin".equals(ataqueJ1.getTipo())) {
+                    juegoActivo = false;
+                    System.out.println("Juego finalizado por Jugador 1");
+                }
+
+            } else { // Turno del Jugador 2
+                enviarMensaje(salidaJugador2, new Mensaje("tu_turno", null));
+                Mensaje ataqueJ2 = recibirMensaje(entradaJugador2);
+
+                if (ataqueJ2 != null && "ataque".equals(ataqueJ2.getTipo())) {
+                    System.out.println("Jugador 2 atacó: " + ataqueJ2.getContenido());
+                    enviarMensaje(salidaJugador1, new Mensaje("ataque_recibido", ataqueJ2.getContenido()));
+
+                    Mensaje resultadoJ2 = recibirMensaje(entradaJugador1);
+                    if (resultadoJ2 != null && "resultado_ataque".equals(resultadoJ2.getTipo())) {
+                        enviarMensaje(salidaJugador2, resultadoJ2);
+                        System.out.println("Resultado del ataque recibido por el servidor: " + resultadoJ2.getContenido());
+
+                        String contenido = (String) resultadoJ2.getContenido();
+                        String[] datos = contenido.split(",");
+                        boolean acierto = false;
+                        String coordenada = "";
+
+                        if (datos.length >= 3) {
+                            coordenada = datos[0] + "," + datos[1];
+                            acierto = Boolean.parseBoolean(datos[2]);
+                        }
+
+                        if (acierto) {
+                            casillasImpactadasJugador1.add(coordenada);
+
+                            // Verificar si jugador 1 perdió todas sus naves
+                            if (casillasImpactadasJugador1.containsAll(casillasJugador1)) {
+                                enviarMensaje(salidaJugador2, new Mensaje("fin_juego", "¡Has ganado!"));
+                                enviarMensaje(salidaJugador1, new Mensaje("fin_juego", "Has perdido."));
+                                juegoActivo = false;
+                                break;
+                            }
+
+                            // impacto: mismo jugador sigue
+                            enviarMensaje(salidaJugador2, new Mensaje("tu_turno", null));
+                        } else {
+                            jugadorActual = 1;
+                            enviarMensaje(salidaJugador1, new Mensaje("tu_turno", null));
+                        }
+                    }
+                } else if (ataqueJ2 != null && "fin".equals(ataqueJ2.getTipo())) {
+                    juegoActivo = false;
+                    System.out.println("Juego finalizado por Jugador 2");
+                }
+            }
+        }
+
+        cerrar();
+    }
+
+    public void enviarAtaqueAJugador2(int x, int y, boolean impacto) {
+        if (salidaJugador2 == null) {
+            System.err.println("Error: conexión con Jugador 2 no inicializada");
+            return;
+        }
+        try {
+            String mensaje = "ATAQUE:" + x + "," + y + "," + (impacto ? "1" : "0");
+            salidaJugador2.println(mensaje);
+            salidaJugador2.flush();
+            System.out.println("Mensaje enviado a Jugador 2: " + mensaje);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public Casilla[][] convertirTextoACasillas(String texto) {
@@ -196,42 +311,34 @@ public class SocketServidor {
                 }
             }
         }
-
         return ocupadas == 25;
     }
 
-    public Tablero recibirTablero(BufferedReader entrada) throws IOException {
-        Mensaje mensaje = recibirMensaje(entrada);
-        if ("tablero".equals(mensaje.getTipo())) {
-            Tablero tablero = new Tablero();
-            tablero.convertirTextoATablero((String) mensaje.getContenido());
-            return tablero;
-        }
-        return null;
-    }
-
-    public void enviarCoordenadas(Socket socket, List<String> coordenadas) throws IOException {
-        // Convertir la lista de coordenadas a formato JSON
-        Gson gson = new Gson();
-        String jsonCoordenadas = gson.toJson(coordenadas);
-
-        // Crear el mensaje
-        Mensaje mensaje = new Mensaje("coordenadas", jsonCoordenadas);
-
-        // Enviar el mensaje al cliente
-        PrintWriter salida = new PrintWriter(socket.getOutputStream(), true);
-        salida.println(gson.toJson(mensaje));
-    }
-
     public void cerrar() throws IOException {
-        entradaJugador1.close();
-        salidaJugador1.close();
-        socketJugador1.close();
+        if (entradaJugador1 != null) {
+            entradaJugador1.close();
+        }
+        if (salidaJugador1 != null) {
+            salidaJugador1.close();
+        }
+        if (socketJugador1 != null) {
+            socketJugador1.close();
+        }
 
-        entradaJugador2.close();
-        salidaJugador2.close();
-        socketJugador2.close();
+        if (entradaJugador2 != null) {
+            entradaJugador2.close();
+        }
+        if (salidaJugador2 != null) {
+            salidaJugador2.close();
+        }
+        if (socketJugador2 != null) {
+            socketJugador2.close();
+        }
 
-        serverSocket.close();
+        if (serverSocket != null) {
+            serverSocket.close();
+        }
+
+        System.out.println("Conexiones cerradas.");
     }
 }

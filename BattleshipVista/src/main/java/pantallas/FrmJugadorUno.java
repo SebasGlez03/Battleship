@@ -88,7 +88,7 @@ public class FrmJugadorUno extends javax.swing.JFrame {
         }
 
         // Enviar el nombre del jugador 1 al servidor en un mensaje JSON
-        Mensaje mensajeNombre = new Mensaje("NOMBRE", nombreJugador1);
+        Mensaje mensajeNombre = new Mensaje("nombre", nombreJugador1);
         cliente.enviarMensaje(mensajeNombre);
 
         // Recibir el nombre del jugador 2 desde el servidor

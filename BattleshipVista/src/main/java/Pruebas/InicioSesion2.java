@@ -96,7 +96,7 @@ public class InicioSesion2 extends javax.swing.JFrame {
         }
 
         // Enviar el nombre del jugador 1 al servidor en un mensaje JSON
-        Mensaje mensajeNombre = new Mensaje("NOMBRE", nombreJugador2);
+        Mensaje mensajeNombre = new Mensaje("nombre", nombreJugador2);
         cliente.enviarMensaje(mensajeNombre);
 
         // Recibir el nombre del jugador 2 desde el servidor

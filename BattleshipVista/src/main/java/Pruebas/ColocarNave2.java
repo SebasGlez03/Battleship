@@ -56,15 +56,11 @@ public class ColocarNave2 extends javax.swing.JFrame {
 
     private static final int TOTAL_CASILLAS_ESPERADAS = 25;
 
-    private Jugador jugadorActual;
-    private Jugador jugadorRival;
-
     private Nave naveSeleccionada;  // Variable para almacenar el barco seleccionado
     private Director director;
     private Casilla[][] tablero;  // Tablero de 10x10
     private boolean[][] casillasOcupadas;
 
-    private boolean esHorizontal = true;
     private JLabel imagenArrastrada;
     private ImageIcon imagenNaveOriginal;
 
@@ -318,57 +314,6 @@ public class ColocarNave2 extends javax.swing.JFrame {
             }
         } else {
             System.out.println("Ya has colocado el maximo de Submarino.");
-        }
-    }
-
-    private void colocarBarco(int x, int y) {
-        // Colocar un barco (para una sola casilla)
-        if (!casillasOcupadas[x][y]) {
-            Casilla casilla = tablero[x][y];
-            naveSeleccionada.agregarCasilla(casilla);
-            casillasOcupadas[x][y] = true;
-
-            JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + y);
-            casillaButton.setBackground(Color.RED);
-
-            System.out.println("Casilla agregada a la nave " + naveSeleccionada.getNombre()
-                    + " en las coordenadas (" + x + ", " + y + ")");
-            repaint();
-        } else {
-            System.out.println("La casilla ya esta ocupada.");
-        }
-    }
-
-    private void colocarPortaaviones(int x, int y) {
-        // Colocar un portaaviones (4 casillas hacia la derecha)
-        if (x >= 0 && x < 10 && y >= 0 && y <= 6) { // hasta columna 6 (6 + 4 = 10)
-            boolean espacioDisponible = true;
-
-            // Verificamos que haya espacio para el portaaviones
-            for (int i = 0; i < 4; i++) {
-                if (casillasOcupadas[x][y + i]) {
-                    espacioDisponible = false;
-                    break;
-                }
-            }
-
-            if (espacioDisponible) {
-                for (int i = 0; i < 4; i++) {
-                    Casilla casilla = tablero[x][y + i];
-                    naveSeleccionada.agregarCasilla(casilla);
-                    casillasOcupadas[x][y + i] = true;
-
-                    JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
-                    casillaButton.setBackground(Color.ORANGE); // Usa otro color para diferenciar
-                }
-
-                System.out.println("Portaaviones colocado en fila " + x + " desde columna " + y + " hasta " + (y + 3));
-                repaint();
-            } else {
-                System.out.println("No hay espacio suficiente o casillas ocupadas para el portaaviones.");
-            }
-        } else {
-            System.out.println("Las coordenadas están fuera del rango para colocar el portaaviones.");
         }
     }
 
@@ -956,87 +901,88 @@ public class ColocarNave2 extends javax.swing.JFrame {
 
     private void btnReadyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReadyActionPerformed
         if (socketCliente == null) {
-        socketCliente = new SocketCliente();  // Inicializar si aún no lo está
-    }
-
-    try {
-        if (tableroListo()) {  // Verifica si las naves están bien colocadas
-            // Crear y enviar mensaje READY
-            Mensaje msgReady = new Mensaje("estado", "READY");
-            socketCliente.enviarMensaje(msgReady);
-            System.out.println("Enviado: READY");
-
-            // Esperar permiso para enviar el tablero
-            Mensaje respuesta = socketCliente.recibirMensaje();
-            if (respuesta == null || !respuesta.getTipo().equals("permiso")
-                    || !respuesta.getContenido().equals("ENVIAR_TABLERO")) {
-                System.out.println("No se recibió permiso válido para enviar el tablero.");
-                return;
-            }
-
-            System.out.println("Autorizado a enviar el tablero.");
-
-            // Crear lista de coordenadas en formato ["x,y", "x,y", ...]
-            List<String> coordenadasList = new ArrayList<>();
-            int totalOcupadas = 0;
-
-            for (int i = 0; i < casillasOcupadas.length; i++) {
-                for (int j = 0; j < casillasOcupadas[i].length; j++) {
-                    if (casillasOcupadas[i][j]) {
-                        coordenadasList.add(j + "," + i);  // Guardar como "x,y"
-                        totalOcupadas++;
-                    }
-                }
-            }
-
-            if (totalOcupadas != 25) {
-                System.out.println("Error: Debes colocar exactamente 25 casillas ocupadas. Actualmente: " + totalOcupadas);
-                return;
-            }
-
-            // Convertir la lista de coordenadas a JSON
-            Gson gson = new Gson();
-            String coordenadasJson = gson.toJson(coordenadasList);
-
-            // Enviar las coordenadas como mensaje tipo "tablero"
-            Mensaje msgTablero = new Mensaje("tablero", coordenadasJson);
-            socketCliente.enviarMensaje(msgTablero);
-
-            // Enviar coordenadas por separado como mensaje tipo "coordenadas"
-            Mensaje msgCoord = new Mensaje("coordenadas", coordenadasJson);
-            socketCliente.enviarMensaje(msgCoord);
-
-            System.out.println("Coordenadas enviadas al servidor:\n" + coordenadasJson);
-
-            // Esperar confirmación de recepción
-            Mensaje confirmacion = socketCliente.recibirMensaje();
-            if (confirmacion != null && "CONFIRMACION_TABLERO_RECIBIDO".equals(confirmacion.getContenido())) {
-                System.out.println("Confirmación del servidor recibida.");
-
-                // Esperar notificación de que ambos tableros están listos
-                Mensaje notificacion = socketCliente.recibirMensaje();
-                if (notificacion != null && "TABLEROS_LISTOS".equals(notificacion.getContenido())) {
-                    System.out.println("Ambos tableros recibidos. Abriendo ColocarNave4...");
-
-                    // Lanzar siguiente ventana
-                    ColocarNave4 ventanaColocarNave = new ColocarNave4(coordenadasJson, socketCliente);
-                    ventanaColocarNave.setVisible(true);
-                    this.dispose();
-                } else {
-                    System.out.println("No se recibió la notificación de inicio.");
-                }
-            } else {
-                System.out.println("No se recibió confirmación del servidor.");
-            }
-
-        } else {
-            System.out.println("No se ha colocado todo correctamente en el tablero.");
+            socketCliente = new SocketCliente();  // Inicializar si aún no lo está
         }
 
-    } catch (IOException e) {
-        e.printStackTrace();
-        System.out.println("No se pudo conectar al servidor.");
-    }
+        try {
+            if (tableroListo()) {  // Verifica si las naves están bien colocadas
+                // Crear y enviar mensaje READY
+                Mensaje msgReady = new Mensaje("estado", "READY");
+                socketCliente.enviarMensaje(msgReady);
+                System.out.println("Enviado: READY");
+
+                // Esperar permiso para enviar el tablero
+                Mensaje respuesta = socketCliente.recibirMensaje();
+                if (respuesta == null || !respuesta.getTipo().equals("permiso")
+                        || !respuesta.getContenido().equals("ENVIAR_TABLERO")) {
+                    System.out.println("No se recibió permiso válido para enviar el tablero.");
+                    return;
+                }
+
+                System.out.println("Autorizado a enviar el tablero.");
+
+                // Crear lista de coordenadas en formato ["x,y", "x,y", ...]
+                List<String> coordenadasList = new ArrayList<>();
+                int totalOcupadas = 0;
+
+                for (int i = 0; i < casillasOcupadas.length; i++) {
+                    for (int j = 0; j < casillasOcupadas[i].length; j++) {
+                        if (casillasOcupadas[i][j]) {
+                            coordenadasList.add(j + "," + i);  // Guardar como "x,y"
+                            totalOcupadas++;
+                        }
+                    }
+                }
+
+                if (totalOcupadas != 25) {
+                    System.out.println("Error: Debes colocar exactamente 25 casillas ocupadas. Actualmente: " + totalOcupadas);
+                    return;
+                }
+
+                // Convertir la lista de coordenadas a JSON
+                Gson gson = new Gson();
+                String coordenadasJson = gson.toJson(coordenadasList);
+
+                // Enviar las coordenadas como mensaje tipo "tablero"
+                Mensaje msgTablero = new Mensaje("tablero", coordenadasJson);
+                socketCliente.enviarMensaje(msgTablero);
+
+                // Enviar coordenadas por separado como mensaje tipo "coordenadas"
+                Mensaje msgCoord = new Mensaje("coordenadas", coordenadasJson);
+                socketCliente.enviarMensaje(msgCoord);
+
+                System.out.println("Coordenadas enviadas al servidor:\n" + coordenadasJson);
+
+                // Esperar confirmación de recepción
+                Mensaje confirmacion = socketCliente.recibirMensaje();
+                if (confirmacion != null && "CONFIRMACION_TABLERO_RECIBIDO".equals(confirmacion.getContenido())) {
+                    System.out.println("Confirmación del servidor recibida.");
+
+                    // Esperar notificación de que ambos tableros están listos
+                    Mensaje notificacion = socketCliente.recibirMensaje();
+                    if (notificacion != null && "TABLEROS_LISTOS".equals(notificacion.getContenido())) {
+                        System.out.println("Ambos tableros recibidos. Abriendo ColocarNave4...");
+
+                        
+                        // Lanzar siguiente ventana
+                        ColocarNave4 ventanaColocarNave = new ColocarNave4( coordenadasJson, socketCliente);
+                        ventanaColocarNave.setVisible(true);
+                        this.dispose();
+                    } else {
+                        System.out.println("No se recibió la notificación de inicio.");
+                    }
+                } else {
+                    System.out.println("No se recibió confirmación del servidor.");
+                }
+
+            } else {
+                System.out.println("No se ha colocado todo correctamente en el tablero.");
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("No se pudo conectar al servidor.");
+        }
     }//GEN-LAST:event_btnReadyActionPerformed
 
     private void btnReiniciarTableroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReiniciarTableroActionPerformed
@@ -1850,71 +1796,6 @@ public class ColocarNave2 extends javax.swing.JFrame {
         barcoMouseDragged(evt, barco1);
     }//GEN-LAST:event_barco1MouseDragged
 
-    // Método para obtener el tablero 1 como String
-    public String obtenerTablero1() {
-        StringBuilder tablero1Texto = new StringBuilder();
-
-        // Supongamos que tablero1 es un Casilla[][] o algo similar
-        for (int i = 0; i < tablero.length; i++) {
-            for (int j = 0; j < tablero[i].length; j++) {
-                // Representación de la casilla como texto. Asegúrate de que la clase Casilla tenga una forma de ser representada como texto
-                tablero1Texto.append(tablero[i][j].toString()).append(" ");
-            }
-            tablero1Texto.append("\n");
-        }
-
-        return tablero1Texto.toString().trim();  // Devolver como texto plano
-    }
-
-// Método para obtener el tablero 2 como String
-    public String obtenerTablero2() {
-        StringBuilder tablero2Texto = new StringBuilder();
-
-        // Supongamos que tablero2 es un Casilla[][] o algo similar
-        for (int i = 0; i < tablero.length; i++) {
-            for (int j = 0; j < tablero[i].length; j++) {
-                // Representación de la casilla como texto
-                tablero2Texto.append(tablero[i][j].toString()).append(" ");
-            }
-            tablero2Texto.append("\n");
-        }
-
-        return tablero2Texto.toString().trim();  // Devolver como texto plano
-    }
-
-    // Método para mostrar la comparación en un nuevo JFrame
-    private void mostrarComparacion(boolean tablasCoinciden, String[][] tableroCopia) {
-        // Crear un nuevo JFrame para mostrar la comparación
-        JFrame frame = new JFrame("Comparaci¿n de Tableros");
-        frame.setSize(400, 300);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-        // Crear un área de texto para mostrar la comparación
-        JTextArea textArea = new JTextArea();
-        textArea.setEditable(false);
-
-        // Mostrar los tableros en el JTextArea
-        textArea.append("Tablero enviado:\n");
-        for (int i = 0; i < tableroCopia.length; i++) {
-            for (int j = 0; j < tableroCopia[i].length; j++) {
-                textArea.append(tableroCopia[i][j] + " ");
-            }
-            textArea.append("\n");
-        }
-        textArea.append("\n");
-
-        // Indicar si los tableros coinciden
-        if (tablasCoinciden) {
-            textArea.append("El tablero fue enviado correctamente.");
-        } else {
-            textArea.append("El tablero no coincide con el original.");
-        }
-
-        // Agregar el JTextArea al JFrame y hacer visible el frame
-        frame.add(new JScrollPane(textArea));
-        frame.setVisible(true);
-    }
-
     private boolean tableroListo() {
         int ocupadas = 0;
 
@@ -1929,31 +1810,6 @@ public class ColocarNave2 extends javax.swing.JFrame {
 
         // Comparar las casillas ocupadas con el total esperado
         return ocupadas == TOTAL_CASILLAS_ESPERADAS;
-    }
-
-    // Método para enviar la confirmación al servidor (simulando el envío por socket)
-    private void enviarConfirmacionAlServidor() throws IOException {
-        // Aquí deberías tener la lógica para enviar la confirmación del jugador al servidor
-        // Suponiendo que se use un método de la clase JuegoServidor
-//        juegoServidor.enviarConfirmacion(jugadorActual);
-    }
-
-    // Verifica si ambos jugadores han confirmado
-    private boolean ambosJugadoresConfirmaron() {
-        return jugadorActual.isConfirmado() && jugadorRival.isConfirmado();
-    }
-
-    // Lógica para iniciar la partida (por ejemplo, cambiar la vista de la interfaz)
-    private void iniciarPartida() {
-        // Cambia a la fase de ataque o lo que corresponda
-        mostrarMensaje("El juego comienza ahora. ¡Es hora de atacar!");
-        // Aquí podrías cambiar la interfaz o comenzar a procesar ataques, etc.
-    }
-
-    // Método para mostrar mensajes (por ejemplo, en un JLabel o en un cuadro de diálogo)
-    private void mostrarMensaje(String mensaje) {
-        // Mostrar el mensaje al usuario (por ejemplo, en un JLabel o un pop-up)
-        JOptionPane.showMessageDialog(this, mensaje);
     }
 
     private void barcoMouseDragged(java.awt.event.MouseEvent evt, JButton barco) {

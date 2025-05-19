@@ -47,6 +47,7 @@ public class SocketCliente {
         System.out.println("Conectado al servidor.");
     }
 
+    
     // Método para enviar un mensaje al servidor
     public void enviarMensaje(Mensaje mensaje) {
         String json = gson.toJson(mensaje);
@@ -62,43 +63,24 @@ public class SocketCliente {
     // Método para enviar el nombre del jugador al servidor
     public void enviarNombre(String nombre) {
         this.nombreJugador = nombre;
-        Mensaje mensaje = new Mensaje("NOMBRE", nombre);
-        enviarMensaje(mensaje);
-    }
-
-    // Método para recibir el nombre del oponente
-    public String recibirNombreOponente() throws IOException {
-        Mensaje mensaje = recibirMensaje();
-        if ("NOMBRE_RIVAL".equals(mensaje.getTipo())) {
-            this.nombreOponente = (String) mensaje.getContenido();
-            System.out.println("Oponente conectado: " + nombreOponente);
-        }
-        return nombreOponente;
+        enviarMensaje(new Mensaje("nombre", nombre));
     }
 
     // Método para confirmar la conexión al servidor
     public void confirmarConexion() {
-        // Crear un JSON con la clave "estado" y el valor "READY"
-        JSONObject mensajeJson = new JSONObject();
-        mensajeJson.put("estado", "READY");
-
-        // Enviar el mensaje
-        enviarMensaje(new Mensaje("estado", mensajeJson.toString()));
+        enviarMensaje(new Mensaje("estado", "READY"));
     }
 
     // Método para enviar el tablero del jugador al servidor
     public void enviarTablero(Tablero tablero) {
         String textoTablero = tablero.convertirTableroATexto();
-        Mensaje mensaje = new Mensaje("tablero", textoTablero);
-        enviarMensaje(mensaje);
+        enviarMensaje(new Mensaje("tablero", textoTablero));
     }
 
     // Método para enviar las coordenadas de ataque al servidor
-    public void enviarCoordenadas(List<String> coordenadas) throws IOException {
-        // Convertir las coordenadas a JSON
+    public void enviarCoordenadas(List<String> coordenadas) {
         String jsonCoordenadas = gson.toJson(coordenadas);
-        Mensaje mensaje = new Mensaje("coordenadas", jsonCoordenadas);
-        enviarMensaje(mensaje);
+        enviarMensaje(new Mensaje("coordenadas", jsonCoordenadas));
     }
 
     // Método para cerrar la conexión
@@ -107,4 +89,14 @@ public class SocketCliente {
         salida.close();
         socket.close();
     }
+
+    // Getter por si necesitas usar el nombre del oponente en otra clase
+    public String getNombreOponente() {
+        return nombreOponente;
+    }
+
+    public String getNombreJugador() {
+        return nombreJugador;
+    }
+
 }
