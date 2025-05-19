@@ -300,16 +300,17 @@ public class ColocarNave4 extends javax.swing.JFrame {
     }
     
     
-    private void mostrarPantallaFinal(String resultado) {
-    if (resultado.contains("¡Has ganado!")) {
-        VentanaGanaste victoria = new VentanaGanaste(resultado);
-        victoria.setVisible(true);
+  private void mostrarPantallaFinal(String resultado) {
+    if (resultado.contains("Has ganado!")) {
+       VentanaGanaste victoria = new VentanaGanaste(this, resultado);
+victoria.setVisible(true);
     } else if (resultado.contains("Has perdido.")) {
-        VentanaPerdiste derrota = new VentanaPerdiste(resultado);
+        VentanaPerdiste derrota = new VentanaPerdiste(this,resultado);
+        derrota.setModal(true); // Igual aquí
         derrota.setVisible(true);
     }
-    
 }
+
     
     
 

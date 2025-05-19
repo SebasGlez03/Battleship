@@ -12,29 +12,27 @@ import java.awt.*;
  *
  * @author Carlo
  */
-public class VentanaPerdiste extends JFrame {
-
-    private JLabel jLabelMensaje;
+public class VentanaPerdiste extends JDialog {
+ private JLabel jLabelMensaje;
     private JButton jButtonSalir;
 
-    public VentanaPerdiste(String mensaje) {
-        // Configura la ventana
-        setUndecorated(true); // Sin bordes ni barra de título
+    public VentanaPerdiste(Frame owner, String mensaje) {
+        super(owner, true); // true = modal
+
+        setUndecorated(true);
         setSize(400, 200);
-        setLocationRelativeTo(null); // Centrada
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(owner);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
-        // Fondo transparente
-        setBackground(new Color(0, 0, 0, 150)); // Negro con transparencia
+        setBackground(new Color(0, 0, 0, 150));
+        setAlwaysOnTop(true);
 
-        // Panel de contenido personalizado
         JPanel panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                // Fondo con transparencia
                 Graphics2D g2 = (Graphics2D) g.create();
-                g2.setColor(new Color(0, 0, 0, 200)); // Fondo más opaco
+                g2.setColor(new Color(0, 0, 0, 200));
                 g2.fillRect(0, 0, getWidth(), getHeight());
                 g2.dispose();
             }
@@ -43,24 +41,20 @@ public class VentanaPerdiste extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
-        // Label de mensaje
         jLabelMensaje = new JLabel(mensaje, SwingConstants.CENTER);
         jLabelMensaje.setFont(new Font("Arial", Font.BOLD, 28));
         jLabelMensaje.setForeground(Color.WHITE);
         jLabelMensaje.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Botón de salida
         jButtonSalir = new JButton("Salir");
         jButtonSalir.setFont(new Font("Arial", Font.PLAIN, 18));
         jButtonSalir.setAlignmentX(Component.CENTER_ALIGNMENT);
-        jButtonSalir.addActionListener(e -> dispose()); // o System.exit(0);
+        jButtonSalir.addActionListener(e -> dispose());
 
-        // Espaciado
         panel.add(jLabelMensaje);
         panel.add(Box.createVerticalStrut(30));
         panel.add(jButtonSalir);
 
-        // Contenedor
         setContentPane(panel);
     }
 }
