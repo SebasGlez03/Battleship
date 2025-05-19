@@ -2,9 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package Pruebas;
+package pantallas;
 
 import Entidades.Casilla;
+import Pruebas.ReproductorSonido;
 import Sockets.Mensaje;
 import Sockets.SocketCliente;
 import java.awt.BorderLayout;
@@ -41,23 +42,18 @@ public class ColocarNave4 extends javax.swing.JFrame {
     private Casilla[][] tableroEnemigo;
     private List<Point> coordenadasOcupadas = new ArrayList<>();
     private List<Point> coordenadasOcupadasEnemigo = new ArrayList<>();
-    private String coordenadas;
 
-    private Mensaje mensaje;
-
-    private boolean puedeAtacar = false;
 
     private Set<Point> coordenadasAtacadas = new HashSet<>();
-//    private boolean puedeAtacar = true;  // Controla si el jugador puede disparar
+
 
     private SocketCliente socketCliente;
 
-//    private JPanel panelTablero;
+
     // Constructor que recibe las coordenadas
     public ColocarNave4(String coordenadas, SocketCliente socketCliente) {
 
         this.socketCliente = socketCliente;
-        this.coordenadas = coordenadas;
 
         initComponents(); // Inicializa los componentes
         this.coordenadasOcupadas = parseCoordenadas(coordenadas); // Convierte las coordenadas del jugador
@@ -79,8 +75,7 @@ public class ColocarNave4 extends javax.swing.JFrame {
         inicializarTableroEnemigo();
         marcarCasillasOcupadas();
 
-        // Ahora también debes recibir las coordenadas del enemigo
-        // Puedes llamar a un método para obtener las coordenadas del enemigo desde el servidor
+        
         try {
             recibirCoordenadasServidor();  // Este método debería llenar coordenadasOcupadasEnemigo
         } catch (IOException e) {
@@ -106,15 +101,12 @@ public class ColocarNave4 extends javax.swing.JFrame {
                     return;
                 }
 
-                // Registrar la coordenada como atacada
+ 
                 coordenadasAtacadas.add(ataque);
 
-                // Bloquear más ataques hasta que llegue la respuesta
-//                puedeAtacar = false;
-                // Enviar ataque al servidor o al otro jugador
                 realizarAtaque(x, y);
 
-                // Deshabilitar la casilla correspondiente en el panel enemigo (opcional)
+
                 JButton boton = (JButton) panelTableroEnemigo.getComponent(y * 10 + x);
                 boton.setEnabled(false);
 
@@ -183,20 +175,6 @@ public class ColocarNave4 extends javax.swing.JFrame {
                     Image imagenEscalada = icono.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                     casillaButtonEnemigo.setIcon(new ImageIcon(imagenEscalada));
 
-                    int finalI = i;
-                    int finalJ = j;
-
-                    // 🟢 Añadir comportamiento al hacer clic sobre una casilla del enemigo
-                    casillaButtonEnemigo.addActionListener(e -> {
-                        int x = finalI;
-                        int y = finalJ;
-
-                        // Solo enviar ataque al servidor, sin decidir impacto aquí
-                        realizarAtaque(x, y);
-
-                        // Deshabilitar la casilla para no repetir ataque (opcional)
-                        casillaButtonEnemigo.setEnabled(false);
-                    });
 
                     panelTableroEnemigo.add(casillaButtonEnemigo);
                     tableroEnemigo[i][j] = new Casilla(i, j);
@@ -233,13 +211,7 @@ public class ColocarNave4 extends javax.swing.JFrame {
         }
     }
 
-//    // Cuando se recibe un ataque del enemigo, ejemplo:
-//public void procesarAtaqueEnemigo(int x, int y) {
-//    boolean impacto = coordenadasOcupadas.contains(new Point(x, y));
-//    SwingUtilities.invokeLater(() -> {
-//        recibirAtaque(x, y, impacto);
-//    });
-//}
+
     public void iniciarEscuchaServidor() {
         new Thread(() -> {
             while (true) {
@@ -250,8 +222,8 @@ public class ColocarNave4 extends javax.swing.JFrame {
                     procesarMensaje(mensaje); // Procesa el mensaje
 
                 } catch (IOException e) {
-                    e.printStackTrace(); // Imprime errores para depuración
-//                break; // Sal del bucle si hay error
+                    e.printStackTrace();
+
                 }
             }
         }).start(); // Inicia el hilo
@@ -259,7 +231,7 @@ public class ColocarNave4 extends javax.swing.JFrame {
 
     private void procesarMensajeAsync(Mensaje mensaje) {
         new Thread(() -> {
-            procesarMensaje(mensaje); // Este ya se ejecuta fuera del hilo de escucha
+            procesarMensaje(mensaje); 
         }).start();
     }
 
@@ -330,10 +302,10 @@ public class ColocarNave4 extends javax.swing.JFrame {
     
     private void mostrarPantallaFinal(String resultado) {
     if (resultado.contains("¡Has ganado!")) {
-        VentanaGanaste victoria = new VentanaGanaste(resultado); // Tu clase personalizada
+        VentanaGanaste victoria = new VentanaGanaste(resultado);
         victoria.setVisible(true);
     } else if (resultado.contains("Has perdido.")) {
-        VentanaPerdiste derrota = new VentanaPerdiste(resultado); // Tu clase personalizada
+        VentanaPerdiste derrota = new VentanaPerdiste(resultado);
         derrota.setVisible(true);
     }
     
@@ -354,7 +326,7 @@ public class ColocarNave4 extends javax.swing.JFrame {
             System.out.println("Coordenada ocupada en: (" + coord.x + ", " + coord.y + ")");
         }
 
-        //COMENTAR PARA HACER INVISIBLE LOS BARCOS
+        
         // Marcar las casillas correspondientes en el tablero enemigo
         for (Point coord : coordenadasOcupadasEnemigo) {
             int x = coord.x;
@@ -366,8 +338,7 @@ public class ColocarNave4 extends javax.swing.JFrame {
             // Obtener el botón correspondiente del tablero enemigo
             JButton casillaButtonEnemigo = (JButton) panelTableroEnemigo.getComponent(y * 10 + x);
 
-            // Cambiar el color o marcar la casilla
-//            casillaButtonEnemigo.setBackground(Color.DARK_GRAY); // Cambiar a rojo para marcar como ocupado
+
             casillaButtonEnemigo.revalidate();
             casillaButtonEnemigo.repaint();  // Asegura que la interfaz se actualice
         }
@@ -395,9 +366,6 @@ public class ColocarNave4 extends javax.swing.JFrame {
             // Cambiar el color o la imagen del botón
             casillaButton.setBackground(Color.GREEN);  // Cambiar a rojo para marcar como ocupada
 
-            // Si prefieres poner una imagen, usa algo como esto:
-            // ImageIcon icono = new ImageIcon(getClass().getResource("/imagenes/casillaOcupada.png"));
-            // casillaButton.setIcon(icono);
         }
     }
 
@@ -493,6 +461,8 @@ public class ColocarNave4 extends javax.swing.JFrame {
         txtX = new javax.swing.JTextField();
         txtY = new javax.swing.JTextField();
         btnAtacar = new javax.swing.JButton();
+        jLabel21 = new javax.swing.JLabel();
+        jLabel22 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -505,7 +475,7 @@ public class ColocarNave4 extends javax.swing.JFrame {
         panelTablero.setBackground(new java.awt.Color(0, 0, 0));
         panelTablero.setForeground(new java.awt.Color(0, 0, 0));
         panelTablero.setPreferredSize(new java.awt.Dimension(400, 400));
-        panelTablero.setLayout(new java.awt.GridLayout());
+        panelTablero.setLayout(new java.awt.GridLayout(1, 0));
 
         jLabel1.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
@@ -697,7 +667,7 @@ public class ColocarNave4 extends javax.swing.JFrame {
         panelTableroEnemigo.setBackground(new java.awt.Color(0, 0, 0));
         panelTableroEnemigo.setForeground(new java.awt.Color(0, 0, 0));
         panelTableroEnemigo.setPreferredSize(new java.awt.Dimension(400, 400));
-        panelTableroEnemigo.setLayout(new java.awt.GridLayout());
+        panelTableroEnemigo.setLayout(new java.awt.GridLayout(1, 0));
 
         jLabel41.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel41.setForeground(new java.awt.Color(255, 255, 255));
@@ -889,6 +859,14 @@ public class ColocarNave4 extends javax.swing.JFrame {
             }
         });
 
+        jLabel21.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel21.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel21.setText("Ingresa coordenada X:");
+
+        jLabel22.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel22.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel22.setText("Ingresa coordenada Y:");
+
         javax.swing.GroupLayout panelFondoTableroLayout = new javax.swing.GroupLayout(panelFondoTablero);
         panelFondoTablero.setLayout(panelFondoTableroLayout);
         panelFondoTableroLayout.setHorizontalGroup(
@@ -899,19 +877,29 @@ public class ColocarNave4 extends javax.swing.JFrame {
                         .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(panelFondoTableroLayout.createSequentialGroup()
                                 .addGap(40, 40, 40)
-                                .addComponent(panelfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                                .addGap(404, 404, 404)
-                                .addComponent(txtX, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(40, 40, 40)
+                                .addComponent(panelfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(40, 40, 40))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelFondoTableroLayout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelFondoTableroLayout.createSequentialGroup()
+                                        .addComponent(txtX, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(146, 146, 146))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelFondoTableroLayout.createSequentialGroup()
+                                        .addComponent(jLabel21)
+                                        .addGap(103, 103, 103)))))
                         .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(panelfondo2, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                                .addGap(36, 36, 36)
-                                .addComponent(txtY, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(panelfondo2, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(38, 38, 38)
+                                .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel22)
+                                    .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                                        .addGap(55, 55, 55)
+                                        .addComponent(txtY, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))))))
                     .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                        .addGap(502, 502, 502)
-                        .addComponent(btnAtacar)))
+                        .addGap(482, 482, 482)
+                        .addComponent(btnAtacar, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(32, Short.MAX_VALUE))
         );
         panelFondoTableroLayout.setVerticalGroup(
@@ -921,13 +909,17 @@ public class ColocarNave4 extends javax.swing.JFrame {
                 .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(panelfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(panelfondo2, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(44, 44, 44)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
                 .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtX, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtY, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel21)
+                    .addComponent(jLabel22))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtX, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtY, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(btnAtacar)
-                .addContainerGap(53, Short.MAX_VALUE))
+                .addComponent(btnAtacar, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(50, 50, 50))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -938,7 +930,7 @@ public class ColocarNave4 extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelFondoTablero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(panelFondoTablero, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -946,61 +938,9 @@ public class ColocarNave4 extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAtacarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAtacarActionPerformed
-//         try {
-//        int x = Integer.parseInt(txtX.getText().trim());
-//        int y = Integer.parseInt(txtY.getText().trim());
-//
-//        if (x < 0 || x >= 10 || y < 0 || y >= 10) {
-//            JOptionPane.showMessageDialog(this, "Coordenadas fuera de rango (0-9).");
-//            return;
-//        }
-//
-//        realizarAtaque(x, y);
-//
-//        // Opcional: deshabilitar botón o limpiar campos
-//        
-//        txtX.setText("");
-//        txtY.setText("");
-//
-//    } catch (NumberFormatException e) {
-//        JOptionPane.showMessageDialog(this, "Ingrese valores numéricos válidos.");
-//    }
+
     }//GEN-LAST:event_btnAtacarActionPerformed
 
-//    /**
-//     * @param args the command line arguments
-//     */
-//    public static void main(String args[]) {
-//        /* Set the Nimbus look and feel */
-//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-//         */
-//        try {
-//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-//                if ("Nimbus".equals(info.getName())) {
-//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-//                    break;
-//                }
-//            }
-//        } catch (ClassNotFoundException ex) {
-//            java.util.logging.Logger.getLogger(ColocarNave4.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (InstantiationException ex) {
-//            java.util.logging.Logger.getLogger(ColocarNave4.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (IllegalAccessException ex) {
-//            java.util.logging.Logger.getLogger(ColocarNave4.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-//            java.util.logging.Logger.getLogger(ColocarNave4.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-//        }
-//        //</editor-fold>
-//
-//        /* Create and display the form */
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new ColocarNave4().setVisible(true);
-//            }
-//        });
-//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAtacar;
@@ -1017,6 +957,8 @@ public class ColocarNave4 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
+    private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel41;

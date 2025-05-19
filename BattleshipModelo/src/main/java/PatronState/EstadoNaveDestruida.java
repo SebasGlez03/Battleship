@@ -18,6 +18,6 @@ public class EstadoNaveDestruida implements EstadoNave {
 
     @Override
     public void mostrarEstado() {
-        System.out.println("La nave está deshabilitada.");
+        System.out.println("La nave esta deshabilitada.");
     }
 }

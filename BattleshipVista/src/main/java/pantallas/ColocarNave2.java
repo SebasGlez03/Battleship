@@ -2,49 +2,20 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package Pruebas;
+package pantallas;
 
-import Entidades.TipoNave;
-import Entidades.Jugador;
+
 import Entidades.Casilla;
-import Entidades.Tablero;
+import Entidades.TipoNave;
 import Entidades.Nave;
-import Juego.JuegoServidor;
 import PatronBuilder.Director;
-import Sockets.Mensaje;
-import Sockets.SocketCliente;
-import Sockets.SocketServidor;
+import Sockets.*;
 import com.google.gson.Gson;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.io.IOException;
-import java.net.Socket;
-import java.util.ArrayList;
+import java.awt.*;
+import java.io.*;
+import java.util.*;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import org.json.JSONObject;
+import javax.swing.*;
 
 /**
  *
@@ -52,15 +23,14 @@ import org.json.JSONObject;
  */
 public class ColocarNave2 extends javax.swing.JFrame {
 
-    private SocketCliente socketCliente;  // La conexión al servidor
-
+    
+    
+    private SocketCliente socketCliente; 
     private static final int TOTAL_CASILLAS_ESPERADAS = 25;
-
-    private Nave naveSeleccionada;  // Variable para almacenar el barco seleccionado
+    private Nave naveSeleccionada;
     private Director director;
-    private Casilla[][] tablero;  // Tablero de 10x10
+    private Casilla[][] tablero; 
     private boolean[][] casillasOcupadas;
-
     private JLabel imagenArrastrada;
     private ImageIcon imagenNaveOriginal;
 
@@ -376,7 +346,7 @@ public class ColocarNave2 extends javax.swing.JFrame {
         panelBarcos.setPreferredSize(new java.awt.Dimension(455, 280));
 
         barco1.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
-        barco1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        barco1.setBorder(null);
         barco1.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         barco1.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         barco1.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
@@ -426,7 +396,7 @@ public class ColocarNave2 extends javax.swing.JFrame {
         });
 
         barco2.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
-        barco2.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        barco2.setBorder(null);
         barco2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         barco2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         barco2.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
@@ -446,7 +416,7 @@ public class ColocarNave2 extends javax.swing.JFrame {
         });
 
         barco3.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
-        barco3.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        barco3.setBorder(null);
         barco3.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         barco3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         barco3.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
@@ -625,7 +595,7 @@ public class ColocarNave2 extends javax.swing.JFrame {
         panelTablero.setBackground(new java.awt.Color(0, 0, 0));
         panelTablero.setForeground(new java.awt.Color(0, 0, 0));
         panelTablero.setPreferredSize(new java.awt.Dimension(400, 400));
-        panelTablero.setLayout(new java.awt.GridLayout());
+        panelTablero.setLayout(new java.awt.GridLayout(1, 0));
 
         jLabel1.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
@@ -833,16 +803,13 @@ public class ColocarNave2 extends javax.swing.JFrame {
             }
         });
 
+        labelNomJugador.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         labelNomJugador.setForeground(new java.awt.Color(255, 255, 255));
 
         javax.swing.GroupLayout panelFondoTableroLayout = new javax.swing.GroupLayout(panelFondoTablero);
         panelFondoTablero.setLayout(panelFondoTableroLayout);
         panelFondoTableroLayout.setHorizontalGroup(
             panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelFondoTableroLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(labelNomJugador, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(970, 970, 970))
             .addGroup(panelFondoTableroLayout.createSequentialGroup()
                 .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelFondoTableroLayout.createSequentialGroup()
@@ -855,32 +822,36 @@ public class ColocarNave2 extends javax.swing.JFrame {
                 .addComponent(panelfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addComponent(jLabel21))
+                        .addGap(49, 49, 49)
+                        .addComponent(btnReady, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                        .addGap(43, 43, 43)
-                        .addComponent(btnReady, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(30, 30, 30)
+                        .addComponent(jLabel21)))
+                .addContainerGap(41, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelFondoTableroLayout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(labelNomJugador, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(338, 338, 338))
         );
         panelFondoTableroLayout.setVerticalGroup(
             panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelFondoTableroLayout.createSequentialGroup()
                 .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                        .addContainerGap()
                         .addComponent(labelNomJugador, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(panelfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                            .addGap(158, 158, 158)
-                            .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(btnReady, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                            .addGap(85, 85, 85)
-                            .addComponent(panelBarcos, javax.swing.GroupLayout.PREFERRED_SIZE, 413, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(27, 27, 27)
-                            .addComponent(btnReiniciarTablero))))
+                    .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                        .addGap(258, 258, 258)
+                        .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnReady, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                        .addGap(85, 85, 85)
+                        .addComponent(panelBarcos, javax.swing.GroupLayout.PREFERRED_SIZE, 413, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(27, 27, 27)
+                        .addComponent(btnReiniciarTablero)))
                 .addContainerGap(85, Short.MAX_VALUE))
         );
 
@@ -905,6 +876,7 @@ public class ColocarNave2 extends javax.swing.JFrame {
         }
 
         try {
+
             if (tableroListo()) {  // Verifica si las naves están bien colocadas
                 // Crear y enviar mensaje READY
                 Mensaje msgReady = new Mensaje("estado", "READY");
@@ -961,11 +933,11 @@ public class ColocarNave2 extends javax.swing.JFrame {
                     // Esperar notificación de que ambos tableros están listos
                     Mensaje notificacion = socketCliente.recibirMensaje();
                     if (notificacion != null && "TABLEROS_LISTOS".equals(notificacion.getContenido())) {
+
                         System.out.println("Ambos tableros recibidos. Abriendo ColocarNave4...");
 
-                        
                         // Lanzar siguiente ventana
-                        ColocarNave4 ventanaColocarNave = new ColocarNave4( coordenadasJson, socketCliente);
+                        ColocarNave4 ventanaColocarNave = new ColocarNave4(coordenadasJson, socketCliente);
                         ventanaColocarNave.setVisible(true);
                         this.dispose();
                     } else {
@@ -1853,33 +1825,33 @@ public class ColocarNave2 extends javax.swing.JFrame {
     private void inicializarNaves() {
         // Crear los botones de los barcos y asignarles su posición
 //    barco1.setText("Barco 1"); // O asigna el nombre correspondiente
-        barco1.setBounds(35, 300, 40, 40); // Ajustar la posición y tamaño del barco
+        barco1.setBounds(140, 226, 40, 40); // Ajustar la posición y tamaño del barco
         panelBarcos.add(barco1);
-        barco2.setBounds(102, 300, 40, 40); // Ajustar la posición y tamaño del barco
+        barco2.setBounds(30, 226, 40, 40); // Ajustar la posición y tamaño del barco
         panelBarcos.add(barco2);
-        barco3.setBounds(169, 300, 40, 40); // Ajustar la posición y tamaño del barco
+        barco3.setBounds(88, 226, 40, 40); // Ajustar la posición y tamaño del barco
         panelBarcos.add(barco3);
 
         // Crear el botón para el portaaviones
-        btnPortaaviones.setBounds(25, 25, 200, 50); // Ajustar la posición y tamaño
+        btnPortaaviones.setBounds(30, 16, 150, 40); // Ajustar la posición y tamaño
         panelBarcos.add(btnPortaaviones);
-        btnPortaaviones2.setBounds(25, 85, 200, 50); // Ajustar la posición y tamaño
+        btnPortaaviones2.setBounds(30, 62, 150, 40); // Ajustar la posición y tamaño
         panelBarcos.add(btnPortaaviones2);
 
         // Crear el botón para el cruceros
-        btnCrucero1.setBounds(35, 145, 50, 150); // Ajustar la posición y tamaño
+        btnCrucero1.setBounds(30, 114, 40, 100); // Ajustar la posición y tamaño
         panelBarcos.add(btnCrucero1);
-        btnCrucero2.setBounds(170, 145, 50, 150); // Ajustar la posición y tamaño
+        btnCrucero2.setBounds(140, 114, 40, 100); // Ajustar la posición y tamaño
         panelBarcos.add(btnCrucero2);
 
         // Crear el botón para el Submarinos
-        btnSubmarino1.setBounds(20, 360, 50, 100); // Ajustar la posición y tamaño
+        btnSubmarino1.setBounds(16, 278, 40, 75); // Ajustar la posición y tamaño
         panelBarcos.add(btnSubmarino1);
-        btnSubmarino2.setBounds(75, 360, 50, 100); // Ajustar la posición y tamaño
+        btnSubmarino2.setBounds(62, 278, 40, 75); // Ajustar la posición y tamaño
         panelBarcos.add(btnSubmarino2);
-        btnSubmarino3.setBounds(135, 360, 50, 100); // Ajustar la posición y tamaño
+        btnSubmarino3.setBounds(108, 278, 40, 75); // Ajustar la posición y tamaño
         panelBarcos.add(btnSubmarino3);
-        btnSubmarino4.setBounds(190, 360, 50, 100); // Ajustar la posición y tamaño
+        btnSubmarino4.setBounds(154, 278, 40, 75); // Ajustar la posición y tamaño
         panelBarcos.add(btnSubmarino4);
 
         // Agregar más barcos según sea necesario

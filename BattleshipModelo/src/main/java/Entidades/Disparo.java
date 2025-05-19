@@ -25,11 +25,6 @@ public boolean ejecutarDisparo(Casilla casilla) {
     return false;
 }
 
-//    public void ejecutarDisparo(Casilla casilla) {
-//        if (casilla.getX() == x && casilla.getY() == y) {
-//            casilla.cambiarEstado(); 
-//        }
-//    }
 
     public int getX() {
         return x;

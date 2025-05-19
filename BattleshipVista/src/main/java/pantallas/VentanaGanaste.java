@@ -2,8 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package Pruebas;
-
+package pantallas;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,12 +11,12 @@ import java.awt.*;
  *
  * @author Carlo
  */
-public class VentanaPerdiste extends JFrame {
+public class VentanaGanaste extends JFrame {
 
     private JLabel jLabelMensaje;
     private JButton jButtonSalir;
 
-    public VentanaPerdiste(String mensaje) {
+    public VentanaGanaste(String mensaje) {
         // Configura la ventana
         setUndecorated(true); // Sin bordes ni barra de título
         setSize(400, 200);
@@ -63,4 +62,12 @@ public class VentanaPerdiste extends JFrame {
         // Contenedor
         setContentPane(panel);
     }
+
+    // Para probar directamente
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> {
+//            VentanaGanaste ventana = new VentanaGanaste("¡Ganaste!");
+//            ventana.setVisible(true);
+//        });
+//    }
 }

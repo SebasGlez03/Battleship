@@ -4,7 +4,6 @@
  */
 package pantallas;
 
-import Pruebas.ColocarNave2;
 import Sockets.Mensaje;
 import Sockets.SocketCliente;
 import java.io.IOException;
@@ -105,6 +104,7 @@ public class FrmJugadorDos extends javax.swing.JFrame {
 
         // Abrir ventana para colocar las naves
         ColocarNave2 ventana = new ColocarNave2(nombreJugador2, cliente);
+        ventana.setLocation(960, 250);
         ventana.setVisible(true);
         dispose();
 

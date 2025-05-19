@@ -41,7 +41,7 @@ public class SocketServidor {
 
     public void iniciarServidor(int puerto) throws IOException {
         serverSocket = new ServerSocket(puerto);
-        System.out.println("Esperando conexión de los jugadores...");
+        System.out.println("Esperando conexion de los jugadores...");
 
         aceptarConexiones();
         procesarTableros();
@@ -114,10 +114,10 @@ public class SocketServidor {
 
         if (!"estado".equals(mensaje1.getTipo()) || !"READY".equals(mensaje1.getContenido())
                 || !"estado".equals(mensaje2.getTipo()) || !"READY".equals(mensaje2.getContenido())) {
-            System.out.println("Uno o ambos jugadores no están listos.");
+            System.out.println("Uno o ambos jugadores no estan listos.");
             return;
         }
-        System.out.println("Ambos jugadores están listos.");
+        System.out.println("Ambos jugadores estan listos.");
 
         Mensaje permiso = new Mensaje("permiso", "ENVIAR_TABLERO");
         enviarMensaje(salidaJugador1, permiso);
@@ -175,7 +175,7 @@ public class SocketServidor {
                 Mensaje ataqueJ1 = recibirMensaje(entradaJugador1);
 
                 if (ataqueJ1 != null && "ataque".equals(ataqueJ1.getTipo())) {
-                    System.out.println("Jugador 1 atacó: " + ataqueJ1.getContenido());
+                    System.out.println("Jugador 1 ataco: " + ataqueJ1.getContenido());
                     enviarMensaje(salidaJugador2, new Mensaje("ataque_recibido", ataqueJ1.getContenido()));
 
                     Mensaje resultadoJ1 = recibirMensaje(entradaJugador2);
@@ -223,7 +223,7 @@ public class SocketServidor {
                 Mensaje ataqueJ2 = recibirMensaje(entradaJugador2);
 
                 if (ataqueJ2 != null && "ataque".equals(ataqueJ2.getTipo())) {
-                    System.out.println("Jugador 2 atacó: " + ataqueJ2.getContenido());
+                    System.out.println("Jugador 2 ataco: " + ataqueJ2.getContenido());
                     enviarMensaje(salidaJugador1, new Mensaje("ataque_recibido", ataqueJ2.getContenido()));
 
                     Mensaje resultadoJ2 = recibirMensaje(entradaJugador1);
@@ -271,7 +271,7 @@ public class SocketServidor {
 
     public void enviarAtaqueAJugador2(int x, int y, boolean impacto) {
         if (salidaJugador2 == null) {
-            System.err.println("Error: conexión con Jugador 2 no inicializada");
+            System.err.println("Error: conexion con Jugador 2 no inicializada");
             return;
         }
         try {

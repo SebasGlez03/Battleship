@@ -18,6 +18,6 @@ public class EstadoNaveActiva implements EstadoNave {
 
     @Override
     public void mostrarEstado() {
-        System.out.println("La nave está activa y en juego.");
+        System.out.println("La nave esta activa y en juego.");
     }
 }

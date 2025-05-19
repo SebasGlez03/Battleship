@@ -4,8 +4,7 @@
  */
 package pantallas;
 
-import Pruebas.InicioSesion;
-import Pruebas.InicioSesion2;
+
 import Sockets.SocketServidor;
 import java.io.IOException;
 import javax.swing.SwingUtilities;
@@ -89,9 +88,9 @@ public class FrmInicio extends javax.swing.JFrame {
         // Abrir las dos ventanas de inicio de sesión
         SwingUtilities.invokeLater(() -> {
             FrmJugadorUno jugadorUno = new FrmJugadorUno();
-            jugadorUno.setLocation(100, 100); // Ajusta la posición
+            jugadorUno.setLocation(400, 250); 
             jugadorUno.setVisible(true);
-            this.dispose(); // Cierra FrmInicio
+            this.dispose();
 
         });
 
