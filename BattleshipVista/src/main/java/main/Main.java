@@ -11,6 +11,11 @@ package main;
  * @author Oley
  */
 public class Main {
+
+    /**
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         
         

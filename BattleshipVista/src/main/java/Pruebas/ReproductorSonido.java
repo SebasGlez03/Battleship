@@ -14,6 +14,10 @@ import java.io.*;
  */
 public class ReproductorSonido {
     
+    /**
+     *
+     * @param rutaSonido
+     */
     public static void reproducirSonido(String rutaSonido) {
         try {
             InputStream audioSrc = ReproductorSonido.class.getResourceAsStream(rutaSonido);

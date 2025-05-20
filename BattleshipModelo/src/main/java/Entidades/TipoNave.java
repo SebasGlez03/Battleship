@@ -16,9 +16,25 @@ import java.awt.Color;
  * distintivo para su representación visual.
  */
 public enum TipoNave {
+
+    /**
+     *
+     */
     PORTAAVIONES("Porta Aviones", 4, Color.GRAY),
+
+    /**
+     *
+     */
     CRUCERO("Crucero", 3, Color.BLUE),
+
+    /**
+     *
+     */
     SUBMARINO("Submarino", 2, Color.GREEN),
+
+    /**
+     *
+     */
     BARCO("Barco", 1, Color.YELLOW);
 
     private final String nombre;

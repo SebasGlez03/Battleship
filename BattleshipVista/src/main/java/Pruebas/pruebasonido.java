@@ -9,7 +9,12 @@ package Pruebas;
  * @author Carlo
  */
 public class pruebasonido {
- public static void main(String[] args) {
+
+    /**
+     *
+     * @param args
+     */
+    public static void main(String[] args) {
         System.out.println("Reproduciendo sonido de impacto...");
         ReproductorSonido.reproducirSonido("/sounds/agua.wav");
         
