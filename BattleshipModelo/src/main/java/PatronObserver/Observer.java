@@ -21,4 +21,7 @@ public interface Observer {
      * observador.
      */
     void actualizar();
+    /*
+    Prueba
+    */
 }
