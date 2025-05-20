@@ -12,9 +12,19 @@ import java.awt.*;
  * @author Carlo
  */
 public class VentanaGanaste extends JDialog {
+        /** Etiqueta para mostrar el mensaje de victoria. */
+
  private JLabel jLabelMensaje;
+     /** Botón para salir y cerrar la ventana. */
+
     private JButton jButtonSalir;
 
+    /**
+     * Constructor de la ventana de victoria.
+     * 
+     * @param owner   La ventana padre.
+     * @param mensaje Mensaje que se mostrará en la ventana.
+     */
     public VentanaGanaste(Frame owner, String mensaje) {
         super(owner, true); // true = modal
 

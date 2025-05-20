@@ -14,11 +14,13 @@ import javax.swing.JOptionPane;
  * @author nomar
  */
 public class FrmJugadorDos extends javax.swing.JFrame {
+    // Cliente socket para la comunicación con el servidor
 
     private SocketCliente cliente;
-    
+
     /**
-     * Creates new form FrmJugadorDos
+     * Constructor de la clase FrmJugadorDos. Inicializa los componentes
+     * gráficos de la ventana.
      */
     public FrmJugadorDos() {
         initComponents();
@@ -75,44 +77,53 @@ public class FrmJugadorDos extends javax.swing.JFrame {
     private void btnAtrasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAtrasMouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_btnAtrasMouseClicked
-
+    /**
+     * Evento que se ejecuta cuando se hace clic en el botón "Listo".
+     *
+     * Realiza las siguientes acciones: - Valida que el campo de texto no esté
+     * vacío. - Crea la conexión con el servidor (localhost, puerto 12345). -
+     * Envía el nombre del jugador 2 al servidor en un mensaje JSON. - Recibe el
+     * nombre del jugador rival desde el servidor. - Muestra un mensaje de
+     * conexión exitosa con el nombre del rival. - Abre la ventana para colocar
+     * las naves (ColocarNave2). - Cierra esta ventana actual.
+     *
+     * En caso de error muestra un mensaje y vuelve a habilitar el botón.
+     */
     private void btnListoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnListoMouseClicked
         // TODO add your handling code here:
         try {
-        btnListo.setEnabled(false);
-        cliente = new SocketCliente();
-        cliente.conectar("127.0.0.1", 12345);
+            btnListo.setEnabled(false);
+            cliente = new SocketCliente();
+            cliente.conectar("127.0.0.1", 12345);
 
-        String nombreJugador2 = campoTextoUsuarioDos.getText().trim();
-        if (nombreJugador2.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingresa tu nombre.");
-            btnListo.setEnabled(true);
-            return;
-        }
+            String nombreJugador2 = campoTextoUsuarioDos.getText().trim();
+            if (nombreJugador2.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Ingresa tu nombre.");
+                btnListo.setEnabled(true);
+                return;
+            }
 
-        // Enviar el nombre del jugador 1 al servidor en un mensaje JSON
-        Mensaje mensajeNombre = new Mensaje("nombre", nombreJugador2);
-        cliente.enviarMensaje(mensajeNombre);
+            // Enviar el nombre del jugador 1 al servidor en un mensaje JSON
+            Mensaje mensajeNombre = new Mensaje("nombre", nombreJugador2);
+            cliente.enviarMensaje(mensajeNombre);
 
-        // Recibir el nombre del jugador 2 desde el servidor
-        Mensaje mensajeRecibido = cliente.recibirMensaje();
-        String nombreRival = (String) mensajeRecibido.getContenido().toString();
+            // Recibir el nombre del jugador 2 desde el servidor
+            Mensaje mensajeRecibido = cliente.recibirMensaje();
+            String nombreRival = (String) mensajeRecibido.getContenido().toString();
 
-        JOptionPane.showMessageDialog(this, "Conectado con: " + nombreRival);
+            JOptionPane.showMessageDialog(this, "Conectado con: " + nombreRival);
 
-        
-
-        // Abrir ventana para colocar las naves
-        ColocarNave2 ventana = new ColocarNave2(nombreJugador2, cliente);
-        ventana.setLocation(960, 250);
-        ventana.setVisible(true);
-        dispose();
+            // Abrir ventana para colocar las naves
+            ColocarNave2 ventana = new ColocarNave2(nombreJugador2, cliente);
+            ventana.setLocation(960, 250);
+            ventana.setVisible(true);
+            dispose();
 
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Error al conectar: " + e.getMessage());
             e.printStackTrace();
             btnListo.setEnabled(true);
-    }
+        }
     }//GEN-LAST:event_btnListoMouseClicked
 
     private void campoTextoUsuarioDosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoTextoUsuarioDosActionPerformed

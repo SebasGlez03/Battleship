@@ -4,7 +4,6 @@
  */
 package pantallas;
 
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -13,9 +12,22 @@ import java.awt.*;
  * @author Carlo
  */
 public class VentanaPerdiste extends JDialog {
- private JLabel jLabelMensaje;
-    private JButton jButtonSalir;
 
+    /**
+     * Etiqueta para mostrar el mensaje de derrota.
+     */
+    private JLabel jLabelMensaje;
+    /*
+    * Botón para salir y cerrar la ventana. 
+    */
+    
+    private JButton jButtonSalir;
+/**
+     * Constructor de la ventana de derrota.
+     * 
+     * @param owner   La ventana padre.
+     * @param mensaje Mensaje que se mostrará en la ventana.
+     */
     public VentanaPerdiste(Frame owner, String mensaje) {
         super(owner, true); // true = modal
 

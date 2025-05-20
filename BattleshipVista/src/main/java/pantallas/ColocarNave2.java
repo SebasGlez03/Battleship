@@ -4,7 +4,6 @@
  */
 package pantallas;
 
-
 import Entidades.Casilla;
 import Entidades.TipoNave;
 import Entidades.Nave;
@@ -23,31 +22,64 @@ import javax.swing.*;
  */
 public class ColocarNave2 extends javax.swing.JFrame {
 
-    
-    
-    private SocketCliente socketCliente; 
+    /**
+     * Cliente socket para comunicación en red.
+     */
+    private SocketCliente socketCliente;
+
+    /**
+     * Número total de casillas esperadas en el tablero (por ejemplo, para
+     * validar).
+     */
     private static final int TOTAL_CASILLAS_ESPERADAS = 25;
+    /**
+     * Nave seleccionada actualmente para colocar en el tablero.
+     */
     private Nave naveSeleccionada;
+    /**
+     * Director para construir las naves (posiblemente usando patrón Builder).
+     */
     private Director director;
-    private Casilla[][] tablero; 
+    /**
+     * Matriz que representa el tablero con casillas.
+     */
+    private Casilla[][] tablero;
+    /**
+     * Matriz para marcar qué casillas están ocupadas en el tablero.
+     */
     private boolean[][] casillasOcupadas;
+    /**
+     * JLabel que contiene la imagen que se está arrastrando.
+     */
     private JLabel imagenArrastrada;
+    /**
+     * Icono original de la imagen de la nave antes de arrastrarla.
+     */
     private ImageIcon imagenNaveOriginal;
 
-    // Contadores para los barcos y portaaviones
+    /**
+     * Contadores para la cantidad de cada tipo de nave colocada.
+     */
     private int contadorBarcos = 0;
     private int contadorPortaaviones = 0;
     private int contadorCruceros = 0;
     private int contadorSubmarinos = 0;
+    /**
+     * Cantidad máxima permitida para cada tipo de nave.
+     */
     private static final int MAX_BARCO = 3;
     private static final int MAX_PORTAAVIONES = 2;
     private static final int MAX_CRUCEROS = 2;
     private static final int MAX_SUBMARINOS = 4;
-
+    /**
+     * Nombre del jugador que está colocando las naves.
+     */
     private String nombreJugador;
 
     /**
-     * Creates new form ColocarNave
+     * Constructor que recibe un servidor para establecer la comunicación.
+     *
+     * @param servidor Instancia de SocketServidor para la conexión de red.
      */
     public ColocarNave2(SocketServidor servidor) {
         this.nombreJugador = nombreJugador;
@@ -56,6 +88,13 @@ public class ColocarNave2 extends javax.swing.JFrame {
         initComponents2();
     }
 
+    /**
+     * Constructor que recibe el nombre del jugador y cliente socket para
+     * comunicación.
+     *
+     * @param nombreJugador Nombre del jugador.
+     * @param cliente Instancia de SocketCliente para la comunicación.
+     */
     public ColocarNave2(String nombreJugador, SocketCliente cliente) {
         this.nombreJugador = nombreJugador;
         this.socketCliente = cliente;
@@ -63,6 +102,10 @@ public class ColocarNave2 extends javax.swing.JFrame {
         initComponents2();
     }
 
+    /**
+     * Método privado que inicializa componentes gráficos adicionales, configura
+     * imágenes, botones y layout para la ventana y tablero.
+     */
     private void initComponents2() {
         labelNomJugador.setText("Jugador: " + nombreJugador);
 
@@ -203,6 +246,15 @@ public class ColocarNave2 extends javax.swing.JFrame {
 
     }
 
+    /**
+     * Inicializa el tablero de juego con una cuadrícula de 10x10 botones. Cada
+     * botón representa una casilla del tablero, configurado con tamaño, color,
+     * icono y estilo visual para que parezca un tablero de juego.
+     *
+     * Solo inicializa el tablero si no ha sido inicializado antes (evita
+     * duplicar componentes). También crea la matriz de objetos Casilla que
+     * representan cada posición lógica.
+     */
     private void inicializarTablero() {
         // Solo inicializamos el tablero si no ha sido inicializado antes
         if (panelTablero.getComponentCount() == 0) {
@@ -231,6 +283,15 @@ public class ColocarNave2 extends javax.swing.JFrame {
         panelTablero.repaint();
     }
 
+    /**
+     * Método para seleccionar un barco (TipoNave.BARCO) para colocar en el
+     * tablero. Verifica que no se haya alcanzado el máximo de barcos
+     * permitidos. Si no hay ninguna nave seleccionada actualmente, construye la
+     * nave y la asigna.
+     *
+     * @param tipoSeleccionado El tipo de nave que se intenta seleccionar
+     * (BARCO).
+     */
     private void seleccionarBarco(TipoNave tipoSeleccionado) {
         // Verificar si el número máximo de barcos ha sido alcanzado
         if (contadorBarcos < MAX_BARCO) {
@@ -245,6 +306,14 @@ public class ColocarNave2 extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Método para seleccionar un portaaviones (TipoNave.PORTAAVIONES). Verifica
+     * que no se haya alcanzado el máximo permitido. Construye y asigna la nave
+     * si no hay ninguna seleccionada.
+     *
+     * @param tipoSeleccionado El tipo de nave que se intenta seleccionar
+     * (PORTAAVIONES).
+     */
     private void seleccionarPortaaviones(TipoNave tipoSeleccionado) {
         // Verificar si el número máximo de portaaviones ha sido alcanzado
         if (contadorPortaaviones < MAX_PORTAAVIONES) {
@@ -259,6 +328,14 @@ public class ColocarNave2 extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Método para seleccionar un crucero (TipoNave.CRUCERO). Verifica que no se
+     * haya alcanzado el máximo permitido. Construye y asigna la nave si no hay
+     * ninguna seleccionada.
+     *
+     * @param tipoSeleccionado El tipo de nave que se intenta seleccionar
+     * (CRUCERO).
+     */
     private void seleccionarCruceros(TipoNave tipoSeleccionado) {
         // Verificar si el número máximo de portaaviones ha sido alcanzado
         if (contadorCruceros < MAX_CRUCEROS) {
@@ -273,6 +350,14 @@ public class ColocarNave2 extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Método para seleccionar un submarino. Verifica que no se haya alcanzado
+     * el máximo permitido. Construye y asigna la nave si no hay ninguna
+     * seleccionada.
+     *
+     * @param tipoSeleccionado El tipo de nave que se intenta seleccionar
+     * (SUBMARINO).
+     */
     private void seleccionarSubmarinos(TipoNave tipoSeleccionado) {
         // Verificar si el número máximo de portaaviones ha sido alcanzado
         if (contadorSubmarinos < MAX_SUBMARINOS) {
@@ -869,7 +954,15 @@ public class ColocarNave2 extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
+/**
+     * Acción que se ejecuta al presionar el botón "Ready". Verifica que el
+     * tablero esté correctamente configurado, envía un mensaje "READY" al
+     * servidor, espera permiso para enviar el tablero, envía las coordenadas
+     * ocupadas en formato JSON, y gestiona la confirmación y el inicio del
+     * juego.
+     *
+     * @param evt Evento generado por la acción del botón.
+     */
     private void btnReadyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReadyActionPerformed
         if (socketCliente == null) {
             socketCliente = new SocketCliente();  // Inicializar si aún no lo está
@@ -956,11 +1049,24 @@ public class ColocarNave2 extends javax.swing.JFrame {
             System.out.println("No se pudo conectar al servidor.");
         }
     }//GEN-LAST:event_btnReadyActionPerformed
-
+    /**
+     * Acción que se ejecuta al presionar el botón Reiniciar Tablero. Reinicia
+     * el estado del tablero a su configuración inicial, limpiando las casillas
+     * ocupadas y permitiendo volver a colocar las naves.
+     *
+     * @param evt Evento generado por la acción del botón.
+     */
     private void btnReiniciarTableroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReiniciarTableroActionPerformed
         reiniciarTablero();
     }//GEN-LAST:event_btnReiniciarTableroActionPerformed
-
+    /**
+     * Acción que se ejecuta al soltar el botón del mouse sobre el botón
+     * submarino de 4 casillas. Intenta colocar un submarino horizontalmente en
+     * el tablero, verificando que haya espacio libre para las 4 casillas y
+     * actualizando el estado visual y lógico del tablero.
+     *
+     * @param evt Evento generado por la acción del mouse (soltar botón).
+     */
     private void btnSubmarino4MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino4MouseReleased
         if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.SUBMARINO) {
             Point puntoEnTablero = SwingUtilities.convertPoint(btnSubmarino4, evt.getPoint(), panelTablero);
@@ -1018,7 +1124,14 @@ public class ColocarNave2 extends javax.swing.JFrame {
             System.out.println("No se ha seleccionado el Crucero para colocar.");
         }
     }//GEN-LAST:event_btnSubmarino4MouseReleased
-
+    /**
+     * Se ejecuta al presionar el botón del submarino de 4 casillas. Selecciona
+     * el tipo de nave SUBMARINO, carga la imagen asociada, crea una etiqueta
+     * que seguirá el cursor para el arrastre, y la agrega a la capa superior
+     * del panel para arrastrarla visualmente.
+     *
+     * @param evt Evento generado por el mouse al presionar el botón.
+     */
     private void btnSubmarino4MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino4MousePressed
         seleccionarSubmarinos(TipoNave.SUBMARINO);
 
@@ -1032,11 +1145,26 @@ public class ColocarNave2 extends javax.swing.JFrame {
         // Agregar al panel principal
         this.getLayeredPane().add(btnSubmarino4, JLayeredPane.DRAG_LAYER);
     }//GEN-LAST:event_btnSubmarino4MousePressed
-
+    /**
+     * Se ejecuta mientras se arrastra el mouse con el botón del submarino de 4
+     * casillas presionado. Actualiza la posición de la imagen que sigue el
+     * cursor.
+     *
+     * @param evt Evento generado por el movimiento del mouse mientras se
+     * arrastra.
+     */
     private void btnSubmarino4MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino4MouseDragged
         barcoMouseDragged(evt, btnSubmarino4);
     }//GEN-LAST:event_btnSubmarino4MouseDragged
-
+    /**
+     * Se ejecuta al soltar el botón del mouse sobre el submarino de 3 casillas.
+     * Intenta colocar el submarino en el tablero verificando espacio y casillas
+     * ocupadas, actualiza la visualización y estado lógico del tablero,
+     * incrementa el contador y elimina el botón del panel si la colocación fue
+     * exitosa.
+     *
+     * @param evt Evento generado por el mouse al soltar el botón.
+     */
     private void btnSubmarino3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino3MouseReleased
         if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.SUBMARINO) {
             Point puntoEnTablero = SwingUtilities.convertPoint(btnSubmarino3, evt.getPoint(), panelTablero);
@@ -1094,7 +1222,13 @@ public class ColocarNave2 extends javax.swing.JFrame {
             System.out.println("No se ha seleccionado el Crucero para colocar.");
         }
     }//GEN-LAST:event_btnSubmarino3MouseReleased
-
+    /**
+     * Se ejecuta al presionar el botón del submarino de 3 casillas. Selecciona
+     * el tipo de nave SUBMARINO, carga la imagen asociada, crea una etiqueta
+     * para el arrastre y la agrega al panel en la capa de drag.
+     *
+     * @param evt Evento generado por el mouse al presionar el botón.
+     */
     private void btnSubmarino3MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino3MousePressed
         seleccionarSubmarinos(TipoNave.SUBMARINO);
 
@@ -1108,11 +1242,26 @@ public class ColocarNave2 extends javax.swing.JFrame {
         // Agregar al panel principal
         this.getLayeredPane().add(btnSubmarino3, JLayeredPane.DRAG_LAYER);
     }//GEN-LAST:event_btnSubmarino3MousePressed
-
+    /**
+     * Se ejecuta mientras se arrastra el mouse con el botón del submarino de 3
+     * casillas presionado. Actualiza la posición de la imagen que sigue el
+     * cursor.
+     *
+     * @param evt Evento generado por el movimiento del mouse mientras se
+     * arrastra.
+     */
     private void btnSubmarino3MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino3MouseDragged
         barcoMouseDragged(evt, btnSubmarino3);
     }//GEN-LAST:event_btnSubmarino3MouseDragged
-
+    /**
+     * Se ejecuta al soltar el botón del mouse sobre el submarino de 2 casillas.
+     * Intenta colocar el submarino en el tablero verificando espacio y casillas
+     * ocupadas, actualiza la visualización y estado lógico del tablero,
+     * incrementa el contador y elimina el botón del panel si la colocación fue
+     * exitosa.
+     *
+     * @param evt Evento generado por el mouse al soltar el botón.
+     */
     private void btnSubmarino2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino2MouseReleased
         if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.SUBMARINO) {
             Point puntoEnTablero = SwingUtilities.convertPoint(btnSubmarino2, evt.getPoint(), panelTablero);
@@ -1170,6 +1319,7 @@ public class ColocarNave2 extends javax.swing.JFrame {
             System.out.println("No se ha seleccionado el Crucero para colocar.");
         }
     }//GEN-LAST:event_btnSubmarino2MouseReleased
+// Evento cuando se presiona el botón del submarino 2
 
     private void btnSubmarino2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino2MousePressed
         seleccionarSubmarinos(TipoNave.SUBMARINO);
@@ -1184,10 +1334,12 @@ public class ColocarNave2 extends javax.swing.JFrame {
         // Agregar al panel principal
         this.getLayeredPane().add(btnSubmarino2, JLayeredPane.DRAG_LAYER);
     }//GEN-LAST:event_btnSubmarino2MousePressed
+// Evento cuando se arrastra el botón submarino 2
 
     private void btnSubmarino2MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino2MouseDragged
         barcoMouseDragged(evt, btnSubmarino2);
     }//GEN-LAST:event_btnSubmarino2MouseDragged
+// Evento cuando se suelta el botón submarino 1 para colocar la nave en el tablero
 
     private void btnSubmarino1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino1MouseReleased
         if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.SUBMARINO) {
@@ -1245,6 +1397,7 @@ public class ColocarNave2 extends javax.swing.JFrame {
             System.out.println("No se ha seleccionado el Crucero para colocar.");
         }
     }//GEN-LAST:event_btnSubmarino1MouseReleased
+// Evento cuando se presiona el botón submarino 1 
 
     private void btnSubmarino1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino1MousePressed
         seleccionarSubmarinos(TipoNave.SUBMARINO);
@@ -1259,6 +1412,7 @@ public class ColocarNave2 extends javax.swing.JFrame {
         // Agregar al panel principal
         this.getLayeredPane().add(btnSubmarino1, JLayeredPane.DRAG_LAYER);
     }//GEN-LAST:event_btnSubmarino1MousePressed
+// Evento para arrastrar el botón submarino 1
 
     private void btnSubmarino1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino1MouseDragged
         barcoMouseDragged(evt, btnSubmarino1);
@@ -1267,6 +1421,7 @@ public class ColocarNave2 extends javax.swing.JFrame {
     private void btnCrucero1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrucero1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnCrucero1ActionPerformed
+// Evento cuando se suelta el botón crucero 1 para colocar en tablero 
 
     private void btnCrucero1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCrucero1MouseReleased
         if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.CRUCERO) {
@@ -1324,7 +1479,13 @@ public class ColocarNave2 extends javax.swing.JFrame {
             System.out.println("No se ha seleccionado el Crucero para colocar.");
         }
     }//GEN-LAST:event_btnCrucero1MouseReleased
-
+    /**
+     * Evento que se dispara cuando se presiona el botón del crucero 1.
+     * Selecciona el tipo de nave CRUCERO, carga la imagen correspondiente y
+     * crea una etiqueta que seguirá el cursor mientras se arrastra la nave.
+     *
+     * @param evt Evento del mouse presionado
+     */
     private void btnCrucero1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCrucero1MousePressed
         seleccionarSubmarinos(TipoNave.CRUCERO);
 
@@ -1338,11 +1499,23 @@ public class ColocarNave2 extends javax.swing.JFrame {
         // Agregar al panel principal
         this.getLayeredPane().add(btnCrucero1, JLayeredPane.DRAG_LAYER);
     }//GEN-LAST:event_btnCrucero1MousePressed
-
+    /**
+     * Evento que se dispara al arrastrar el botón del crucero 1. Actualiza la
+     * posición de la nave mientras se arrastra.
+     *
+     * @param evt Evento del mouse arrastrado
+     */
     private void btnCrucero1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCrucero1MouseDragged
         barcoMouseDragged(evt, btnCrucero1);
     }//GEN-LAST:event_btnCrucero1MouseDragged
-
+    /**
+     * Evento que se dispara cuando se suelta el botón del crucero 2. Verifica
+     * si hay espacio disponible para colocar la nave en el tablero, actualiza
+     * las casillas ocupadas, cambia el color de las casillas y elimina el botón
+     * de la interfaz para reflejar que el crucero ha sido colocado.
+     *
+     * @param evt Evento del mouse liberado
+     */
     private void btnCrucero2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCrucero2MouseReleased
         if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.CRUCERO) {
             Point puntoEnTablero = SwingUtilities.convertPoint(btnCrucero2, evt.getPoint(), panelTablero);
@@ -1399,7 +1572,13 @@ public class ColocarNave2 extends javax.swing.JFrame {
             System.out.println("No se ha seleccionado el Crucero para colocar.");
         }
     }//GEN-LAST:event_btnCrucero2MouseReleased
-
+    /**
+     * Evento que se dispara al presionar el botón del crucero 2. Similar al
+     * crucero 1, selecciona la nave, carga la imagen y crea la etiqueta para el
+     * arrastre.
+     *
+     * @param evt Evento del mouse presionado
+     */
     private void btnCrucero2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCrucero2MousePressed
         seleccionarSubmarinos(TipoNave.CRUCERO);
 
@@ -1413,11 +1592,26 @@ public class ColocarNave2 extends javax.swing.JFrame {
         // Agregar al panel principal
         this.getLayeredPane().add(btnCrucero2, JLayeredPane.DRAG_LAYER);
     }//GEN-LAST:event_btnCrucero2MousePressed
-
+    /**
+     * Evento que se dispara al arrastrar el botón del crucero 2. Actualiza la
+     * posición de la nave mientras se arrastra.
+     *
+     * @param evt Evento del mouse arrastrado
+     */
     private void btnCrucero2MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCrucero2MouseDragged
         barcoMouseDragged(evt, btnCrucero2);
     }//GEN-LAST:event_btnCrucero2MouseDragged
-
+    /**
+     * Evento que se ejecuta al soltar el botón del mouse sobre el botón barco3.
+     *
+     * Este método verifica si hay una nave seleccionada para colocar en el
+     * tablero. Convierte la posición del cursor en el panel tablero a
+     * coordenadas del tablero lógico. Si la casilla está libre, agrega la
+     * casilla a la nave, marca la casilla como ocupada, actualiza el color en
+     * la interfaz, incrementa el contador de barcos y remueve el botón de la
+     * nave para que desaparezca del panel de barcos. Si la casilla está ocupada
+     * o fuera del tablero, regresa el barco a su posición inicial.
+     */
     private void barco3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_barco3MouseReleased
         if (naveSeleccionada != null) {
             Point puntoEnTablero = SwingUtilities.convertPoint(barco3, evt.getPoint(), panelTablero);
@@ -1465,7 +1659,12 @@ public class ColocarNave2 extends javax.swing.JFrame {
             System.out.println("No se ha seleccionado un barco para colocar.");
         }
     }//GEN-LAST:event_barco3MouseReleased
-
+    /**
+     * Evento que se ejecuta al presionar el botón del mouse sobre barco3.
+     *
+     * Selecciona la nave tipo BARCO para colocar y prepara la imagen que se
+     * arrastrará siguiendo al cursor durante la operación de drag and drop.
+     */
     private void barco3MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_barco3MousePressed
         seleccionarSubmarinos(TipoNave.BARCO);
 
@@ -1480,10 +1679,19 @@ public class ColocarNave2 extends javax.swing.JFrame {
         this.getLayeredPane().add(barco3, JLayeredPane.DRAG_LAYER);
     }//GEN-LAST:event_barco3MousePressed
 
+    /**
+     * Evento que se ejecuta mientras se arrastra el mouse con el botón barco3
+     * presionado.
+     *
+     * Maneja el movimiento visual del botón barco3 mientras se arrastra.
+     */
     private void barco3MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_barco3MouseDragged
         barcoMouseDragged(evt, barco3);
     }//GEN-LAST:event_barco3MouseDragged
-
+    /**
+     * Evento que se ejecuta al soltar el botón del mouse sobre el botón barco2.
+     * Funciona igual que barco3MouseReleased, pero para el botón barco2.
+     */
     private void barco2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_barco2MouseReleased
         if (naveSeleccionada != null) {
             Point puntoEnTablero = SwingUtilities.convertPoint(barco2, evt.getPoint(), panelTablero);
@@ -1532,7 +1740,10 @@ public class ColocarNave2 extends javax.swing.JFrame {
             System.out.println("No se ha seleccionado un barco para colocar.");
         }
     }//GEN-LAST:event_barco2MouseReleased
-
+    /**
+     * Evento que se ejecuta al presionar el botón del mouse sobre barco2.
+     * Similar a barco3MousePressed, pero para barco2.
+     */
     private void barco2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_barco2MousePressed
         seleccionarSubmarinos(TipoNave.BARCO);
 
@@ -1546,11 +1757,24 @@ public class ColocarNave2 extends javax.swing.JFrame {
         // Agregar al panel principal
         this.getLayeredPane().add(barco2, JLayeredPane.DRAG_LAYER);
     }//GEN-LAST:event_barco2MousePressed
-
+    /**
+     * Evento que se ejecuta mientras se arrastra el mouse con el botón barco2
+     * presionado. Similar a barco3MouseDragged, pero para barco2.
+     */
     private void barco2MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_barco2MouseDragged
         barcoMouseDragged(evt, barco2);
     }//GEN-LAST:event_barco2MouseDragged
-
+    /**
+     * Evento que se ejecuta al soltar el botón del mouse sobre el botón
+     * btnPortaaviones2.
+     *
+     * Verifica que se haya seleccionado el portaaviones, comprueba si hay
+     * espacio suficiente en el tablero para colocarlo horizontalmente (4
+     * casillas) sin pisar casillas ocupadas. Si el espacio está disponible,
+     * coloca la nave, colorea las casillas, incrementa el contador y remueve el
+     * botón del panel de barcos. Si no, regresa el botón a su posición inicial
+     * y muestra mensaje.
+     */
     private void btnPortaaviones2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPortaaviones2MouseReleased
         if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.PORTAAVIONES) {
             Point puntoEnTablero = SwingUtilities.convertPoint(btnPortaaviones2, evt.getPoint(), panelTablero);
@@ -1608,7 +1832,11 @@ public class ColocarNave2 extends javax.swing.JFrame {
             System.out.println("No se ha seleccionado el portaaviones para colocar.");
         }
     }//GEN-LAST:event_btnPortaaviones2MouseReleased
-
+    /**
+     * Evento que se ejecuta al presionar el botón del mouse sobre
+     * btnPortaaviones2. Prepara la selección del portaaviones y la imagen para
+     * arrastrar.
+     */
     private void btnPortaaviones2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPortaaviones2MousePressed
         seleccionarSubmarinos(TipoNave.PORTAAVIONES);
 
@@ -1626,7 +1854,11 @@ public class ColocarNave2 extends javax.swing.JFrame {
     private void btnPortaaviones2MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPortaaviones2MouseDragged
 
     }//GEN-LAST:event_btnPortaaviones2MouseDragged
-
+    /**
+     * Evento que se ejecuta al soltar el botón del mouse sobre el botón
+     * btnPortaaviones. Funciona igual que btnPortaaviones2MouseReleased, pero
+     * para btnPortaaviones.
+     */
     private void btnPortaavionesMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPortaavionesMouseReleased
         if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.PORTAAVIONES) {
             Point puntoEnTablero = SwingUtilities.convertPoint(btnPortaaviones, evt.getPoint(), panelTablero);
@@ -1683,7 +1915,11 @@ public class ColocarNave2 extends javax.swing.JFrame {
             System.out.println("No se ha seleccionado el portaaviones para colocar.");
         }
     }//GEN-LAST:event_btnPortaavionesMouseReleased
-
+    /**
+     * Evento que se ejecuta al presionar el botón del mouse sobre
+     * btnPortaaviones. Prepara la selección del portaaviones y la imagen para
+     * arrastrar.
+     */
     private void btnPortaavionesMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPortaavionesMousePressed
         seleccionarSubmarinos(TipoNave.PORTAAVIONES);
 
@@ -1697,11 +1933,30 @@ public class ColocarNave2 extends javax.swing.JFrame {
         // Agregar al panel principal
         this.getLayeredPane().add(btnPortaaviones, JLayeredPane.DRAG_LAYER);
     }//GEN-LAST:event_btnPortaavionesMousePressed
-
+    /**
+     * Evento que se ejecuta mientras se arrastra el mouse con el botón
+     * btnPortaaviones presionado. Maneja el movimiento visual del botón durante
+     * el arrastre.
+     */
     private void btnPortaavionesMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPortaavionesMouseDragged
         barcoMouseDragged(evt, btnPortaaviones);
     }//GEN-LAST:event_btnPortaavionesMouseDragged
-
+    /**
+     * Evento que se ejecuta al soltar el botón del mouse sobre el botón barco1.
+     *
+     * Este método maneja la colocación del barco en el tablero cuando el
+     * usuario lo suelta. - Convierte la posición del cursor en coordenadas del
+     * tablero lógico. - Verifica que la posición esté dentro del tablero. -
+     * Verifica si la casilla está ocupada: - Si está ocupada, regresa el barco
+     * a su posición inicial y muestra un mensaje. - Si no está ocupada, agrega
+     * la casilla a la nave, marca la casilla como ocupada, cambia el color del
+     * botón correspondiente para reflejar la ocupación, incrementa el contador
+     * de barcos si corresponde, y remueve el botón del barco para que
+     * desaparezca visualmente. - Si no hay ninguna nave seleccionada, muestra
+     * un mensaje indicándolo.
+     *
+     * @param evt Evento del mouse que contiene la posición del cursor.
+     */
     private void barco1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_barco1MouseReleased
         if (naveSeleccionada != null) {
             Point puntoEnTablero = SwingUtilities.convertPoint(barco1, evt.getPoint(), panelTablero);
@@ -1749,7 +2004,16 @@ public class ColocarNave2 extends javax.swing.JFrame {
             System.out.println("No se ha seleccionado un barco para colocar.");
         }
     }//GEN-LAST:event_barco1MouseReleased
-
+    /**
+     * Evento que se ejecuta al presionar el botón del mouse sobre el botón
+     * barco1.
+     *
+     * Este método selecciona el barco tipo BARCO para colocar y prepara la
+     * imagen que seguirá el cursor durante el arrastre (drag and drop). Agrega
+     * el botón barco1 a la capa de drag para que se pueda mover libremente.
+     *
+     * @param evt Evento del mouse.
+     */
     private void barco1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_barco1MousePressed
         seleccionarSubmarinos(TipoNave.BARCO);
 
@@ -1763,11 +2027,25 @@ public class ColocarNave2 extends javax.swing.JFrame {
         // Agregar al panel principal
         this.getLayeredPane().add(barco1, JLayeredPane.DRAG_LAYER);
     }//GEN-LAST:event_barco1MousePressed
-
+    /**
+     * Evento que se ejecuta mientras se arrastra el botón barco1 con el mouse
+     * presionado.
+     *
+     * Actualiza la posición del botón barco1 para seguir el cursor durante el
+     * drag.
+     *
+     * @param evt Evento del mouse.
+     */
     private void barco1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_barco1MouseDragged
         barcoMouseDragged(evt, barco1);
     }//GEN-LAST:event_barco1MouseDragged
-
+    /**
+     * Verifica si el tablero está listo, es decir, si todas las casillas
+     * esperadas están ocupadas.
+     *
+     * @return true si el número de casillas ocupadas es igual al total
+     * esperado, false en otro caso.
+     */
     private boolean tableroListo() {
         int ocupadas = 0;
 
@@ -1784,6 +2062,13 @@ public class ColocarNave2 extends javax.swing.JFrame {
         return ocupadas == TOTAL_CASILLAS_ESPERADAS;
     }
 
+    /**
+     * Reinicia el tablero y los contadores, restableciendo todo a su estado
+     * inicial. - Limpia el panel del tablero y elimina todas las casillas
+     * ocupadas. - Restablece el estado de cada casilla del tablero. - Reinstala
+     * los botones y paneles de las naves. - Reinicia los contadores de barcos,
+     * portaaviones, cruceros y submarinos. - Actualiza la interfaz gráfica.
+     */
     private void barcoMouseDragged(java.awt.event.MouseEvent evt, JButton barco) {
         Point puntoPantalla = evt.getLocationOnScreen();
         Point puntoVentana = this.getLocationOnScreen();
@@ -1822,6 +2107,12 @@ public class ColocarNave2 extends javax.swing.JFrame {
         panelBarcos.repaint();
     }
 
+    /**
+     * Inicializa los botones para las naves en el panel de barcos. - Ajusta la
+     * posición y tamaño de cada botón de nave. - Añade cada botón al panel
+     * correspondiente. - Actualiza la interfaz gráfica para reflejar los
+     * cambios.
+     */
     private void inicializarNaves() {
         // Crear los botones de los barcos y asignarles su posición
 //    barco1.setText("Barco 1"); // O asigna el nombre correspondiente

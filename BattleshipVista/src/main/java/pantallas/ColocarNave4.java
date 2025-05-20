@@ -38,19 +38,42 @@ import javax.swing.SwingUtilities;
  */
 public class ColocarNave4 extends javax.swing.JFrame {
 
+    /**
+     * Matriz que representa el tablero del jugador con casillas.
+     */
     private Casilla[][] tablero;
+    /**
+     * Matriz que representa el tablero del enemigo con casillas.
+     */
     private Casilla[][] tableroEnemigo;
+    /**
+     * Lista de puntos con coordenadas ocupadas en el tablero del jugador.
+     */
     private List<Point> coordenadasOcupadas = new ArrayList<>();
+    /**
+     * Lista de puntos con coordenadas ocupadas en el tablero enemigo.
+     */
     private List<Point> coordenadasOcupadasEnemigo = new ArrayList<>();
 
-
+    /**
+     * Conjunto que almacena las coordenadas ya atacadas para evitar ataques
+     * duplicados.
+     */
     private Set<Point> coordenadasAtacadas = new HashSet<>();
 
-
+    /**
+     * Cliente socket para la comunicación con el servidor del juego.
+     */
     private SocketCliente socketCliente;
 
-
-    // Constructor que recibe las coordenadas
+    /**
+     * Constructor que inicializa la ventana, recibe las coordenadas ocupadas
+     * del jugador y el cliente socket para comunicación.
+     *
+     * @param coordenadas String con coordenadas ocupadas por las naves del
+     * jugador.
+     * @param socketCliente Cliente para comunicación con el servidor.
+     */
     public ColocarNave4(String coordenadas, SocketCliente socketCliente) {
 
         this.socketCliente = socketCliente;
@@ -75,7 +98,6 @@ public class ColocarNave4 extends javax.swing.JFrame {
         inicializarTableroEnemigo();
         marcarCasillasOcupadas();
 
-        
         try {
             recibirCoordenadasServidor();  // Este método debería llenar coordenadasOcupadasEnemigo
         } catch (IOException e) {
@@ -101,11 +123,9 @@ public class ColocarNave4 extends javax.swing.JFrame {
                     return;
                 }
 
- 
                 coordenadasAtacadas.add(ataque);
 
                 realizarAtaque(x, y);
-
 
                 JButton boton = (JButton) panelTableroEnemigo.getComponent(y * 10 + x);
                 boton.setEnabled(false);
@@ -121,6 +141,14 @@ public class ColocarNave4 extends javax.swing.JFrame {
 
     }
 
+    /**
+     * Método para atacar una casilla en el tablero enemigo. Verifica si la
+     * casilla tiene una nave y si no ha sido impactada.
+     *
+     * @param x Coordenada X del ataque.
+     * @param y Coordenada Y del ataque.
+     * @return true si el ataque impactó una nave, false en caso contrario.
+     */
     private boolean atacar(int x, int y) {
         Casilla casilla = tableroEnemigo[x][y];
         if (casilla != null && casilla.tieneNave() && !casilla.estaImpactada()) {
@@ -130,6 +158,11 @@ public class ColocarNave4 extends javax.swing.JFrame {
         return false;
     }
 
+    /**
+     * Inicializa el tablero propio con botones para cada casilla. Solo se
+     * inicializa si el panel está vacío para evitar duplicados. Cada botón
+     * representa una casilla de 40x40 píxeles con imagen de fondo.
+     */
     private void inicializarTablero() {
         // Solo inicializamos el tablero si no ha sido inicializado antes
         if (panelTablero.getComponentCount() == 0) {
@@ -158,6 +191,11 @@ public class ColocarNave4 extends javax.swing.JFrame {
         panelTablero.repaint();
     }
 
+    /**
+     * Inicializa el tablero enemigo con botones para cada casilla. Similar al
+     * tablero propio, pero para representar el área del oponente. Solo se
+     * inicializa si el panel está vacío.
+     */
     private void inicializarTableroEnemigo() {
         if (panelTableroEnemigo.getComponentCount() == 0) {
             for (int i = 0; i < 10; i++) {
@@ -175,7 +213,6 @@ public class ColocarNave4 extends javax.swing.JFrame {
                     Image imagenEscalada = icono.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
                     casillaButtonEnemigo.setIcon(new ImageIcon(imagenEscalada));
 
-
                     panelTableroEnemigo.add(casillaButtonEnemigo);
                     tableroEnemigo[i][j] = new Casilla(i, j);
                 }
@@ -185,6 +222,14 @@ public class ColocarNave4 extends javax.swing.JFrame {
         panelTableroEnemigo.repaint();
     }
 
+    /**
+     * Actualiza el color de la casilla en el tablero enemigo para mostrar el
+     * resultado de un ataque recibido.
+     *
+     * @param x La coordenada X del ataque.
+     * @param y La coordenada Y del ataque.
+     * @param acierto true si el ataque fue un impacto, false si fue agua.
+     */
     public void mostrarResultadoAtaqueEnemigo(int x, int y, boolean acierto) {
         JButton boton = (JButton) panelTableroEnemigo.getComponent(y * 10 + x);
         if (acierto) {
@@ -194,11 +239,25 @@ public class ColocarNave4 extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Envía un mensaje de ataque al servidor con las coordenadas indicadas.
+     *
+     * @param x La coordenada X a atacar.
+     * @param y La coordenada Y a atacar.
+     */
     private void realizarAtaque(int x, int y) {
         Mensaje ataque = new Mensaje("ataque", x + "," + y);
         socketCliente.enviarMensaje(ataque);
     }
 
+    /**
+     * Procesa un ataque recibido del enemigo, marcando la casilla
+     * correspondiente como impactada o agua en el tablero propio.
+     *
+     * @param x La coordenada X atacada.
+     * @param y La coordenada Y atacada.
+     * @param esAcierto true si el ataque impactó una nave, false si fue agua.
+     */
     public void recibirAtaque(int x, int y, boolean esAcierto) {
         Casilla casilla = tablero[x][y];
         casilla.estaImpactada();
@@ -211,7 +270,11 @@ public class ColocarNave4 extends javax.swing.JFrame {
         }
     }
 
-
+    /**
+     * Inicia un hilo que escucha continuamente mensajes desde el servidor,
+     * procesándolos según su tipo. Se ejecuta en segundo plano para no bloquear
+     * la interfaz gráfica.
+     */
     public void iniciarEscuchaServidor() {
         new Thread(() -> {
             while (true) {
@@ -229,12 +292,25 @@ public class ColocarNave4 extends javax.swing.JFrame {
         }).start(); // Inicia el hilo
     }
 
+    /**
+     * Procesa un mensaje recibido, actualizando la interfaz y lógica según el
+     * tipo: - resultado_ataque: muestra impacto o agua en tablero enemigo. -
+     * ataque_recibido: actualiza el tablero propio y responde con resultado. -
+     * fin_juego: muestra mensaje de fin de juego.
+     *
+     * @param mensaje El mensaje recibido desde el servidor o cliente.
+     */
     private void procesarMensajeAsync(Mensaje mensaje) {
         new Thread(() -> {
-            procesarMensaje(mensaje); 
+            procesarMensaje(mensaje);
         }).start();
     }
 
+    /**
+     * Procesa un mensaje en un hilo aparte para no bloquear la interfaz.
+     *
+     * @param mensaje El mensaje a procesar.
+     */
     private void procesarMensaje(Mensaje mensaje) {
         switch (mensaje.getTipo()) {
             case "resultado_ataque": {
@@ -250,13 +326,12 @@ public class ColocarNave4 extends javax.swing.JFrame {
                     boton.setBackground(acierto ? Color.RED : Color.BLUE);
 
                     // Sonido de impacto o agua
-                if (acierto) {
-                   ReproductorSonido.reproducirSonido("/sounds/impacto.wav");
-                } else {
-                  ReproductorSonido.reproducirSonido("/sounds/agua.wav");
-                }
-                    
-                    
+                    if (acierto) {
+                        ReproductorSonido.reproducirSonido("/sounds/impacto.wav");
+                    } else {
+                        ReproductorSonido.reproducirSonido("/sounds/agua.wav");
+                    }
+
                     // Mensaje emergente para informar resultado del ataque
                     JOptionPane.showMessageDialog(this, acierto ? "impacto" : "agua");
                 });
@@ -298,23 +373,32 @@ public class ColocarNave4 extends javax.swing.JFrame {
             }
         }
     }
-    
-    
-  private void mostrarPantallaFinal(String resultado) {
-    if (resultado.contains("Has ganado!")) {
-       VentanaGanaste victoria = new VentanaGanaste(this, resultado);
-victoria.setVisible(true);
-    } else if (resultado.contains("Has perdido.")) {
-        VentanaPerdiste derrota = new VentanaPerdiste(this,resultado);
-        derrota.setModal(true); // Igual aquí
-        derrota.setVisible(true);
+
+    /**
+     * Muestra la pantalla final según el resultado del juego. Si el resultado
+     * contiene que has ganado, se abre la ventana de victoria. Si contiene "Has
+     * perdido.", se abre la ventana de derrota.
+     *
+     * @param resultado Texto con el resultado del juego.
+     */
+    private void mostrarPantallaFinal(String resultado) {
+        if (resultado.contains("Has ganado!")) {
+            VentanaGanaste victoria = new VentanaGanaste(this, resultado);
+            victoria.setVisible(true);
+        } else if (resultado.contains("Has perdido.")) {
+            VentanaPerdiste derrota = new VentanaPerdiste(this, resultado);
+            derrota.setModal(true); // Igual aquí
+            derrota.setVisible(true);
+        }
     }
-}
 
-    
-    
-
-    // Método para recibir las coordenadas del enemigo
+    /**
+     * Recibe las coordenadas del enemigo en formato String, las parsea a una
+     * lista de puntos y marca las casillas correspondientes en el tablero
+     * enemigo.
+     *
+     * @param coordenadasEnemigo Coordenadas del enemigo en formato String.
+     */
     public void recibirCoordenadasEnemigo(String coordenadasEnemigo) {
         // Convertir las coordenadas recibidas del enemigo en puntos
         coordenadasOcupadasEnemigo = parseCoordenadas(coordenadasEnemigo);
@@ -327,7 +411,6 @@ victoria.setVisible(true);
             System.out.println("Coordenada ocupada en: (" + coord.x + ", " + coord.y + ")");
         }
 
-        
         // Marcar las casillas correspondientes en el tablero enemigo
         for (Point coord : coordenadasOcupadasEnemigo) {
             int x = coord.x;
@@ -339,13 +422,17 @@ victoria.setVisible(true);
             // Obtener el botón correspondiente del tablero enemigo
             JButton casillaButtonEnemigo = (JButton) panelTableroEnemigo.getComponent(y * 10 + x);
 
-
             casillaButtonEnemigo.revalidate();
             casillaButtonEnemigo.repaint();  // Asegura que la interfaz se actualice
         }
     }
 
-    // Método para recibir las coordenadas del servidor
+    /**
+     * Espera y recibe las coordenadas del servidor para actualizar el tablero
+     * enemigo.
+     *
+     * @throws IOException En caso de errores en la comunicación por socket.
+     */
     public void recibirCoordenadasServidor() throws IOException {
         // Esperar coordenadas del servidor para el tablero enemigo
         Mensaje respuestaEnemigo = socketCliente.recibirMensaje();
@@ -355,6 +442,11 @@ victoria.setVisible(true);
         }
     }
 
+    /**
+     * Marca las casillas ocupadas en el tablero propio con un color específico.
+     * Cambia el fondo de los botones correspondientes a verde para indicar
+     * ocupación.
+     */
     private void marcarCasillasOcupadas() {
         for (Point coord : coordenadasOcupadas) {
             // Coordenadas ocupadas
@@ -370,7 +462,15 @@ victoria.setVisible(true);
         }
     }
 
-    // Método para convertir las coordenadas en una lista de puntos
+    /**
+     * Convierte una cadena de coordenadas en formato específico a una lista de
+     * objetos Point. Valida que las coordenadas estén dentro del rango
+     * permitido (0 a 9).
+     *
+     * @param coordenadas Cadena con coordenadas en formato parecido a:
+     * ["x,y",...]
+     * @return Lista de puntos con las coordenadas parseadas.
+     */
     private List<Point> parseCoordenadas(String coordenadas) {
         List<Point> puntos = new ArrayList<>();
 

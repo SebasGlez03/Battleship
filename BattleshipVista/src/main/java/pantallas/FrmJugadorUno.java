@@ -14,10 +14,13 @@ import javax.swing.JOptionPane;
  * @author nomar
  */
 public class FrmJugadorUno extends javax.swing.JFrame {
+    // Cliente socket para comunicación con el servidor
 
     private SocketCliente cliente;
-    
-    
+  /**
+     * Constructor de la clase FrmJugadorUno.
+     * Inicializa los componentes gráficos de la ventana.
+     */
     /**
      * Creates new form FrmJugadorUno
      */
@@ -71,38 +74,48 @@ public class FrmJugadorUno extends javax.swing.JFrame {
     private void campoTextoUsuarioUnoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoTextoUsuarioUnoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_campoTextoUsuarioUnoActionPerformed
-
+ /**
+     * Evento que se ejecuta al hacer clic en el botón "Listo".
+     * 
+     * - Valida que el campo de texto no esté vacío.
+     * - Crea la conexión con el servidor (localhost:12345).
+     * - Envía el nombre del jugador 1 al servidor en formato JSON.
+     * - Recibe el nombre del jugador 2.
+     * - Muestra mensaje de conexión exitosa.
+     * - Abre la ventana para colocar las naves (ColocarNave2).
+     * - Cierra esta ventana.
+     * 
+     * En caso de error muestra mensaje y re-habilita el botón.
+     */
     private void btnListoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnListoMouseClicked
         // TODO add your handling code here:
         try {
-        btnListo.setEnabled(false);
-        cliente = new SocketCliente();
-        cliente.conectar("127.0.0.1", 12345);
+            btnListo.setEnabled(false);
+            cliente = new SocketCliente();
+            cliente.conectar("127.0.0.1", 12345);
 
-        String nombreJugador1 = campoTextoUsuarioUno.getText().trim();
-        if (nombreJugador1.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingresa tu nombre.");
-            btnListo.setEnabled(true);
-            return;
-        }
+            String nombreJugador1 = campoTextoUsuarioUno.getText().trim();
+            if (nombreJugador1.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Ingresa tu nombre.");
+                btnListo.setEnabled(true);
+                return;
+            }
 
-        // Enviar el nombre del jugador 1 al servidor en un mensaje JSON
-        Mensaje mensajeNombre = new Mensaje("nombre", nombreJugador1);
-        cliente.enviarMensaje(mensajeNombre);
+            // Enviar el nombre del jugador 1 al servidor en un mensaje JSON
+            Mensaje mensajeNombre = new Mensaje("nombre", nombreJugador1);
+            cliente.enviarMensaje(mensajeNombre);
 
-        // Recibir el nombre del jugador 2 desde el servidor
-        Mensaje mensajeRecibido = cliente.recibirMensaje();
-        Object nombreRival = mensajeRecibido.getContenido().toString();
+            // Recibir el nombre del jugador 2 desde el servidor
+            Mensaje mensajeRecibido = cliente.recibirMensaje();
+            Object nombreRival = mensajeRecibido.getContenido().toString();
 
-        JOptionPane.showMessageDialog(this, "Conectado con: " + nombreRival);
+            JOptionPane.showMessageDialog(this, "Conectado con: " + nombreRival);
 
-        
-
-        // Abrir ventana para colocar las naves
-        ColocarNave2 ventana = new ColocarNave2(nombreJugador1, cliente);
-        ventana.setLocation(10, 250);
-        ventana.setVisible(true);
-        dispose();
+            // Abrir ventana para colocar las naves
+            ColocarNave2 ventana = new ColocarNave2(nombreJugador1, cliente);
+            ventana.setLocation(10, 250);
+            ventana.setVisible(true);
+            dispose();
 
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Error al conectar: " + e.getMessage());
@@ -111,9 +124,6 @@ public class FrmJugadorUno extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnListoMouseClicked
 
-    
-
-    
     /**
      * @param args the command line arguments
      */

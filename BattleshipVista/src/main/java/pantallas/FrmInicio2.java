@@ -15,8 +15,10 @@ import javax.swing.SwingUtilities;
  */
 public class FrmInicio2 extends javax.swing.JFrame {
 
+
     /**
-     * Creates new form FrmInicio
+     * Crea un nuevo formulario FrmInicio2 y llama a initComponents para
+     * inicializar todos los componentes gráficos.
      */
     public FrmInicio2() {
         initComponents();
@@ -72,7 +74,12 @@ public class FrmInicio2 extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
+/**
+     * Evento que se ejecuta al hacer clic en el botón de jugar.
+     * Abre la ventana FrmJugadorDos y cierra esta ventana.
+     * 
+     * @param evt Evento del mouse que dispara el método.
+     */
     private void btnPlayMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPlayMouseClicked
         // Inicia el servidor en un hilo separado
 
@@ -92,7 +99,12 @@ public class FrmInicio2 extends javax.swing.JFrame {
         // TODO add your handling code here:
         this.dispose();
     }//GEN-LAST:event_btnExitMouseClicked
-
+ /**
+     * Evento que se ejecuta al hacer clic en el botón de ajustes.
+     * Abre la ventana FrmAjustes y cierra esta ventana.
+     * 
+     * @param evt Evento del mouse que dispara el método.
+     */
     private void btnAjusteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAjusteMouseClicked
         // TODO add your handling code here:
         FrmAjustes frmAjustes = new FrmAjustes();

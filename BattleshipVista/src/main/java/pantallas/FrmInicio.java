@@ -13,6 +13,9 @@ import javax.swing.SwingUtilities;
  *
  * @author nomar
  */
+/**
+ * Constructor que inicializa los componentes gráficos de la ventana.
+ */
 public class FrmInicio extends javax.swing.JFrame {
 
     /**
@@ -72,7 +75,13 @@ public class FrmInicio extends javax.swing.JFrame {
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
+/**
+ * Método ejecutado al hacer clic en el botón "Play".
+ * Inicia el servidor en un hilo nuevo y abre la ventana de inicio de sesión
+ * para el jugador uno.
+ * 
+ * @param evt Evento de clic del mouse
+ */
     private void btnPlayMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPlayMouseClicked
         // Inicia el servidor en un hilo separado
 
@@ -96,12 +105,22 @@ public class FrmInicio extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_btnPlayMouseClicked
-
+/**
+ * Método ejecutado al hacer clic en el botón "Exit".
+ * Cierra la aplicación.
+ * 
+ * @param evt Evento de clic del mouse
+ */
     private void btnExitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnExitMouseClicked
         // TODO add your handling code here:
         this.dispose();
     }//GEN-LAST:event_btnExitMouseClicked
-
+/**
+ * Método ejecutado al hacer clic en el botón "Ajustes".
+ * Abre la ventana de configuración (FrmAjustes).
+ * 
+ * @param evt Evento de clic del mouse
+ */
     private void btnAjusteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAjusteMouseClicked
         // TODO add your handling code here:
         FrmAjustes frmAjustes = new FrmAjustes();
