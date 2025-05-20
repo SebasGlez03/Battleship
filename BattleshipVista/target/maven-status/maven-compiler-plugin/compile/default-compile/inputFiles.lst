@@ -1,17 +1,3 @@
-<<<<<<< Updated upstream
-C:\Users\Oley\Documents\GitHub\ProyectoDS\BaseDatos2024_2025\Battleship\BattleshipVista\src\main\java\main\Main.java
-C:\Users\Oley\Documents\GitHub\ProyectoDS\BaseDatos2024_2025\Battleship\BattleshipVista\src\main\java\pantallas\ColocarNave2.java
-C:\Users\Oley\Documents\GitHub\ProyectoDS\BaseDatos2024_2025\Battleship\BattleshipVista\src\main\java\pantallas\ColocarNave4.java
-C:\Users\Oley\Documents\GitHub\ProyectoDS\BaseDatos2024_2025\Battleship\BattleshipVista\src\main\java\pantallas\FrmAjustes.java
-C:\Users\Oley\Documents\GitHub\ProyectoDS\BaseDatos2024_2025\Battleship\BattleshipVista\src\main\java\pantallas\FrmInicio.java
-C:\Users\Oley\Documents\GitHub\ProyectoDS\BaseDatos2024_2025\Battleship\BattleshipVista\src\main\java\pantallas\FrmInicio2.java
-C:\Users\Oley\Documents\GitHub\ProyectoDS\BaseDatos2024_2025\Battleship\BattleshipVista\src\main\java\pantallas\FrmJugadorDos.java
-C:\Users\Oley\Documents\GitHub\ProyectoDS\BaseDatos2024_2025\Battleship\BattleshipVista\src\main\java\pantallas\FrmJugadorUno.java
-C:\Users\Oley\Documents\GitHub\ProyectoDS\BaseDatos2024_2025\Battleship\BattleshipVista\src\main\java\pantallas\VentanaGanaste.java
-C:\Users\Oley\Documents\GitHub\ProyectoDS\BaseDatos2024_2025\Battleship\BattleshipVista\src\main\java\pantallas\VentanaPerdiste.java
-C:\Users\Oley\Documents\GitHub\ProyectoDS\BaseDatos2024_2025\Battleship\BattleshipVista\src\main\java\Pruebas\pruebasonido.java
-C:\Users\Oley\Documents\GitHub\ProyectoDS\BaseDatos2024_2025\Battleship\BattleshipVista\src\main\java\Pruebas\ReproductorSonido.java
-=======
 C:\Users\Carlo\OneDrive\Documentos\TAREAS\ARQUITECTURA DE SOFTWARE\Battleship\BattleshipVista\src\main\java\pantallas\CrearTablero.java
 C:\Users\Carlo\OneDrive\Documentos\TAREAS\ARQUITECTURA DE SOFTWARE\Battleship\BattleshipVista\src\main\java\pantallas\Jugador1.java
 C:\Users\Carlo\OneDrive\Documentos\TAREAS\ARQUITECTURA DE SOFTWARE\Battleship\BattleshipVista\src\main\java\pantallas\Jugador2.java
@@ -21,4 +7,3 @@ C:\Users\Carlo\OneDrive\Documentos\TAREAS\ARQUITECTURA DE SOFTWARE\Battleship\Ba
 C:\Users\Carlo\OneDrive\Documentos\TAREAS\ARQUITECTURA DE SOFTWARE\Battleship\BattleshipVista\src\main\java\pantallas\VentanaGanar.java
 C:\Users\Carlo\OneDrive\Documentos\TAREAS\ARQUITECTURA DE SOFTWARE\Battleship\BattleshipVista\src\main\java\pantallas\VentanaPerder.java
 C:\Users\Carlo\OneDrive\Documentos\TAREAS\ARQUITECTURA DE SOFTWARE\Battleship\BattleshipVista\src\main\java\Sonido\ReproductorSonido.java
->>>>>>> Stashed changes

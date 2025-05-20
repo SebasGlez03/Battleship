@@ -13,14 +13,13 @@ import javax.swing.SwingUtilities;
  *
  * @author nomar
  */
-<<<<<<< Updated upstream:BattleshipVista/src/main/java/pantallas/FrmInicio.java
+
 /**
  * Constructor que inicializa los componentes gráficos de la ventana.
  */
-public class FrmInicio extends javax.swing.JFrame {
-=======
+
 public class Jugador1 extends javax.swing.JFrame {
->>>>>>> Stashed changes:BattleshipVista/src/main/java/pantallas/Jugador1.java
+
 
     /**
      * Creates new form FrmInicio

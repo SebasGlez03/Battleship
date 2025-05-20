@@ -13,12 +13,9 @@ import javax.swing.JOptionPane;
  *
  * @author nomar
  */
-<<<<<<< Updated upstream:BattleshipVista/src/main/java/pantallas/FrmJugadorUno.java
-public class FrmJugadorUno extends javax.swing.JFrame {
-    // Cliente socket para comunicación con el servidor
-=======
+
 public class NomJugador1 extends javax.swing.JFrame {
->>>>>>> Stashed changes:BattleshipVista/src/main/java/pantallas/NomJugador1.java
+
 
     private SocketCliente cliente;
   /**
@@ -115,21 +112,14 @@ public class NomJugador1 extends javax.swing.JFrame {
 
             JOptionPane.showMessageDialog(this, "Conectado con: " + nombreRival);
 
-<<<<<<< Updated upstream:BattleshipVista/src/main/java/pantallas/FrmJugadorUno.java
-            // Abrir ventana para colocar las naves
-            ColocarNave2 ventana = new ColocarNave2(nombreJugador1, cliente);
-            ventana.setLocation(10, 250);
-            ventana.setVisible(true);
-            dispose();
-=======
-        
+
 
         // Abrir ventana para colocar las naves
         CrearTablero ventana = new CrearTablero(nombreJugador1, cliente);
         ventana.setLocation(10, 250);
         ventana.setVisible(true);
         dispose();
->>>>>>> Stashed changes:BattleshipVista/src/main/java/pantallas/NomJugador1.java
+
 
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Error al conectar: " + e.getMessage());

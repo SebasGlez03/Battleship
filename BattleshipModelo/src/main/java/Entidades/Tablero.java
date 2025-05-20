@@ -20,7 +20,6 @@ public class Tablero {
     private Casilla[][] casillas = new Casilla[10][10];
     private String nombreJugador;
 
-    
     public Tablero() {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
@@ -29,7 +28,6 @@ public class Tablero {
         }
     }
 
-  
     public Casilla getCasilla(int x, int y) {
         if (x < 0 || x >= 10 || y < 0 || y >= 10) {
             return null;
@@ -37,7 +35,6 @@ public class Tablero {
         return casillas[x][y];
     }
 
-   
     public String atacarCasilla(String coordenada) {
         int fila = coordenada.charAt(0) - 'A';
         int columna = Integer.parseInt(coordenada.substring(1)) - 1;
@@ -55,22 +52,18 @@ public class Tablero {
         return casilla.estaImpactada() ? "Impacto" : "Agua";
     }
 
-  
     public String convertirTableroATexto() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 10; j++) {
                 sb.append(casillas[i][j].convertirATexto());
-                if (j < 9) {
-                    sb.append(",");
-                }
+                if (j < 9) sb.append(",");
             }
             sb.append("\n");
         }
         return sb.toString();
     }
 
-  
     public void convertirTextoATablero(String texto) {
         String[] filas = texto.split("\n");
         for (int i = 0; i < 10; i++) {
@@ -88,22 +81,19 @@ public class Tablero {
         }
     }
 
-    
     public void setNombreJugador(String nombreJugador) {
         this.nombreJugador = nombreJugador;
     }
 
- 
     public String getNombreJugador() {
         return nombreJugador;
     }
 
-   
     public Casilla[][] getCasillas() {
         return casillas;
     }
 
-    
+    // Devuelve una lista de coordenadas donde hay naves colocadas
     public List<String> obtenerCoordenadasConNaves() {
         List<String> coordenadas = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -116,5 +106,5 @@ public class Tablero {
         }
         return coordenadas;
     }
-
+    
 }

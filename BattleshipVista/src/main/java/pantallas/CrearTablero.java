@@ -22,64 +22,31 @@ import javax.swing.*;
  */
 public class CrearTablero extends javax.swing.JFrame {
 
-    /**
-     * Cliente socket para comunicación en red.
-     */
-    private SocketCliente socketCliente;
-
-    /**
-     * Número total de casillas esperadas en el tablero (por ejemplo, para
-     * validar).
-     */
+    
+    
+    private SocketCliente socketCliente; 
     private static final int TOTAL_CASILLAS_ESPERADAS = 25;
-    /**
-     * Nave seleccionada actualmente para colocar en el tablero.
-     */
     private Nave naveSeleccionada;
-    /**
-     * Director para construir las naves (posiblemente usando patrón Builder).
-     */
     private Director director;
-    /**
-     * Matriz que representa el tablero con casillas.
-     */
-    private Casilla[][] tablero;
-    /**
-     * Matriz para marcar qué casillas están ocupadas en el tablero.
-     */
+    private Casilla[][] tablero; 
     private boolean[][] casillasOcupadas;
-    /**
-     * JLabel que contiene la imagen que se está arrastrando.
-     */
     private JLabel imagenArrastrada;
-    /**
-     * Icono original de la imagen de la nave antes de arrastrarla.
-     */
     private ImageIcon imagenNaveOriginal;
 
-    /**
-     * Contadores para la cantidad de cada tipo de nave colocada.
-     */
+    // Contadores para los barcos y portaaviones
     private int contadorBarcos = 0;
     private int contadorPortaaviones = 0;
     private int contadorCruceros = 0;
     private int contadorSubmarinos = 0;
-    /**
-     * Cantidad máxima permitida para cada tipo de nave.
-     */
     private static final int MAX_BARCO = 3;
     private static final int MAX_PORTAAVIONES = 2;
     private static final int MAX_CRUCEROS = 2;
     private static final int MAX_SUBMARINOS = 4;
-    /**
-     * Nombre del jugador que está colocando las naves.
-     */
+
     private String nombreJugador;
 
     /**
-     * Constructor que recibe un servidor para establecer la comunicación.
-     *
-     * @param servidor Instancia de SocketServidor para la conexión de red.
+     * Creates new form ColocarNave
      */
     public CrearTablero(SocketServidor servidor) {
         this.nombreJugador = nombreJugador;
@@ -88,28 +55,13 @@ public class CrearTablero extends javax.swing.JFrame {
         initComponents2();
     }
 
-<<<<<<< Updated upstream:BattleshipVista/src/main/java/pantallas/ColocarNave2.java
-    /**
-     * Constructor que recibe el nombre del jugador y cliente socket para
-     * comunicación.
-     *
-     * @param nombreJugador Nombre del jugador.
-     * @param cliente Instancia de SocketCliente para la comunicación.
-     */
-    public ColocarNave2(String nombreJugador, SocketCliente cliente) {
-=======
     public CrearTablero(String nombreJugador, SocketCliente cliente) {
->>>>>>> Stashed changes:BattleshipVista/src/main/java/pantallas/CrearTablero.java
         this.nombreJugador = nombreJugador;
         this.socketCliente = cliente;
         initComponents();
         initComponents2();
     }
 
-    /**
-     * Método privado que inicializa componentes gráficos adicionales, configura
-     * imágenes, botones y layout para la ventana y tablero.
-     */
     private void initComponents2() {
         labelNomJugador.setText("Jugador: " + nombreJugador);
 
@@ -250,15 +202,6 @@ public class CrearTablero extends javax.swing.JFrame {
 
     }
 
-    /**
-     * Inicializa el tablero de juego con una cuadrícula de 10x10 botones. Cada
-     * botón representa una casilla del tablero, configurado con tamaño, color,
-     * icono y estilo visual para que parezca un tablero de juego.
-     *
-     * Solo inicializa el tablero si no ha sido inicializado antes (evita
-     * duplicar componentes). También crea la matriz de objetos Casilla que
-     * representan cada posición lógica.
-     */
     private void inicializarTablero() {
         // Solo inicializamos el tablero si no ha sido inicializado antes
         if (panelTablero.getComponentCount() == 0) {
@@ -287,15 +230,6 @@ public class CrearTablero extends javax.swing.JFrame {
         panelTablero.repaint();
     }
 
-    /**
-     * Método para seleccionar un barco (TipoNave.BARCO) para colocar en el
-     * tablero. Verifica que no se haya alcanzado el máximo de barcos
-     * permitidos. Si no hay ninguna nave seleccionada actualmente, construye la
-     * nave y la asigna.
-     *
-     * @param tipoSeleccionado El tipo de nave que se intenta seleccionar
-     * (BARCO).
-     */
     private void seleccionarBarco(TipoNave tipoSeleccionado) {
         // Verificar si el número máximo de barcos ha sido alcanzado
         if (contadorBarcos < MAX_BARCO) {
@@ -310,14 +244,6 @@ public class CrearTablero extends javax.swing.JFrame {
         }
     }
 
-    /**
-     * Método para seleccionar un portaaviones (TipoNave.PORTAAVIONES). Verifica
-     * que no se haya alcanzado el máximo permitido. Construye y asigna la nave
-     * si no hay ninguna seleccionada.
-     *
-     * @param tipoSeleccionado El tipo de nave que se intenta seleccionar
-     * (PORTAAVIONES).
-     */
     private void seleccionarPortaaviones(TipoNave tipoSeleccionado) {
         // Verificar si el número máximo de portaaviones ha sido alcanzado
         if (contadorPortaaviones < MAX_PORTAAVIONES) {
@@ -332,14 +258,6 @@ public class CrearTablero extends javax.swing.JFrame {
         }
     }
 
-    /**
-     * Método para seleccionar un crucero (TipoNave.CRUCERO). Verifica que no se
-     * haya alcanzado el máximo permitido. Construye y asigna la nave si no hay
-     * ninguna seleccionada.
-     *
-     * @param tipoSeleccionado El tipo de nave que se intenta seleccionar
-     * (CRUCERO).
-     */
     private void seleccionarCruceros(TipoNave tipoSeleccionado) {
         // Verificar si el número máximo de portaaviones ha sido alcanzado
         if (contadorCruceros < MAX_CRUCEROS) {
@@ -354,14 +272,6 @@ public class CrearTablero extends javax.swing.JFrame {
         }
     }
 
-    /**
-     * Método para seleccionar un submarino. Verifica que no se haya alcanzado
-     * el máximo permitido. Construye y asigna la nave si no hay ninguna
-     * seleccionada.
-     *
-     * @param tipoSeleccionado El tipo de nave que se intenta seleccionar
-     * (SUBMARINO).
-     */
     private void seleccionarSubmarinos(TipoNave tipoSeleccionado) {
         // Verificar si el número máximo de portaaviones ha sido alcanzado
         if (contadorSubmarinos < MAX_SUBMARINOS) {
@@ -1123,22 +1033,7 @@ public class CrearTablero extends javax.swing.JFrame {
     }
 
     }//GEN-LAST:event_btnSubmarino4MouseReleased
-<<<<<<< Updated upstream:BattleshipVista/src/main/java/pantallas/ColocarNave2.java
-    /**
-     * Se ejecuta al presionar el botón del submarino de 4 casillas. Selecciona
-     * el tipo de nave SUBMARINO, carga la imagen asociada, crea una etiqueta
-     * que seguirá el cursor para el arrastre, y la agrega a la capa superior
-     * del panel para arrastrarla visualmente.
-     *
-     * @param evt Evento generado por el mouse al presionar el botón.
-     */
-=======
 
-   
-    
-    
-    
->>>>>>> Stashed changes:BattleshipVista/src/main/java/pantallas/CrearTablero.java
     private void btnSubmarino4MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino4MousePressed
         seleccionarSubmarinos(TipoNave.SUBMARINO);
 
