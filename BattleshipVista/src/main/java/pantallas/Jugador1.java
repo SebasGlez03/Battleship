@@ -13,15 +13,19 @@ import javax.swing.SwingUtilities;
  *
  * @author nomar
  */
+<<<<<<< Updated upstream:BattleshipVista/src/main/java/pantallas/FrmInicio.java
 /**
  * Constructor que inicializa los componentes gráficos de la ventana.
  */
 public class FrmInicio extends javax.swing.JFrame {
+=======
+public class Jugador1 extends javax.swing.JFrame {
+>>>>>>> Stashed changes:BattleshipVista/src/main/java/pantallas/Jugador1.java
 
     /**
      * Creates new form FrmInicio
      */
-    public FrmInicio() {
+    public Jugador1() {
         initComponents();
     }
 
@@ -96,7 +100,7 @@ public class FrmInicio extends javax.swing.JFrame {
 
         // Abrir las dos ventanas de inicio de sesión
         SwingUtilities.invokeLater(() -> {
-            FrmJugadorUno jugadorUno = new FrmJugadorUno();
+            NomJugador1 jugadorUno = new NomJugador1();
             jugadorUno.setLocation(400, 250); 
             jugadorUno.setVisible(true);
             this.dispose();
@@ -122,10 +126,10 @@ public class FrmInicio extends javax.swing.JFrame {
  * @param evt Evento de clic del mouse
  */
     private void btnAjusteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAjusteMouseClicked
-        // TODO add your handling code here:
-        FrmAjustes frmAjustes = new FrmAjustes();
-        frmAjustes.setVisible(true);
-        this.dispose();
+//        // TODO add your handling code here:
+//        FrmAjustes frmAjustes = new FrmAjustes();
+//        frmAjustes.setVisible(true);
+//        this.dispose();
     }//GEN-LAST:event_btnAjusteMouseClicked
 
     /**
@@ -145,20 +149,21 @@ public class FrmInicio extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Jugador1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Jugador1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Jugador1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmInicio.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Jugador1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FrmInicio().setVisible(true);
+                new Jugador1().setVisible(true);
             }
         });
     }

@@ -5,7 +5,7 @@
 package pantallas;
 
 import Entidades.Casilla;
-import Pruebas.ReproductorSonido;
+import Sonido.ReproductorSonido;
 import Sockets.Mensaje;
 import Sockets.SocketCliente;
 import java.awt.BorderLayout;
@@ -22,8 +22,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
+import java.util.Stack;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -36,7 +39,7 @@ import javax.swing.SwingUtilities;
  *
  * @author Carlo
  */
-public class ColocarNave4 extends javax.swing.JFrame {
+public class Partida extends javax.swing.JFrame {
 
     /**
      * Matriz que representa el tablero del jugador con casillas.
@@ -55,6 +58,7 @@ public class ColocarNave4 extends javax.swing.JFrame {
      */
     private List<Point> coordenadasOcupadasEnemigo = new ArrayList<>();
 
+<<<<<<< Updated upstream:BattleshipVista/src/main/java/pantallas/ColocarNave4.java
     /**
      * Conjunto que almacena las coordenadas ya atacadas para evitar ataques
      * duplicados.
@@ -75,12 +79,27 @@ public class ColocarNave4 extends javax.swing.JFrame {
      * @param socketCliente Cliente para comunicación con el servidor.
      */
     public ColocarNave4(String coordenadas, SocketCliente socketCliente) {
+=======
+    private List<List<Point>> barcosEnemigos = new ArrayList<>();
+    private Set<Point> coordenadasImpactadasEnemigo = new HashSet<>();
+
+    private Set<Point> coordenadasImpactadasPropias = new HashSet<>();
+    private List<List<Point>> barcosPropios;
+
+    private Set<Point> coordenadasAtacadas = new HashSet<>();
+
+    private SocketCliente socketCliente;
+
+    // Constructor que recibe las coordenadas
+    public Partida(String coordenadas, SocketCliente socketCliente) {
+>>>>>>> Stashed changes:BattleshipVista/src/main/java/pantallas/Partida.java
 
         this.socketCliente = socketCliente;
 
         initComponents(); // Inicializa los componentes
         this.coordenadasOcupadas = parseCoordenadas(coordenadas); // Convierte las coordenadas del jugador
 
+        this.barcosPropios = agruparBarcos(coordenadasOcupadas);
         // Inicializar el tablero y marcar las casillas ocupadas
         tablero = new Casilla[10][10];
         tableroEnemigo = new Casilla[10][10];
@@ -169,7 +188,7 @@ public class ColocarNave4 extends javax.swing.JFrame {
             for (int i = 0; i < 10; i++) {
                 for (int j = 0; j < 10; j++) {
                     JButton casillaButton = new JButton();
-                    casillaButton.setPreferredSize(new Dimension(40, 40));
+                    casillaButton.setPreferredSize(new Dimension(35, 35));
                     casillaButton.setBackground(Color.LIGHT_GRAY);
                     casillaButton.setContentAreaFilled(false); // Sin decoración del SO
                     casillaButton.setFocusPainted(false);       // Sin contorno de foco
@@ -179,7 +198,7 @@ public class ColocarNave4 extends javax.swing.JFrame {
 
                     // Imagen de fondo
                     ImageIcon icono = new ImageIcon(getClass().getResource("/imagenes/casillaimg2.png"));
-                    Image imagenEscalada = icono.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+                    Image imagenEscalada = icono.getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
                     casillaButton.setIcon(new ImageIcon(imagenEscalada));
 
                     panelTablero.add(casillaButton);
@@ -270,11 +289,14 @@ public class ColocarNave4 extends javax.swing.JFrame {
         }
     }
 
+<<<<<<< Updated upstream:BattleshipVista/src/main/java/pantallas/ColocarNave4.java
     /**
      * Inicia un hilo que escucha continuamente mensajes desde el servidor,
      * procesándolos según su tipo. Se ejecuta en segundo plano para no bloquear
      * la interfaz gráfica.
      */
+=======
+>>>>>>> Stashed changes:BattleshipVista/src/main/java/pantallas/Partida.java
     public void iniciarEscuchaServidor() {
         new Thread(() -> {
             while (true) {
@@ -314,17 +336,16 @@ public class ColocarNave4 extends javax.swing.JFrame {
     private void procesarMensaje(Mensaje mensaje) {
         switch (mensaje.getTipo()) {
             case "resultado_ataque": {
-                // El servidor o cliente recibe la respuesta a un ataque: x,y,acierto (true/false)
                 String[] datos = ((String) mensaje.getContenido()).split(",");
                 int x = Integer.parseInt(datos[0]);
                 int y = Integer.parseInt(datos[1]);
                 boolean acierto = Boolean.parseBoolean(datos[2]);
+                Point puntoImpactado = new Point(x, y);
 
                 SwingUtilities.invokeLater(() -> {
-                    // Actualiza el botón del tablero enemigo con rojo si fue impacto, azul si fue agua
-                    JButton boton = (JButton) panelTableroEnemigo.getComponent(y * 10 + x);
-                    boton.setBackground(acierto ? Color.RED : Color.BLUE);
+                    JButton boton = (JButton) panelTableroEnemigo.getComponent(puntoImpactado.y * 10 + puntoImpactado.x);
 
+<<<<<<< Updated upstream:BattleshipVista/src/main/java/pantallas/ColocarNave4.java
                     // Sonido de impacto o agua
                     if (acierto) {
                         ReproductorSonido.reproducirSonido("/sounds/impacto.wav");
@@ -334,30 +355,85 @@ public class ColocarNave4 extends javax.swing.JFrame {
 
                     // Mensaje emergente para informar resultado del ataque
                     JOptionPane.showMessageDialog(this, acierto ? "impacto" : "agua");
+=======
+                    if (acierto) {
+                        ReproductorSonido.reproducirSonido("/sounds/impacto.wav");
+                        boton.setBackground(Color.YELLOW);
+
+                        if (esBarcoHundido(puntoImpactado)) {
+                            colorearBarcoEnemigoHundido(puntoImpactado);
+
+                            // Obtener tamaño del barco hundido para determinar el tipo
+                            List<Point> barcoHundido = null;
+                            for (List<Point> barco : barcosEnemigos) {
+                                if (barco.contains(puntoImpactado)) {
+                                    barcoHundido = barco;
+                                    break;
+                                }
+                            }
+                            int tamaño = barcoHundido != null ? barcoHundido.size() : 0;
+                            String tipoBarco = obtenerTipoBarcoPorTamano(tamaño);
+
+                            JOptionPane.showMessageDialog(this, "¡Has destruido un " + tipoBarco + " enemigo!");
+                        } else {
+//                            ReproductorSonido.reproducirSonido("/sounds/impacto.wav");
+                            JOptionPane.showMessageDialog(this, "¡Impacto!");
+                        }
+
+                        
+                    } else {
+                        boton.setBackground(Color.BLUE);
+                        ReproductorSonido.reproducirSonido("/sounds/agua.wav");
+                        JOptionPane.showMessageDialog(this, "¡Agua!");
+                    }
+>>>>>>> Stashed changes:BattleshipVista/src/main/java/pantallas/Partida.java
                 });
                 break;
             }
 
             case "ataque_recibido": {
-                // Se recibe un ataque enemigo: x,y
                 String[] datos = ((String) mensaje.getContenido()).split(",");
                 int x = Integer.parseInt(datos[0]);
                 int y = Integer.parseInt(datos[1]);
+                Point puntoImpactado = new Point(x, y);
 
-                // Se verifica si las coordenadas atacadas están ocupadas (impacto)
-                boolean esAcierto = coordenadasOcupadas.contains(new Point(x, y));
+                boolean esAcierto = coordenadasOcupadas.contains(puntoImpactado);
+
+                if (esAcierto) {
+                    tablero[x][y].estaImpactada();
+
+                    if (esBarcoPropioHundido(puntoImpactado)) {
+                        colorearBarcoPropioHundido(puntoImpactado);
+                    }
+                }
 
                 SwingUtilities.invokeLater(() -> {
-                    // Actualiza el botón del propio tablero con rojo si impacto, azul si agua
-                    JButton boton = (JButton) panelTablero.getComponent(y * 10 + x);
-                    boton.setBackground(esAcierto ? Color.RED : Color.BLUE);
+                    JButton boton = (JButton) panelTablero.getComponent(puntoImpactado.y * 10 + puntoImpactado.x);
 
-                    String nombreAtacante = datos.length > 2 ? datos[2] : "El oponente ";
-                    JOptionPane.showMessageDialog(this,
-                            nombreAtacante + (esAcierto ? " impactó" : " falló (agua)"));
+                    if (esAcierto) {
+                        if (esBarcoPropioHundido(puntoImpactado)) {
+                            // Obtener tamaño del barco propio hundido para mostrar mensaje
+                            List<Point> barcoHundido = null;
+                            for (List<Point> barco : barcosPropios) {
+                                if (barco.contains(puntoImpactado)) {
+                                    barcoHundido = barco;
+                                    break;
+                                }
+                            }
+                            int tamaño = barcoHundido != null ? barcoHundido.size() : 0;
+                            String tipoBarco = obtenerTipoBarcoPorTamano(tamaño);
+
+                            JOptionPane.showMessageDialog(this, "¡Tu " + tipoBarco + " ha sido destruido!");
+                        } else {
+                            boton.setBackground(Color.YELLOW);
+                            JOptionPane.showMessageDialog(this, "¡Has sido impactado!");
+                        }
+                    } else {
+                        boton.setBackground(Color.BLUE);
+                        JOptionPane.showMessageDialog(this, "¡Agua!");
+                    }
                 });
 
-                // Enviar respuesta al atacante con resultado completo (x,y,acierto)
                 Mensaje respuesta = new Mensaje("resultado_ataque", x + "," + y + "," + esAcierto);
                 System.out.println(respuesta);
                 socketCliente.enviarMensaje(respuesta);
@@ -365,14 +441,13 @@ public class ColocarNave4 extends javax.swing.JFrame {
             }
 
             case "fin_juego": {
-                String resultado = (String) mensaje.getContenido(); // "¡Has ganado!" o "Has perdido."
+                String resultado = (String) mensaje.getContenido();
                 mostrarPantallaFinal(resultado);
-
                 break;
-
             }
         }
     }
+<<<<<<< Updated upstream:BattleshipVista/src/main/java/pantallas/ColocarNave4.java
 
     /**
      * Muestra la pantalla final según el resultado del juego. Si el resultado
@@ -399,18 +474,156 @@ public class ColocarNave4 extends javax.swing.JFrame {
      *
      * @param coordenadasEnemigo Coordenadas del enemigo en formato String.
      */
-    public void recibirCoordenadasEnemigo(String coordenadasEnemigo) {
-        // Convertir las coordenadas recibidas del enemigo en puntos
-        coordenadasOcupadasEnemigo = parseCoordenadas(coordenadasEnemigo);
+=======
 
-        // Verificar que las coordenadas se están procesando correctamente
-        System.out.println("Coordenadas del enemigo recibidas: ");
+    private String obtenerTipoBarcoPorTamano(int tamaño) {
+        switch (tamaño) {
+            case 4:
+                return "Portaaviones";
+            case 3:
+                return "Crucero";
+            case 2:
+                return "Submarino";
+            case 1:
+                return "Barco";
+            default:
+                return "Barco desconocido";
+        }
+    }
 
-        // Mostrar cada coordenada ocupada en la consola
-        for (Point coord : coordenadasOcupadasEnemigo) {
-            System.out.println("Coordenada ocupada en: (" + coord.x + ", " + coord.y + ")");
+    public void recibirAtaqueEnemigo(Point ataque) {
+        // Marca la casilla como impactada (amarillo)
+        JButton boton = (JButton) panelTablero.getComponent(ataque.y * 10 + ataque.x);
+        boton.setBackground(Color.YELLOW);
+
+        coordenadasImpactadasPropias.add(ataque);
+
+        // Verificar si el barco propio está hundido
+        if (esBarcoPropioHundido(ataque)) {
+            // Colorea todo el barco hundido en rojo
+            colorearBarcoPropioHundido(ataque);
+            JOptionPane.showMessageDialog(this, "¡Uno de tus barcos fue hundido!");
+        } else {
+            JOptionPane.showMessageDialog(this, "Has recibido un impacto en (" + ataque.x + ", " + ataque.y + ")");
+        }
+    }
+
+    private boolean esBarcoPropioHundido(Point puntoImpactado) {
+        coordenadasImpactadasPropias.add(puntoImpactado);
+
+        for (List<Point> barco : barcosPropios) {
+            if (barco.contains(puntoImpactado)) {
+                if (coordenadasImpactadasPropias.containsAll(barco)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void colorearBarcoPropioHundido(Point puntoImpactado) {
+        Set<Point> barco = new HashSet<>();
+        Queue<Point> cola = new LinkedList<>();
+        cola.add(puntoImpactado);
+
+        while (!cola.isEmpty()) {
+            Point actual = cola.poll();
+            if (barco.contains(actual)) {
+                continue;
+            }
+            barco.add(actual);
+
+            // Vecinos ortogonales (no diagonales)
+            int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+            for (int[] dir : dirs) {
+                int nx = actual.x + dir[0];
+                int ny = actual.y + dir[1];
+                Point vecino = new Point(nx, ny);
+
+                // Solo agregamos si es parte del barco propio y ya estaba impactado
+                if (coordenadasOcupadas.contains(vecino)) {
+                    JButton b = (JButton) panelTablero.getComponent(ny * 10 + nx);
+                    if (b.getBackground().equals(Color.YELLOW)) {
+                        cola.add(vecino);
+                    }
+                }
+            }
         }
 
+        // Colorear todas las casillas del barco hundido de rojo
+        for (Point p : barco) {
+            JButton b = (JButton) panelTablero.getComponent(p.y * 10 + p.x);
+            b.setBackground(Color.RED);
+        }
+    }
+
+    private void colorearBarcoEnemigoHundido(Point puntoImpactado) {
+        Set<Point> barco = new HashSet<>();
+        Queue<Point> cola = new LinkedList<>();
+        cola.add(puntoImpactado);
+
+        while (!cola.isEmpty()) {
+            Point actual = cola.poll();
+            if (barco.contains(actual)) {
+                continue;
+            }
+            barco.add(actual);
+
+            // Verificamos vecinos ortogonales (no diagonales)
+            int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+            for (int[] dir : dirs) {
+                int nx = actual.x + dir[0];
+                int ny = actual.y + dir[1];
+                Point vecino = new Point(nx, ny);
+
+                // Solo agregamos si es parte del barco enemigo y ya estaba impactado (amarillo)
+                if (coordenadasOcupadasEnemigo.contains(vecino)) {
+                    JButton b = (JButton) panelTableroEnemigo.getComponent(ny * 10 + nx);
+                    if (b.getBackground().equals(Color.YELLOW)) {
+                        cola.add(vecino);
+                    }
+                }
+            }
+        }
+
+        // Ahora coloreamos todas las casillas del barco de rojo
+        for (Point p : barco) {
+            JButton b = (JButton) panelTableroEnemigo.getComponent(p.y * 10 + p.x);
+            b.setBackground(Color.RED);
+        }
+    }
+
+    private void mostrarPantallaFinal(String resultado) {
+        if (resultado.contains("Has ganado!")) {
+            VentanaGanar victoria = new VentanaGanar(this);
+            victoria.setVisible(true);
+        } else if (resultado.contains("Has perdido.")) {
+            VentanaPerder derrota = new VentanaPerder(this);
+            derrota.setModal(true); // Igual aquí
+            derrota.setVisible(true);
+        }
+    }
+
+    // Método para recibir las coordenadas del enemigo
+>>>>>>> Stashed changes:BattleshipVista/src/main/java/pantallas/Partida.java
+    public void recibirCoordenadasEnemigo(String coordenadasEnemigo) {
+        coordenadasOcupadasEnemigo = new ArrayList<>();
+        barcosEnemigos.clear();
+
+        // Parsear todas las coordenadas sin asumir orden ni tamaños
+        coordenadasEnemigo = coordenadasEnemigo.substring(1, coordenadasEnemigo.length() - 1);
+        String[] coords = coordenadasEnemigo.split(",\"");
+
+        for (String coord : coords) {
+            coord = coord.replace("\"", "").trim();
+            String[] partes = coord.split(",");
+            int x = Integer.parseInt(partes[0]);
+            int y = Integer.parseInt(partes[1]);
+            Point punto = new Point(x, y);
+            coordenadasOcupadasEnemigo.add(punto);
+        }
+
+<<<<<<< Updated upstream:BattleshipVista/src/main/java/pantallas/ColocarNave4.java
         // Marcar las casillas correspondientes en el tablero enemigo
         for (Point coord : coordenadasOcupadasEnemigo) {
             int x = coord.x;
@@ -433,6 +646,72 @@ public class ColocarNave4 extends javax.swing.JFrame {
      *
      * @throws IOException En caso de errores en la comunicación por socket.
      */
+=======
+        // Agrupar coordenadas en barcos conectados
+        barcosEnemigos = agruparBarcos(coordenadasOcupadasEnemigo);
+
+        // Debug: mostrar barcos
+        System.out.println("Barcos enemigos detectados:");
+        for (int i = 0; i < barcosEnemigos.size(); i++) {
+            System.out.print("Barco " + (i + 1) + ": ");
+            for (Point p : barcosEnemigos.get(i)) {
+                System.out.print("(" + p.x + "," + p.y + ") ");
+            }
+            System.out.println();
+        }
+    }
+
+    private boolean esBarcoHundido(Point puntoImpactado) {
+        coordenadasImpactadasEnemigo.add(puntoImpactado);
+
+        for (List<Point> barco : barcosEnemigos) {
+            if (barco.contains(puntoImpactado)) {
+                if (coordenadasImpactadasEnemigo.containsAll(barco)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private List<List<Point>> agruparBarcos(List<Point> coords) {
+        List<List<Point>> barcos = new ArrayList<>();
+        Set<Point> sinProcesar = new HashSet<>(coords);
+
+        while (!sinProcesar.isEmpty()) {
+            Point inicio = sinProcesar.iterator().next();
+            List<Point> barco = new ArrayList<>();
+            Queue<Point> cola = new LinkedList<>();
+            cola.add(inicio);
+
+            while (!cola.isEmpty()) {
+                Point actual = cola.poll();
+                if (sinProcesar.contains(actual)) {
+                    sinProcesar.remove(actual);
+                    barco.add(actual);
+
+                    // Vecinos adyacentes (arriba, abajo, izquierda, derecha)
+                    List<Point> vecinos = List.of(
+                            new Point(actual.x + 1, actual.y),
+                            new Point(actual.x - 1, actual.y),
+                            new Point(actual.x, actual.y + 1),
+                            new Point(actual.x, actual.y - 1)
+                    );
+
+                    for (Point vecino : vecinos) {
+                        if (sinProcesar.contains(vecino)) {
+                            cola.add(vecino);
+                        }
+                    }
+                }
+            }
+            barcos.add(barco);
+        }
+        return barcos;
+    }
+
+    // Método para recibir las coordenadas del servidor
+>>>>>>> Stashed changes:BattleshipVista/src/main/java/pantallas/Partida.java
     public void recibirCoordenadasServidor() throws IOException {
         // Esperar coordenadas del servidor para el tablero enemigo
         Mensaje respuestaEnemigo = socketCliente.recibirMensaje();
@@ -564,6 +843,8 @@ public class ColocarNave4 extends javax.swing.JFrame {
         btnAtacar = new javax.swing.JButton();
         jLabel21 = new javax.swing.JLabel();
         jLabel22 = new javax.swing.JLabel();
+        jLabel23 = new javax.swing.JLabel();
+        jLabel24 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -581,102 +862,102 @@ public class ColocarNave4 extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("  0");
-        jLabel1.setPreferredSize(new java.awt.Dimension(25, 35));
+        jLabel1.setPreferredSize(new java.awt.Dimension(25, 30));
 
         jLabel2.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("  1");
-        jLabel2.setPreferredSize(new java.awt.Dimension(25, 35));
+        jLabel2.setPreferredSize(new java.awt.Dimension(25, 30));
 
         jLabel3.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("  2");
-        jLabel3.setPreferredSize(new java.awt.Dimension(25, 35));
+        jLabel3.setPreferredSize(new java.awt.Dimension(25, 30));
 
         jLabel4.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("  3");
-        jLabel4.setPreferredSize(new java.awt.Dimension(25, 35));
+        jLabel4.setPreferredSize(new java.awt.Dimension(25, 30));
 
         jLabel5.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
         jLabel5.setText("  4");
-        jLabel5.setPreferredSize(new java.awt.Dimension(25, 35));
+        jLabel5.setPreferredSize(new java.awt.Dimension(25, 30));
 
         jLabel6.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("  5");
-        jLabel6.setPreferredSize(new java.awt.Dimension(25, 35));
+        jLabel6.setPreferredSize(new java.awt.Dimension(25, 30));
 
         jLabel7.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("  6");
-        jLabel7.setPreferredSize(new java.awt.Dimension(25, 35));
+        jLabel7.setPreferredSize(new java.awt.Dimension(25, 30));
 
         jLabel8.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("  7");
-        jLabel8.setPreferredSize(new java.awt.Dimension(25, 35));
+        jLabel8.setPreferredSize(new java.awt.Dimension(25, 30));
 
         jLabel9.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("  8");
-        jLabel9.setPreferredSize(new java.awt.Dimension(25, 35));
+        jLabel9.setPreferredSize(new java.awt.Dimension(25, 30));
 
         jLabel10.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(255, 255, 255));
         jLabel10.setText("  9");
-        jLabel10.setPreferredSize(new java.awt.Dimension(25, 35));
+        jLabel10.setPreferredSize(new java.awt.Dimension(25, 30));
 
         jLabel11.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel11.setForeground(new java.awt.Color(255, 255, 255));
         jLabel11.setText("    0");
-        jLabel11.setPreferredSize(new java.awt.Dimension(35, 25));
+        jLabel11.setPreferredSize(new java.awt.Dimension(30, 25));
 
         jLabel12.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(255, 255, 255));
         jLabel12.setText("    1");
-        jLabel12.setPreferredSize(new java.awt.Dimension(35, 25));
+        jLabel12.setPreferredSize(new java.awt.Dimension(30, 25));
 
         jLabel13.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel13.setForeground(new java.awt.Color(255, 255, 255));
         jLabel13.setText("    2");
-        jLabel13.setPreferredSize(new java.awt.Dimension(35, 25));
+        jLabel13.setPreferredSize(new java.awt.Dimension(30, 25));
 
         jLabel14.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel14.setForeground(new java.awt.Color(255, 255, 255));
         jLabel14.setText("    3");
-        jLabel14.setPreferredSize(new java.awt.Dimension(35, 25));
+        jLabel14.setPreferredSize(new java.awt.Dimension(30, 25));
 
         jLabel15.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(255, 255, 255));
         jLabel15.setText("    4");
-        jLabel15.setPreferredSize(new java.awt.Dimension(35, 25));
+        jLabel15.setPreferredSize(new java.awt.Dimension(30, 25));
 
         jLabel16.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel16.setForeground(new java.awt.Color(255, 255, 255));
         jLabel16.setText("    5");
-        jLabel16.setPreferredSize(new java.awt.Dimension(35, 25));
+        jLabel16.setPreferredSize(new java.awt.Dimension(30, 25));
 
         jLabel17.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(255, 255, 255));
         jLabel17.setText("   6");
-        jLabel17.setPreferredSize(new java.awt.Dimension(35, 25));
+        jLabel17.setPreferredSize(new java.awt.Dimension(30, 25));
 
         jLabel18.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel18.setForeground(new java.awt.Color(255, 255, 255));
         jLabel18.setText("   7");
-        jLabel18.setPreferredSize(new java.awt.Dimension(35, 25));
+        jLabel18.setPreferredSize(new java.awt.Dimension(30, 25));
 
         jLabel19.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel19.setForeground(new java.awt.Color(255, 255, 255));
         jLabel19.setText("   8");
-        jLabel19.setPreferredSize(new java.awt.Dimension(35, 25));
+        jLabel19.setPreferredSize(new java.awt.Dimension(30, 25));
 
         jLabel20.setFont(new java.awt.Font("Arial Black", 1, 14)); // NOI18N
         jLabel20.setForeground(new java.awt.Color(255, 255, 255));
         jLabel20.setText("   9");
-        jLabel20.setPreferredSize(new java.awt.Dimension(35, 25));
+        jLabel20.setPreferredSize(new java.awt.Dimension(30, 25));
 
         javax.swing.GroupLayout panelfondoLayout = new javax.swing.GroupLayout(panelfondo);
         panelfondo.setLayout(panelfondoLayout);
@@ -717,8 +998,8 @@ public class ColocarNave4 extends javax.swing.JFrame {
                         .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel20, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(panelTablero, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(37, Short.MAX_VALUE))
+                    .addComponent(panelTablero, javax.swing.GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
         panelfondoLayout.setVerticalGroup(
             panelfondoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -757,8 +1038,8 @@ public class ColocarNave4 extends javax.swing.JFrame {
                         .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(panelTablero, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(496, 496, 496))
+                    .addComponent(panelTablero, javax.swing.GroupLayout.DEFAULT_SIZE, 0, Short.MAX_VALUE))
+                .addGap(542, 542, 542))
         );
 
         panelfondo2.setBackground(new java.awt.Color(102, 102, 102));
@@ -953,6 +1234,9 @@ public class ColocarNave4 extends javax.swing.JFrame {
                 .addGap(496, 496, 496))
         );
 
+        btnAtacar.setBackground(new java.awt.Color(255, 153, 102));
+        btnAtacar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        btnAtacar.setForeground(new java.awt.Color(255, 255, 255));
         btnAtacar.setText("ATACAR");
         btnAtacar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -961,66 +1245,78 @@ public class ColocarNave4 extends javax.swing.JFrame {
         });
 
         jLabel21.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel21.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel21.setForeground(new java.awt.Color(255, 255, 255));
         jLabel21.setText("Ingresa coordenada X:");
 
         jLabel22.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel22.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel22.setForeground(new java.awt.Color(255, 255, 255));
         jLabel22.setText("Ingresa coordenada Y:");
+
+        jLabel23.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel23.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel23.setText("TU TABLERO");
+
+        jLabel24.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel24.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel24.setText("TABLERO ENEMIGO");
 
         javax.swing.GroupLayout panelFondoTableroLayout = new javax.swing.GroupLayout(panelFondoTablero);
         panelFondoTablero.setLayout(panelFondoTableroLayout);
         panelFondoTableroLayout.setHorizontalGroup(
             panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelFondoTableroLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelFondoTableroLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                        .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                                .addGap(40, 40, 40)
-                                .addComponent(panelfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(40, 40, 40))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelFondoTableroLayout.createSequentialGroup()
-                                .addContainerGap()
-                                .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelFondoTableroLayout.createSequentialGroup()
-                                        .addComponent(txtX, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(146, 146, 146))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelFondoTableroLayout.createSequentialGroup()
-                                        .addComponent(jLabel21)
-                                        .addGap(103, 103, 103)))))
-                        .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(panelfondo2, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                                .addGap(38, 38, 38)
-                                .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel22)
-                                    .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                                        .addGap(55, 55, 55)
-                                        .addComponent(txtY, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                    .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                        .addGap(482, 482, 482)
-                        .addComponent(btnAtacar, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(32, Short.MAX_VALUE))
+                    .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                            .addComponent(jLabel21)
+                            .addGap(103, 103, 103)
+                            .addComponent(jLabel22))
+                        .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                            .addComponent(txtX, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(210, 210, 210)
+                            .addComponent(txtY, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(46, 46, 46)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelFondoTableroLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnAtacar, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(181, 181, 181)))
+                .addGap(96, 96, 96))
+            .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addComponent(panelfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(47, 47, 47)
+                .addComponent(panelfondo2, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(79, Short.MAX_VALUE))
+            .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                .addGap(194, 194, 194)
+                .addComponent(jLabel23)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel24)
+                .addGap(242, 242, 242))
         );
         panelFondoTableroLayout.setVerticalGroup(
             panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                .addGap(29, 29, 29)
+                .addContainerGap(16, Short.MAX_VALUE)
+                .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel23)
+                    .addComponent(jLabel24))
+                .addGap(18, 18, 18)
                 .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(panelfondo2, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
+                    .addComponent(panelfondo2, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(panelfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 413, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel21)
                     .addComponent(jLabel22))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtX, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtY, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtY, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtX, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnAtacar, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(50, 50, 50))
+                .addGap(31, 31, 31))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1060,6 +1356,8 @@ public class ColocarNave4 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel22;
+    private javax.swing.JLabel jLabel23;
+    private javax.swing.JLabel jLabel24;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel41;

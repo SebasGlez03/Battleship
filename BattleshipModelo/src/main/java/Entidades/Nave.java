@@ -6,6 +6,8 @@ package Entidades;
 
 import PatronObserver.*;
 import PatronState.*;
+import Sockets.Mensaje;
+import Sockets.SocketCliente;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,8 @@ import java.util.List;
  * reaccionar a cambios en las casillas que ocupa.
  */
 public class Nave implements Observer {
+
+    private SocketCliente socket; // o SocketServidor si estás del lado servidor
 
     private TipoNave tipo;
     private List<Casilla> posiciones = new ArrayList<>();
@@ -37,12 +41,19 @@ public class Nave implements Observer {
         this.estado = new EstadoNaveActiva();
     }
 
+<<<<<<< Updated upstream
     /**
      * Agrega una casilla a la lista de posiciones que ocupa esta nave. También
      * se registra como observador de la casilla.
      *
      * @param c Casilla a agregar.
      */
+=======
+    public void setSocket(SocketCliente socket) {
+        this.socket = socket;
+    }
+
+>>>>>>> Stashed changes
     public void agregarCasilla(Casilla c) {
         posiciones.add(c);
         c.agregarObservador(this);
@@ -110,6 +121,20 @@ public class Nave implements Observer {
     public boolean isHundido() {
         return hundido;
     }
+    
+    public boolean estaAveriada() {
+    if (isHundido()) {
+        return false;
+    }
+    for (Casilla c : posiciones) {
+        if (c.estaImpactada()) {
+            return true;  // Al menos una casilla impactada y no hundido
+        }
+    }
+    return false;
+}
+
+    
 
     /**
      * Establece el estado de hundimiento de la nave.
@@ -167,17 +192,28 @@ public class Nave implements Observer {
     // Método del Observer
     @Override
     public void actualizar() {
-        boolean todasImpactadas = true;
-        for (Casilla c : posiciones) {
-            if (!c.estaImpactada()) {
-                todasImpactadas = false;
-                break;
+         boolean todasImpactadas = true;
+    for (Casilla c : posiciones) {
+        if (!c.estaImpactada()) {
+            todasImpactadas = false;
+            break;
+        }
+    }
+
+    if (todasImpactadas && !hundido) {
+        setHundido(true);
+        String mensajeHundido = "¡La Nave " + getNombre() + " ha sido hundida!";
+
+        // Mostrar mensaje local y enviar por red
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            javax.swing.JOptionPane.showMessageDialog(null, mensajeHundido);
+
+            if (socket != null) {
+                Mensaje mensaje = new Mensaje("nave_hundida", mensajeHundido);
+                socket.enviarMensaje(mensaje);
             }
-        }
-        if (todasImpactadas && !hundido) {
-            setHundido(true);
-            System.out.println("¡El barco " + getNombre() + " ha sido hundido!");
-        }
+        });
+    }
     }
 
     /**

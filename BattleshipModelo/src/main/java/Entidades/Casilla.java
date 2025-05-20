@@ -23,9 +23,10 @@ import java.util.List;
  */
 public class Casilla implements Subject {
 
-    private int x;
+   private int x;
     private int y;
     private EstadoCasilla estado;
+    private Nave nave;  // <-- nueva referencia a la nave que ocupa esta casilla
     private List<Observer> observadores = new ArrayList<>();
 
     /**
@@ -39,13 +40,28 @@ public class Casilla implements Subject {
         this.x = x;
         this.y = y;
         this.estado = new EstadoCasillaDisponible();
+        this.nave = null;
     }
 
+<<<<<<< Updated upstream
     /**
      * Obtiene la coordenada X de la casilla.
      *
      * @return Coordenada X.
      */
+=======
+    public void setNave(Nave nave) {
+        this.nave = nave;
+        this.estado = new EstadoCasillaOcupada();  // cambia el estado a ocupada cuando se asigna una nave
+        notificarObservadores();
+    }
+
+    
+    
+    public Nave getNave() {
+        return nave;
+    }
+>>>>>>> Stashed changes
     public int getX() {
         return x;
     }
@@ -94,6 +110,11 @@ public class Casilla implements Subject {
     public boolean estaImpactada() {
         return estado.estaImpactada();
     }
+    
+    public boolean estaAveriada() {
+    return estaImpactada() && nave != null && !nave.isHundido();
+}
+
 
     /**
      * Cambia el estado de la casilla según su lógica interna y notifica a los

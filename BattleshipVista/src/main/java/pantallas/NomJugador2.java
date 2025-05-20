@@ -13,8 +13,12 @@ import javax.swing.JOptionPane;
  *
  * @author nomar
  */
+<<<<<<< Updated upstream:BattleshipVista/src/main/java/pantallas/FrmJugadorDos.java
 public class FrmJugadorDos extends javax.swing.JFrame {
     // Cliente socket para la comunicación con el servidor
+=======
+public class NomJugador2 extends javax.swing.JFrame {
+>>>>>>> Stashed changes:BattleshipVista/src/main/java/pantallas/NomJugador2.java
 
     private SocketCliente cliente;
 
@@ -22,7 +26,7 @@ public class FrmJugadorDos extends javax.swing.JFrame {
      * Constructor de la clase FrmJugadorDos. Inicializa los componentes
      * gráficos de la ventana.
      */
-    public FrmJugadorDos() {
+    public NomJugador2() {
         initComponents();
     }
 
@@ -113,11 +117,21 @@ public class FrmJugadorDos extends javax.swing.JFrame {
 
             JOptionPane.showMessageDialog(this, "Conectado con: " + nombreRival);
 
+<<<<<<< Updated upstream:BattleshipVista/src/main/java/pantallas/FrmJugadorDos.java
             // Abrir ventana para colocar las naves
             ColocarNave2 ventana = new ColocarNave2(nombreJugador2, cliente);
             ventana.setLocation(960, 250);
             ventana.setVisible(true);
             dispose();
+=======
+        
+
+        // Abrir ventana para colocar las naves
+        CrearTablero ventana = new CrearTablero(nombreJugador2, cliente);
+        ventana.setLocation(960, 250);
+        ventana.setVisible(true);
+        dispose();
+>>>>>>> Stashed changes:BattleshipVista/src/main/java/pantallas/NomJugador2.java
 
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Error al conectar: " + e.getMessage());
@@ -133,37 +147,38 @@ public class FrmJugadorDos extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmJugadorDos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmJugadorDos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmJugadorDos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmJugadorDos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FrmJugadorDos().setVisible(true);
-            }
-        });
-    }
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(NomJugador2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(NomJugador2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(NomJugador2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(NomJugador2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                new NomJugador2().setVisible(true);
+//            }
+//        });
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel btnAtras;

@@ -20,7 +20,7 @@ import javax.swing.*;
  *
  * @author Carlo
  */
-public class ColocarNave2 extends javax.swing.JFrame {
+public class CrearTablero extends javax.swing.JFrame {
 
     /**
      * Cliente socket para comunicación en red.
@@ -81,13 +81,14 @@ public class ColocarNave2 extends javax.swing.JFrame {
      *
      * @param servidor Instancia de SocketServidor para la conexión de red.
      */
-    public ColocarNave2(SocketServidor servidor) {
+    public CrearTablero(SocketServidor servidor) {
         this.nombreJugador = nombreJugador;
 
         initComponents();
         initComponents2();
     }
 
+<<<<<<< Updated upstream:BattleshipVista/src/main/java/pantallas/ColocarNave2.java
     /**
      * Constructor que recibe el nombre del jugador y cliente socket para
      * comunicación.
@@ -96,6 +97,9 @@ public class ColocarNave2 extends javax.swing.JFrame {
      * @param cliente Instancia de SocketCliente para la comunicación.
      */
     public ColocarNave2(String nombreJugador, SocketCliente cliente) {
+=======
+    public CrearTablero(String nombreJugador, SocketCliente cliente) {
+>>>>>>> Stashed changes:BattleshipVista/src/main/java/pantallas/CrearTablero.java
         this.nombreJugador = nombreJugador;
         this.socketCliente = cliente;
         initComponents();
@@ -1030,7 +1034,7 @@ public class ColocarNave2 extends javax.swing.JFrame {
                         System.out.println("Ambos tableros recibidos. Abriendo ColocarNave4...");
 
                         // Lanzar siguiente ventana
-                        ColocarNave4 ventanaColocarNave = new ColocarNave4(coordenadasJson, socketCliente);
+                        Partida ventanaColocarNave = new Partida(coordenadasJson, socketCliente);
                         ventanaColocarNave.setVisible(true);
                         this.dispose();
                     } else {
@@ -1069,61 +1073,57 @@ public class ColocarNave2 extends javax.swing.JFrame {
      */
     private void btnSubmarino4MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino4MouseReleased
         if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.SUBMARINO) {
-            Point puntoEnTablero = SwingUtilities.convertPoint(btnSubmarino4, evt.getPoint(), panelTablero);
-            int x = puntoEnTablero.y / 40;
-            int y = puntoEnTablero.x / 40;
+        Point puntoEnTablero = SwingUtilities.convertPoint(btnSubmarino4, evt.getPoint(), panelTablero);
+        int x = puntoEnTablero.y / 40;
+        int y = puntoEnTablero.x / 40;
 
-            // Verificamos que haya espacio para 4 casillas hacia la derecha
-            if (x >= 0 && x < 10 && y >= 0 && y <= 8) { // hasta columna 6 (6 + 4 = 10)
-                boolean espacioDisponible = true;
-
+        // Verificamos que haya espacio para 2 casillas hacia la derecha
+        if (x >= 0 && x < 10 && y >= 0 && y <= 8) { // hasta columna 8 (8 + 2 = 10)
+            // Validar que no haya casillas ocupadas ni adyacentes
+            if (esValidaColocacionConEspacio(x, y, 2)) {
                 for (int i = 0; i < 2; i++) {
-                    if (casillasOcupadas[x][y + i]) {
-                        espacioDisponible = false;
+                    Casilla casilla = tablero[x][y + i];
+                    naveSeleccionada.agregarCasilla(casilla);
+                    casillasOcupadas[x][y + i] = true;
 
-                        btnSubmarino4.setBounds(190, 360, 40, 75); // Ajustar la posición y tamaño
-                        panelBarcos.add(btnSubmarino4);
-                        panelBarcos.revalidate();
-                        panelBarcos.repaint();
-                        break;
-                    }
+                    JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
+                    casillaButton.setBackground(Color.PINK);
                 }
 
-                if (espacioDisponible) {
-                    for (int i = 0; i < 2; i++) {
-                        Casilla casilla = tablero[x][y + i];
-                        naveSeleccionada.agregarCasilla(casilla);
-                        casillasOcupadas[x][y + i] = true;
+                System.out.println("Submarino colocado en fila " + x + " desde columna " + y + " hasta " + (y + 1));
+                repaint();
 
-                        JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
-                        casillaButton.setBackground(Color.PINK);
-                    }
+                contadorSubmarinos++;
+                naveSeleccionada = null;
 
-                    System.out.println("Crucero colocado en fila " + x + " desde columna " + y + " hasta " + (y + 3));
-                    repaint();
+                // Hacer desaparecer el botón del submarino después de colocarlo
+                Container contenedor = btnSubmarino4.getParent();
+                contenedor.remove(btnSubmarino4);
+                contenedor.revalidate();
+                contenedor.repaint();
 
-                    // Incrementar contador de portaaviones
-                    if (naveSeleccionada.getTipo() == TipoNave.SUBMARINO) {
-                        contadorSubmarinos++;
-                    }
-                    naveSeleccionada = null; // Reiniciar la selección del barco
-
-                    //Hacer que la nave desaparezca despues de colocarla en el tablero
-                    Container contenedor = btnSubmarino4.getParent(); // Obtener el panel donde estaba el botón
-                    contenedor.remove(btnSubmarino4);                 // Eliminar el botón del panel
-                    contenedor.revalidate();                      // Revalidar el layout
-                    contenedor.repaint();                         // Repaint para refrescar la interfaz
-
-                } else {
-                    System.out.println("No hay espacio suficiente o casillas ocupadas para el Crucero.");
-                }
             } else {
-                System.out.println("Las coordenadas estan fuera del rango para colocar el Crucero.");
+                System.out.println("No se puede colocar el submarino porque hay otra nave adyacente.");
+                // Opcional: Regresar el botón a su posición original si quieres
+                btnSubmarino4.setBounds(154, 278, 40, 75);
+                panelBarcos.add(btnSubmarino4);
+                panelBarcos.revalidate();
+                panelBarcos.repaint();
             }
         } else {
-            System.out.println("No se ha seleccionado el Crucero para colocar.");
+            System.out.println("Las coordenadas están fuera del rango para colocar el submarino.");
+            // Opcional: Regresar el botón a su posición original
+            btnSubmarino4.setBounds(154, 278, 40, 75);
+            panelBarcos.add(btnSubmarino4);
+            panelBarcos.revalidate();
+            panelBarcos.repaint();
         }
+    } else {
+        System.out.println("No se ha seleccionado el submarino para colocar.");
+    }
+
     }//GEN-LAST:event_btnSubmarino4MouseReleased
+<<<<<<< Updated upstream:BattleshipVista/src/main/java/pantallas/ColocarNave2.java
     /**
      * Se ejecuta al presionar el botón del submarino de 4 casillas. Selecciona
      * el tipo de nave SUBMARINO, carga la imagen asociada, crea una etiqueta
@@ -1132,6 +1132,13 @@ public class ColocarNave2 extends javax.swing.JFrame {
      *
      * @param evt Evento generado por el mouse al presionar el botón.
      */
+=======
+
+   
+    
+    
+    
+>>>>>>> Stashed changes:BattleshipVista/src/main/java/pantallas/CrearTablero.java
     private void btnSubmarino4MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino4MousePressed
         seleccionarSubmarinos(TipoNave.SUBMARINO);
 
@@ -1167,60 +1174,54 @@ public class ColocarNave2 extends javax.swing.JFrame {
      */
     private void btnSubmarino3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino3MouseReleased
         if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.SUBMARINO) {
-            Point puntoEnTablero = SwingUtilities.convertPoint(btnSubmarino3, evt.getPoint(), panelTablero);
-            int x = puntoEnTablero.y / 40;
-            int y = puntoEnTablero.x / 40;
+        Point puntoEnTablero = SwingUtilities.convertPoint(btnSubmarino3, evt.getPoint(), panelTablero);
+        int x = puntoEnTablero.y / 40;
+        int y = puntoEnTablero.x / 40;
 
-            // Verificamos que haya espacio para 4 casillas hacia la derecha
-            if (x >= 0 && x < 10 && y >= 0 && y <= 8) { // hasta columna 6 (6 + 4 = 10)
-                boolean espacioDisponible = true;
-
+        // Verificamos que haya espacio para 2 casillas hacia la derecha
+        if (x >= 0 && x < 10 && y >= 0 && y <= 8) { // hasta columna 8 (8 + 2 = 10)
+            // Validar que no haya casillas ocupadas ni adyacentes
+            if (esValidaColocacionConEspacio(x, y, 2)) {
                 for (int i = 0; i < 2; i++) {
-                    if (casillasOcupadas[x][y + i]) {
-                        espacioDisponible = false;
+                    Casilla casilla = tablero[x][y + i];
+                    naveSeleccionada.agregarCasilla(casilla);
+                    casillasOcupadas[x][y + i] = true;
 
-                        btnSubmarino3.setBounds(135, 360, 40, 75); // Ajustar la posición y tamaño
-                        panelBarcos.add(btnSubmarino3);
-                        panelBarcos.revalidate();
-                        panelBarcos.repaint();
-                        break;
-                    }
+                    JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
+                    casillaButton.setBackground(Color.PINK);
                 }
 
-                if (espacioDisponible) {
-                    for (int i = 0; i < 2; i++) {
-                        Casilla casilla = tablero[x][y + i];
-                        naveSeleccionada.agregarCasilla(casilla);
-                        casillasOcupadas[x][y + i] = true;
+                System.out.println("Submarino colocado en fila " + x + " desde columna " + y + " hasta " + (y + 1));
+                repaint();
 
-                        JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
-                        casillaButton.setBackground(Color.PINK);
-                    }
+                contadorSubmarinos++;
+                naveSeleccionada = null;
 
-                    System.out.println("Crucero colocado en fila " + x + " desde columna " + y + " hasta " + (y + 3));
-                    repaint();
+                // Hacer desaparecer el botón del submarino después de colocarlo
+                Container contenedor = btnSubmarino3.getParent();
+                contenedor.remove(btnSubmarino3);
+                contenedor.revalidate();
+                contenedor.repaint();
 
-                    // Incrementar contador de portaaviones
-                    if (naveSeleccionada.getTipo() == TipoNave.SUBMARINO) {
-                        contadorSubmarinos++;
-                    }
-                    naveSeleccionada = null; // Reiniciar la selección del barco
-
-                    //Hacer que la nave desaparezca despues de colocarla en el tablero
-                    Container contenedor = btnSubmarino3.getParent(); // Obtener el panel donde estaba el botón
-                    contenedor.remove(btnSubmarino3);                 // Eliminar el botón del panel
-                    contenedor.revalidate();                      // Revalidar el layout
-                    contenedor.repaint();                         // Repaint para refrescar la interfaz
-
-                } else {
-                    System.out.println("No hay espacio suficiente o casillas ocupadas para el Crucero.");
-                }
             } else {
-                System.out.println("Las coordenadas estan fuera del rango para colocar el Crucero.");
+                System.out.println("No se puede colocar el submarino porque hay otra nave adyacente.");
+                // Opcional: Regresar el botón a su posición original si quieres
+                btnSubmarino3.setBounds(108, 278, 40, 75);
+                panelBarcos.add(btnSubmarino3);
+                panelBarcos.revalidate();
+                panelBarcos.repaint();
             }
         } else {
-            System.out.println("No se ha seleccionado el Crucero para colocar.");
+            System.out.println("Las coordenadas están fuera del rango para colocar el submarino.");
+            // Opcional: Regresar el botón a su posición original
+            btnSubmarino3.setBounds(108, 278, 40, 75);
+            panelBarcos.add(btnSubmarino3);
+            panelBarcos.revalidate();
+            panelBarcos.repaint();
         }
+    } else {
+        System.out.println("No se ha seleccionado el submarino para colocar.");
+    }
     }//GEN-LAST:event_btnSubmarino3MouseReleased
     /**
      * Se ejecuta al presionar el botón del submarino de 3 casillas. Selecciona
@@ -1263,61 +1264,55 @@ public class ColocarNave2 extends javax.swing.JFrame {
      * @param evt Evento generado por el mouse al soltar el botón.
      */
     private void btnSubmarino2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino2MouseReleased
-        if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.SUBMARINO) {
-            Point puntoEnTablero = SwingUtilities.convertPoint(btnSubmarino2, evt.getPoint(), panelTablero);
-            int x = puntoEnTablero.y / 40;
-            int y = puntoEnTablero.x / 40;
+         if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.SUBMARINO) {
+        Point puntoEnTablero = SwingUtilities.convertPoint(btnSubmarino2, evt.getPoint(), panelTablero);
+        int x = puntoEnTablero.y / 40;
+        int y = puntoEnTablero.x / 40;
 
-            // Verificamos que haya espacio para 4 casillas hacia la derecha
-            if (x >= 0 && x < 10 && y >= 0 && y <= 8) { // hasta columna 6 (6 + 4 = 10)
-                boolean espacioDisponible = true;
-
+        // Verificamos que haya espacio para 2 casillas hacia la derecha
+        if (x >= 0 && x < 10 && y >= 0 && y <= 8) { // hasta columna 8 (8 + 2 = 10)
+            // Validar que no haya casillas ocupadas ni adyacentes
+            if (esValidaColocacionConEspacio(x, y, 2)) {
                 for (int i = 0; i < 2; i++) {
-                    if (casillasOcupadas[x][y + i]) {
-                        espacioDisponible = false;
+                    Casilla casilla = tablero[x][y + i];
+                    naveSeleccionada.agregarCasilla(casilla);
+                    casillasOcupadas[x][y + i] = true;
 
-                        btnSubmarino2.setBounds(75, 360, 40, 75); // Ajustar la posición y tamaño
-                        panelBarcos.add(btnSubmarino2);
-                        panelBarcos.revalidate();
-                        panelBarcos.repaint();
-                        break;
-                    }
+                    JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
+                    casillaButton.setBackground(Color.PINK);
                 }
 
-                if (espacioDisponible) {
-                    for (int i = 0; i < 2; i++) {
-                        Casilla casilla = tablero[x][y + i];
-                        naveSeleccionada.agregarCasilla(casilla);
-                        casillasOcupadas[x][y + i] = true;
+                System.out.println("Submarino colocado en fila " + x + " desde columna " + y + " hasta " + (y + 1));
+                repaint();
 
-                        JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
-                        casillaButton.setBackground(Color.PINK);
-                    }
+                contadorSubmarinos++;
+                naveSeleccionada = null;
 
-                    System.out.println("Crucero colocado en fila " + x + " desde columna " + y + " hasta " + (y + 3));
-                    repaint();
+                // Hacer desaparecer el botón del submarino después de colocarlo
+                Container contenedor = btnSubmarino2.getParent();
+                contenedor.remove(btnSubmarino2);
+                contenedor.revalidate();
+                contenedor.repaint();
 
-                    // Incrementar contador de portaaviones
-                    if (naveSeleccionada.getTipo() == TipoNave.SUBMARINO) {
-                        contadorSubmarinos++;
-                    }
-                    naveSeleccionada = null; // Reiniciar la selección del barco
-
-                    //Hacer que la nave desaparezca despues de colocarla en el tablero
-                    Container contenedor = btnSubmarino2.getParent(); // Obtener el panel donde estaba el botón
-                    contenedor.remove(btnSubmarino2);                 // Eliminar el botón del panel
-                    contenedor.revalidate();                      // Revalidar el layout
-                    contenedor.repaint();                         // Repaint para refrescar la interfaz
-
-                } else {
-                    System.out.println("No hay espacio suficiente o casillas ocupadas para el Crucero.");
-                }
             } else {
-                System.out.println("Las coordenadas estan fuera del rango para colocar el Crucero.");
+                System.out.println("No se puede colocar el submarino porque hay otra nave adyacente.");
+                // Opcional: Regresar el botón a su posición original si quieres
+                btnSubmarino2.setBounds(62, 278, 40, 75);
+                panelBarcos.add(btnSubmarino2);
+                panelBarcos.revalidate();
+                panelBarcos.repaint();
             }
         } else {
-            System.out.println("No se ha seleccionado el Crucero para colocar.");
+            System.out.println("Las coordenadas están fuera del rango para colocar el submarino.");
+            // Opcional: Regresar el botón a su posición original
+            btnSubmarino2.setBounds(62, 278, 40, 75);
+            panelBarcos.add(btnSubmarino2);
+            panelBarcos.revalidate();
+            panelBarcos.repaint();
         }
+    } else {
+        System.out.println("No se ha seleccionado el submarino para colocar.");
+    }
     }//GEN-LAST:event_btnSubmarino2MouseReleased
 // Evento cuando se presiona el botón del submarino 2
 
@@ -1343,59 +1338,54 @@ public class ColocarNave2 extends javax.swing.JFrame {
 
     private void btnSubmarino1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnSubmarino1MouseReleased
         if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.SUBMARINO) {
-            Point puntoEnTablero = SwingUtilities.convertPoint(btnSubmarino1, evt.getPoint(), panelTablero);
-            int x = puntoEnTablero.y / 40;
-            int y = puntoEnTablero.x / 40;
+        Point puntoEnTablero = SwingUtilities.convertPoint(btnSubmarino1, evt.getPoint(), panelTablero);
+        int x = puntoEnTablero.y / 40;
+        int y = puntoEnTablero.x / 40;
 
-            // Verificamos que haya espacio para 4 casillas hacia la derecha
-            if (x >= 0 && x < 10 && y >= 0 && y <= 8) { // hasta columna 6 (6 + 4 = 10)
-                boolean espacioDisponible = true;
-
+        // Verificamos que haya espacio para 2 casillas hacia la derecha
+        if (x >= 0 && x < 10 && y >= 0 && y <= 8) { // hasta columna 8 (8 + 2 = 10)
+            // Validar que no haya casillas ocupadas ni adyacentes
+            if (esValidaColocacionConEspacio(x, y, 2)) {
                 for (int i = 0; i < 2; i++) {
-                    if (casillasOcupadas[x][y + i]) {
-                        espacioDisponible = false;
-                        btnSubmarino1.setBounds(20, 360, 40, 75); // Ajustar la posición y tamaño
-                        panelBarcos.add(btnSubmarino1);
-                        panelBarcos.revalidate();
-                        panelBarcos.repaint();
-                        break;
-                    }
+                    Casilla casilla = tablero[x][y + i];
+                    naveSeleccionada.agregarCasilla(casilla);
+                    casillasOcupadas[x][y + i] = true;
+
+                    JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
+                    casillaButton.setBackground(Color.PINK);
                 }
 
-                if (espacioDisponible) {
-                    for (int i = 0; i < 2; i++) {
-                        Casilla casilla = tablero[x][y + i];
-                        naveSeleccionada.agregarCasilla(casilla);
-                        casillasOcupadas[x][y + i] = true;
+                System.out.println("Submarino colocado en fila " + x + " desde columna " + y + " hasta " + (y + 1));
+                repaint();
 
-                        JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
-                        casillaButton.setBackground(Color.PINK);
-                    }
+                contadorSubmarinos++;
+                naveSeleccionada = null;
 
-                    System.out.println("Crucero colocado en fila " + x + " desde columna " + y + " hasta " + (y + 3));
-                    repaint();
+                // Hacer desaparecer el botón del submarino después de colocarlo
+                Container contenedor = btnSubmarino1.getParent();
+                contenedor.remove(btnSubmarino1);
+                contenedor.revalidate();
+                contenedor.repaint();
 
-                    // Incrementar contador de portaaviones
-                    if (naveSeleccionada.getTipo() == TipoNave.SUBMARINO) {
-                        contadorSubmarinos++;
-                    }
-                    naveSeleccionada = null; // Reiniciar la selección del barco
-
-                    //Hacer que la nave desaparezca despues de colocarla en el tablero
-                    Container contenedor = btnSubmarino1.getParent(); // Obtener el panel donde estaba el botón
-                    contenedor.remove(btnSubmarino1);                 // Eliminar el botón del panel
-                    contenedor.revalidate();                      // Revalidar el layout
-                    contenedor.repaint();                         // Repaint para refrescar la interfaz
-
-                } else {
-                    System.out.println("No hay espacio suficiente o casillas ocupadas para el Crucero.");
-                }
             } else {
-                System.out.println("Las coordenadas estan fuera del rango para colocar el Crucero.");
+                System.out.println("No se puede colocar el submarino porque hay otra nave adyacente.");
+                // Opcional: Regresar el botón a su posición original si quieres
+                btnSubmarino1.setBounds(16, 278, 40, 75);
+                panelBarcos.add(btnSubmarino1);
+                panelBarcos.revalidate();
+                panelBarcos.repaint();
             }
         } else {
-            System.out.println("No se ha seleccionado el Crucero para colocar.");
+            System.out.println("Las coordenadas están fuera del rango para colocar el submarino.");
+            // Opcional: Regresar el botón a su posición original
+            btnSubmarino1.setBounds(16, 278, 40, 75);
+            panelBarcos.add(btnSubmarino1);
+            panelBarcos.revalidate();
+            panelBarcos.repaint();
         }
+    } else {
+        System.out.println("No se ha seleccionado el submarino para colocar.");
+    }
     }//GEN-LAST:event_btnSubmarino1MouseReleased
 // Evento cuando se presiona el botón submarino 1 
 
@@ -1425,59 +1415,52 @@ public class ColocarNave2 extends javax.swing.JFrame {
 
     private void btnCrucero1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCrucero1MouseReleased
         if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.CRUCERO) {
-            Point puntoEnTablero = SwingUtilities.convertPoint(btnCrucero1, evt.getPoint(), panelTablero);
-            int x = puntoEnTablero.y / 40;
-            int y = puntoEnTablero.x / 40;
+        Point puntoEnTablero = SwingUtilities.convertPoint(btnCrucero1, evt.getPoint(), panelTablero);
+        int x = puntoEnTablero.y / 40;
+        int y = puntoEnTablero.x / 40;
 
-            // Verificamos que haya espacio para 4 casillas hacia la derecha
-            if (x >= 0 && x < 10 && y >= 0 && y <= 7) { // hasta columna 6 (6 + 4 = 10)
-                boolean espacioDisponible = true;
-
+        // Verificamos que haya espacio para 3 casillas hacia la derecha
+        if (x >= 0 && x < 10 && y >= 0 && y <= 7) { // hasta columna 7 (7 + 3 = 10)
+            if (esValidaColocacionConEspacio(x, y, 3)) {
                 for (int i = 0; i < 3; i++) {
-                    if (casillasOcupadas[x][y + i]) {
-                        espacioDisponible = false;
-                        btnCrucero1.setBounds(35, 145, 40, 100); // Ajustar la posición y tamaño
-                        panelBarcos.add(btnCrucero1);
-                        panelBarcos.revalidate();
-                        panelBarcos.repaint();
-                        break;
-                    }
+                    Casilla casilla = tablero[x][y + i];
+                    naveSeleccionada.agregarCasilla(casilla);
+                    casillasOcupadas[x][y + i] = true;
+
+                    JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
+                    casillaButton.setBackground(Color.GREEN);
                 }
 
-                if (espacioDisponible) {
-                    for (int i = 0; i < 3; i++) {
-                        Casilla casilla = tablero[x][y + i];
-                        naveSeleccionada.agregarCasilla(casilla);
-                        casillasOcupadas[x][y + i] = true;
+                System.out.println("Crucero colocado en fila " + x + " desde columna " + y + " hasta " + (y + 2));
+                repaint();
 
-                        JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
-                        casillaButton.setBackground(Color.GREEN);
-                    }
+                contadorCruceros++;
+                naveSeleccionada = null;
 
-                    System.out.println("Crucero colocado en fila " + x + " desde columna " + y + " hasta " + (y + 2));
-                    repaint();
+                // Hacer desaparecer el botón del crucero después de colocarlo
+                Container contenedor = btnCrucero1.getParent();
+                contenedor.remove(btnCrucero1);
+                contenedor.revalidate();
+                contenedor.repaint();
 
-                    // Incrementar contador de portaaviones
-                    if (naveSeleccionada.getTipo() == TipoNave.CRUCERO) {
-                        contadorCruceros++;
-                    }
-                    naveSeleccionada = null; // Reiniciar la selección del barco
-
-                    //Hacer que la nave desaparezca despues de colocarla en el tablero
-                    Container contenedor = btnCrucero1.getParent(); // Obtener el panel donde estaba el botón
-                    contenedor.remove(btnCrucero1);                 // Eliminar el botón del panel
-                    contenedor.revalidate();                      // Revalidar el layout
-                    contenedor.repaint();                         // Repaint para refrescar la interfaz
-
-                } else {
-                    System.out.println("No hay espacio suficiente o casillas ocupadas para el Crucero.");
-                }
             } else {
-                System.out.println("Las coordenadas estan fuera del rango para colocar el Crucero.");
+                System.out.println("No se puede colocar el crucero porque hay otra nave adyacente.");
+                // Opcional: Regresar el botón a su posición original
+                btnCrucero1.setBounds(30, 114, 40, 100);
+                panelBarcos.add(btnCrucero1);
+                panelBarcos.revalidate();
+                panelBarcos.repaint();
             }
         } else {
-            System.out.println("No se ha seleccionado el Crucero para colocar.");
+            System.out.println("Las coordenadas están fuera del rango para colocar el Crucero.");
+            btnCrucero1.setBounds(30, 114, 40, 100);
+            panelBarcos.add(btnCrucero1);
+            panelBarcos.revalidate();
+            panelBarcos.repaint();
         }
+    } else {
+        System.out.println("No se ha seleccionado el Crucero para colocar.");
+    }
     }//GEN-LAST:event_btnCrucero1MouseReleased
     /**
      * Evento que se dispara cuando se presiona el botón del crucero 1.
@@ -1517,60 +1500,53 @@ public class ColocarNave2 extends javax.swing.JFrame {
      * @param evt Evento del mouse liberado
      */
     private void btnCrucero2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnCrucero2MouseReleased
-        if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.CRUCERO) {
-            Point puntoEnTablero = SwingUtilities.convertPoint(btnCrucero2, evt.getPoint(), panelTablero);
-            int x = puntoEnTablero.y / 40;
-            int y = puntoEnTablero.x / 40;
+         if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.CRUCERO) {
+        Point puntoEnTablero = SwingUtilities.convertPoint(btnCrucero2, evt.getPoint(), panelTablero);
+        int x = puntoEnTablero.y / 40;
+        int y = puntoEnTablero.x / 40;
 
-            // Verificamos que haya espacio para 4 casillas hacia la derecha
-            if (x >= 0 && x < 10 && y >= 0 && y <= 7) { // hasta columna 6 (6 + 4 = 10)
-                boolean espacioDisponible = true;
-
+        // Verificamos que haya espacio para 3 casillas hacia la derecha
+        if (x >= 0 && x < 10 && y >= 0 && y <= 7) { // hasta columna 7 (7 + 3 = 10)
+            if (esValidaColocacionConEspacio(x, y, 3)) {
                 for (int i = 0; i < 3; i++) {
-                    if (casillasOcupadas[x][y + i]) {
-                        espacioDisponible = false;
-                        btnCrucero2.setBounds(170, 145, 40, 100); // Ajustar la posición y tamaño
-                        panelBarcos.add(btnCrucero2);
-                        panelBarcos.revalidate();
-                        panelBarcos.repaint();
-                        break;
-                    }
+                    Casilla casilla = tablero[x][y + i];
+                    naveSeleccionada.agregarCasilla(casilla);
+                    casillasOcupadas[x][y + i] = true;
+
+                    JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
+                    casillaButton.setBackground(Color.GREEN);
                 }
 
-                if (espacioDisponible) {
-                    for (int i = 0; i < 3; i++) {
-                        Casilla casilla = tablero[x][y + i];
-                        naveSeleccionada.agregarCasilla(casilla);
-                        casillasOcupadas[x][y + i] = true;
+                System.out.println("Crucero colocado en fila " + x + " desde columna " + y + " hasta " + (y + 2));
+                repaint();
 
-                        JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
-                        casillaButton.setBackground(Color.GREEN);
-                    }
+                contadorCruceros++;
+                naveSeleccionada = null;
 
-                    System.out.println("Crucero colocado en fila " + x + " desde columna " + y + " hasta " + (y + 2));
-                    repaint();
+                // Hacer desaparecer el botón del crucero después de colocarlo
+                Container contenedor = btnCrucero2.getParent();
+                contenedor.remove(btnCrucero2);
+                contenedor.revalidate();
+                contenedor.repaint();
 
-                    // Incrementar contador de portaaviones
-                    if (naveSeleccionada.getTipo() == TipoNave.CRUCERO) {
-                        contadorCruceros++;
-                    }
-                    naveSeleccionada = null; // Reiniciar la selección del barco
-
-                    //Hacer que la nave desaparezca despues de colocarla en el tablero
-                    Container contenedor = btnCrucero2.getParent(); // Obtener el panel donde estaba el botón
-                    contenedor.remove(btnCrucero2);                 // Eliminar el botón del panel
-                    contenedor.revalidate();                      // Revalidar el layout
-                    contenedor.repaint();                         // Repaint para refrescar la interfaz
-
-                } else {
-                    System.out.println("No hay espacio suficiente o casillas ocupadas para el Crucero.");
-                }
             } else {
-                System.out.println("Las coordenadas estan fuera del rango para colocar el Crucero.");
+                System.out.println("No se puede colocar el crucero porque hay otra nave adyacente.");
+                // Opcional: Regresar el botón a su posición original
+                btnCrucero2.setBounds(140, 114, 40, 100);
+                panelBarcos.add(btnCrucero2);
+                panelBarcos.revalidate();
+                panelBarcos.repaint();
             }
         } else {
-            System.out.println("No se ha seleccionado el Crucero para colocar.");
+            System.out.println("Las coordenadas están fuera del rango para colocar el Crucero.");
+            btnCrucero2.setBounds(140, 114, 40, 100);
+            panelBarcos.add(btnCrucero2);
+            panelBarcos.revalidate();
+            panelBarcos.repaint();
         }
+    } else {
+        System.out.println("No se ha seleccionado el Crucero para colocar.");
+    }
     }//GEN-LAST:event_btnCrucero2MouseReleased
     /**
      * Evento que se dispara al presionar el botón del crucero 2. Similar al
@@ -1614,50 +1590,59 @@ public class ColocarNave2 extends javax.swing.JFrame {
      */
     private void barco3MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_barco3MouseReleased
         if (naveSeleccionada != null) {
-            Point puntoEnTablero = SwingUtilities.convertPoint(barco3, evt.getPoint(), panelTablero);
+        Point puntoEnTablero = SwingUtilities.convertPoint(barco3, evt.getPoint(), panelTablero);
 
-            int x = puntoEnTablero.y / 40; // fila
-            int y = puntoEnTablero.x / 40; // columna
+        int x = puntoEnTablero.y / 40; // fila
+        int y = puntoEnTablero.x / 40; // columna
 
-            if (x >= 0 && x < 10 && y >= 0 && y < 10) {
-                if (casillasOcupadas[x][y]) {
+        if (x >= 0 && x < 10 && y >= 0 && y < 10) {
+            // Validamos que no haya ninguna nave adyacente o en la misma casilla
+            if (!esValidaColocacionConEspacio(x, y, 1)) {
+                System.out.println("No se puede colocar el barco porque hay otra nave adyacente.");
+                barco3.setBounds(88, 226, 40, 40); // posición original
+                panelBarcos.add(barco3);
+                panelBarcos.revalidate();
+                panelBarcos.repaint();
+                return;
+            }
 
-                    barco3.setBounds(169, 300, 40, 40); // Ajustar la posición y tamaño del barco
-                    panelBarcos.add(barco3);
-                    panelBarcos.revalidate();
-                    panelBarcos.repaint();
-                    System.out.println("La casilla ya está ocupada.");
-                } else {
-                    Casilla casilla = tablero[x][y];
-                    naveSeleccionada.agregarCasilla(casilla);
-                    casillasOcupadas[x][y] = true; // Marcar la casilla como ocupada
-
-                    JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + y);
-                    casillaButton.setBackground(Color.RED); // Actualiza la interfaz con el color
-
-                    System.out.println("Casilla agregada a la nave " + naveSeleccionada.getNombre()
-                            + " en las coordenadas (" + x + ", " + y + ")");
-                    repaint();
-
-                    // Incrementar contador de barcos
-                    if (naveSeleccionada.getTipo() == TipoNave.BARCO) {
-                        contadorBarcos++;
-                    }
-
-                    naveSeleccionada = null; // Reiniciar la selección del barco
-
-                    // Hacer que la nave desaparezca después de colocarla en el tablero
-                    Container contenedor = barco3.getParent(); // Obtener el panel donde estaba el botón
-                    contenedor.remove(barco3);                 // Eliminar el botón del panel
-                    contenedor.revalidate();                   // Revalidar el layout
-                    contenedor.repaint();                      // Repaint para refrescar la interfaz
-                }
+            if (casillasOcupadas[x][y]) {
+                System.out.println("La casilla ya está ocupada.");
+                barco3.setBounds(88, 226, 40, 40); // posición original
+                panelBarcos.add(barco3);
+                panelBarcos.revalidate();
+                panelBarcos.repaint();
             } else {
-                System.out.println("Las coordenadas están fuera del tablero.");
+                Casilla casilla = tablero[x][y];
+                naveSeleccionada.agregarCasilla(casilla);
+                casillasOcupadas[x][y] = true; // Marcar la casilla como ocupada
+
+                JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + y);
+                casillaButton.setBackground(Color.RED); // Actualiza la interfaz con el color
+
+                System.out.println("Casilla agregada a la nave " + naveSeleccionada.getNombre()
+                        + " en las coordenadas (" + x + ", " + y + ")");
+                repaint();
+
+                // Incrementar contador de barcos
+                if (naveSeleccionada.getTipo() == TipoNave.BARCO) {
+                    contadorBarcos++;
+                }
+
+                naveSeleccionada = null; // Reiniciar la selección del barco
+
+                // Hacer que la nave desaparezca después de colocarla en el tablero
+                Container contenedor = barco3.getParent(); // Obtener el panel donde estaba el botón
+                contenedor.remove(barco3);                 // Eliminar el botón del panel
+                contenedor.revalidate();                   // Revalidar el layout
+                contenedor.repaint();                      // Repaint para refrescar la interfaz
             }
         } else {
-            System.out.println("No se ha seleccionado un barco para colocar.");
+            System.out.println("Las coordenadas están fuera del tablero.");
         }
+    } else {
+        System.out.println("No se ha seleccionado un barco para colocar.");
+    }
     }//GEN-LAST:event_barco3MouseReleased
     /**
      * Evento que se ejecuta al presionar el botón del mouse sobre barco3.
@@ -1694,51 +1679,59 @@ public class ColocarNave2 extends javax.swing.JFrame {
      */
     private void barco2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_barco2MouseReleased
         if (naveSeleccionada != null) {
-            Point puntoEnTablero = SwingUtilities.convertPoint(barco2, evt.getPoint(), panelTablero);
+        Point puntoEnTablero = SwingUtilities.convertPoint(barco2, evt.getPoint(), panelTablero);
 
-            int x = puntoEnTablero.y / 40; // fila
-            int y = puntoEnTablero.x / 40; // columna
+        int x = puntoEnTablero.y / 40; // fila
+        int y = puntoEnTablero.x / 40; // columna
 
-            if (x >= 0 && x < 10 && y >= 0 && y < 10) {
-                if (casillasOcupadas[x][y]) {
+        if (x >= 0 && x < 10 && y >= 0 && y < 10) {
+            // Validamos que no haya ninguna nave adyacente o en la misma casilla
+            if (!esValidaColocacionConEspacio(x, y, 1)) {
+                System.out.println("No se puede colocar el barco porque hay otra nave adyacente.");
+                barco2.setBounds(30, 226, 40, 40); // posición original
+                panelBarcos.add(barco2);
+                panelBarcos.revalidate();
+                panelBarcos.repaint();
+                return;
+            }
 
-                    barco2.setBounds(102, 300, 40, 40); // Ajustar la posición y tamaño del barco
-                    panelBarcos.add(barco2);
-                    panelBarcos.revalidate();
-                    panelBarcos.repaint();
-
-                    System.out.println("La casilla ya está ocupada.");
-                } else {
-                    Casilla casilla = tablero[x][y];
-                    naveSeleccionada.agregarCasilla(casilla);
-                    casillasOcupadas[x][y] = true; // Marcar la casilla como ocupada
-
-                    JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + y);
-                    casillaButton.setBackground(Color.RED); // Actualiza la interfaz con el color
-
-                    System.out.println("Casilla agregada a la nave " + naveSeleccionada.getNombre()
-                            + " en las coordenadas (" + x + ", " + y + ")");
-                    repaint();
-
-                    // Incrementar contador de barcos
-                    if (naveSeleccionada.getTipo() == TipoNave.BARCO) {
-                        contadorBarcos++;
-                    }
-
-                    naveSeleccionada = null; // Reiniciar la selección del barco
-
-                    // Hacer que la nave desaparezca después de colocarla en el tablero
-                    Container contenedor = barco2.getParent(); // Obtener el panel donde estaba el botón
-                    contenedor.remove(barco2);                 // Eliminar el botón del panel
-                    contenedor.revalidate();                   // Revalidar el layout
-                    contenedor.repaint();                      // Repaint para refrescar la interfaz
-                }
+            if (casillasOcupadas[x][y]) {
+                System.out.println("La casilla ya está ocupada.");
+                barco2.setBounds(30, 226, 40, 40); // posición original
+                panelBarcos.add(barco2);
+                panelBarcos.revalidate();
+                panelBarcos.repaint();
             } else {
-                System.out.println("Las coordenadas están fuera del tablero.");
+                Casilla casilla = tablero[x][y];
+                naveSeleccionada.agregarCasilla(casilla);
+                casillasOcupadas[x][y] = true; // Marcar la casilla como ocupada
+
+                JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + y);
+                casillaButton.setBackground(Color.RED); // Actualiza la interfaz con el color
+
+                System.out.println("Casilla agregada a la nave " + naveSeleccionada.getNombre()
+                        + " en las coordenadas (" + x + ", " + y + ")");
+                repaint();
+
+                // Incrementar contador de barcos
+                if (naveSeleccionada.getTipo() == TipoNave.BARCO) {
+                    contadorBarcos++;
+                }
+
+                naveSeleccionada = null; // Reiniciar la selección del barco
+
+                // Hacer que la nave desaparezca después de colocarla en el tablero
+                Container contenedor = barco2.getParent(); // Obtener el panel donde estaba el botón
+                contenedor.remove(barco2);                 // Eliminar el botón del panel
+                contenedor.revalidate();                   // Revalidar el layout
+                contenedor.repaint();                      // Repaint para refrescar la interfaz
             }
         } else {
-            System.out.println("No se ha seleccionado un barco para colocar.");
+            System.out.println("Las coordenadas están fuera del tablero.");
         }
+    } else {
+        System.out.println("No se ha seleccionado un barco para colocar.");
+    }
     }//GEN-LAST:event_barco2MouseReleased
     /**
      * Evento que se ejecuta al presionar el botón del mouse sobre barco2.
@@ -1776,61 +1769,68 @@ public class ColocarNave2 extends javax.swing.JFrame {
      * y muestra mensaje.
      */
     private void btnPortaaviones2MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPortaaviones2MouseReleased
-        if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.PORTAAVIONES) {
-            Point puntoEnTablero = SwingUtilities.convertPoint(btnPortaaviones2, evt.getPoint(), panelTablero);
-            int x = puntoEnTablero.y / 40;
-            int y = puntoEnTablero.x / 40;
+         if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.PORTAAVIONES) {
+        Point puntoEnTablero = SwingUtilities.convertPoint(btnPortaaviones2, evt.getPoint(), panelTablero);
+        int x = puntoEnTablero.y / 40; // fila
+        int y = puntoEnTablero.x / 40; // columna
 
-            // Verificamos que haya espacio para 4 casillas hacia la derecha
-            if (x >= 0 && x < 10 && y >= 0 && y <= 6) { // hasta columna 6 (6 + 4 = 10)
-                boolean espacioDisponible = true;
+        // Validar que la nave quepa y que las coordenadas estén dentro del tablero
+        if (x >= 0 && x < 10 && y >= 0 && y <= 6) { // hasta columna 6 (6 + 4 = 10)
+            
+            // Validar espacio y alrededores libres
+            if (!esValidaColocacionConEspacio(x, y, 4)) {
+                System.out.println("No se puede colocar el portaaviones porque hay otra nave adyacente o casilla ocupada.");
+                btnPortaaviones2.setBounds(30, 62, 150, 40); // posición original
+                panelBarcos.add(btnPortaaviones2);
+                panelBarcos.revalidate();
+                panelBarcos.repaint();
+                return;
+            }
 
+            boolean espacioDisponible = true;
+
+            for (int i = 0; i < 4; i++) {
+                if (casillasOcupadas[x][y + i]) {
+                    espacioDisponible = false;
+                    btnPortaaviones2.setBounds(30, 62, 150, 40); // posición original
+                    panelBarcos.add(btnPortaaviones2);
+                    panelBarcos.revalidate();
+                    panelBarcos.repaint();
+                    break;
+                }
+            }
+
+            if (espacioDisponible) {
                 for (int i = 0; i < 4; i++) {
-                    if (casillasOcupadas[x][y + i]) {
-                        espacioDisponible = false;
+                    Casilla casilla = tablero[x][y + i];
+                    naveSeleccionada.agregarCasilla(casilla);
+                    casillasOcupadas[x][y + i] = true;
 
-                        btnPortaaviones2.setBounds(25, 85, 150, 40); // Ajustar la posición y tamaño
-                        panelBarcos.add(btnPortaaviones2);
-                        panelBarcos.revalidate();
-                        panelBarcos.repaint();
-                        break;
-                    }
+                    JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
+                    casillaButton.setBackground(Color.ORANGE);
                 }
 
-                if (espacioDisponible) {
-                    for (int i = 0; i < 4; i++) {
-                        Casilla casilla = tablero[x][y + i];
-                        naveSeleccionada.agregarCasilla(casilla);
-                        casillasOcupadas[x][y + i] = true;
+                System.out.println("Portaaviones colocado en fila " + x + " desde columna " + y + " hasta " + (y + 3));
+                repaint();
 
-                        JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
-                        casillaButton.setBackground(Color.ORANGE);
-                    }
+                contadorPortaaviones++;
+                naveSeleccionada = null; // Reiniciar selección
 
-                    System.out.println("Portaaviones colocado en fila " + x + " desde columna " + y + " hasta " + (y + 3));
-                    repaint();
+                // Remover botón del panel
+                Container contenedor = btnPortaaviones2.getParent();
+                contenedor.remove(btnPortaaviones2);
+                contenedor.revalidate();
+                contenedor.repaint();
 
-                    // Incrementar contador de portaaviones
-                    if (naveSeleccionada.getTipo() == TipoNave.PORTAAVIONES) {
-                        contadorPortaaviones++;
-                    }
-                    naveSeleccionada = null; // Reiniciar la selección del barco
-
-                    //Hacer que la nave desaparezca despues de colocarla en el tablero
-                    Container contenedor = btnPortaaviones2.getParent(); // Obtener el panel donde estaba el botón
-                    contenedor.remove(btnPortaaviones2);                 // Eliminar el botón del panel
-                    contenedor.revalidate();                      // Revalidar el layout
-                    contenedor.repaint();                         // Repaint para refrescar la interfaz
-
-                } else {
-                    System.out.println("No hay espacio suficiente o casillas ocupadas para el portaaviones.");
-                }
             } else {
-                System.out.println("Las coordenadas estan fuera del rango para colocar el portaaviones.");
+                System.out.println("No hay espacio suficiente o casillas ocupadas para el portaaviones.");
             }
         } else {
-            System.out.println("No se ha seleccionado el portaaviones para colocar.");
+            System.out.println("Las coordenadas están fuera del rango para colocar el portaaviones.");
         }
+    } else {
+        System.out.println("No se ha seleccionado el portaaviones para colocar.");
+    }
     }//GEN-LAST:event_btnPortaaviones2MouseReleased
     /**
      * Evento que se ejecuta al presionar el botón del mouse sobre
@@ -1860,60 +1860,68 @@ public class ColocarNave2 extends javax.swing.JFrame {
      * para btnPortaaviones.
      */
     private void btnPortaavionesMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnPortaavionesMouseReleased
-        if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.PORTAAVIONES) {
-            Point puntoEnTablero = SwingUtilities.convertPoint(btnPortaaviones, evt.getPoint(), panelTablero);
-            int x = puntoEnTablero.y / 40;
-            int y = puntoEnTablero.x / 40;
+         if (naveSeleccionada != null && naveSeleccionada.getTipo() == TipoNave.PORTAAVIONES) {
+        Point puntoEnTablero = SwingUtilities.convertPoint(btnPortaaviones, evt.getPoint(), panelTablero);
+        int x = puntoEnTablero.y / 40; // fila
+        int y = puntoEnTablero.x / 40; // columna
 
-            // Verificamos que haya espacio para 4 casillas hacia la derecha
-            if (x >= 0 && x < 10 && y >= 0 && y <= 6) { // hasta columna 6 (6 + 4 = 10)
-                boolean espacioDisponible = true;
+        // Validar que la nave quepa y que las coordenadas estén dentro del tablero
+        if (x >= 0 && x < 10 && y >= 0 && y <= 6) { // hasta columna 6 (6 + 4 = 10)
+            
+            // Validar espacio y alrededores libres
+            if (!esValidaColocacionConEspacio(x, y, 4)) {
+                System.out.println("No se puede colocar el portaaviones porque hay otra nave adyacente o casilla ocupada.");
+                btnPortaaviones.setBounds(30, 16, 150, 40); // posición original
+                panelBarcos.add(btnPortaaviones);
+                panelBarcos.revalidate();
+                panelBarcos.repaint();
+                return;
+            }
 
+            boolean espacioDisponible = true;
+
+            for (int i = 0; i < 4; i++) {
+                if (casillasOcupadas[x][y + i]) {
+                    espacioDisponible = false;
+                    btnPortaaviones.setBounds(30, 16, 150, 40); // posición original
+                    panelBarcos.add(btnPortaaviones);
+                    panelBarcos.revalidate();
+                    panelBarcos.repaint();
+                    break;
+                }
+            }
+
+            if (espacioDisponible) {
                 for (int i = 0; i < 4; i++) {
-                    if (casillasOcupadas[x][y + i]) {
-                        espacioDisponible = false;
-                        btnPortaaviones.setBounds(25, 25, 150, 40); // Ajustar la posición y tamaño
-                        panelBarcos.add(btnPortaaviones);
-                        panelBarcos.revalidate();
-                        panelBarcos.repaint();
-                        break;
-                    }
+                    Casilla casilla = tablero[x][y + i];
+                    naveSeleccionada.agregarCasilla(casilla);
+                    casillasOcupadas[x][y + i] = true;
+
+                    JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
+                    casillaButton.setBackground(Color.ORANGE);
                 }
 
-                if (espacioDisponible) {
-                    for (int i = 0; i < 4; i++) {
-                        Casilla casilla = tablero[x][y + i];
-                        naveSeleccionada.agregarCasilla(casilla);
-                        casillasOcupadas[x][y + i] = true;
+                System.out.println("Portaaviones colocado en fila " + x + " desde columna " + y + " hasta " + (y + 3));
+                repaint();
 
-                        JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + (y + i));
-                        casillaButton.setBackground(Color.ORANGE);
-                    }
+                contadorPortaaviones++;
+                naveSeleccionada = null; // Reiniciar selección
 
-                    System.out.println("Portaaviones colocado en fila " + x + " desde columna " + y + " hasta " + (y + 3));
-                    repaint();
+                // Remover botón del panel
+                Container contenedor = btnPortaaviones.getParent();
+                contenedor.remove(btnPortaaviones);
+                contenedor.revalidate();
+                contenedor.repaint();
 
-                    // Incrementar contador de portaaviones
-                    if (naveSeleccionada.getTipo() == TipoNave.PORTAAVIONES) {
-                        contadorPortaaviones++;
-                    }
-                    naveSeleccionada = null; // Reiniciar la selección del barco
-
-                    //Hacer que la nave desaparezca despues de colocarla en el tablero
-                    Container contenedor = btnPortaaviones.getParent(); // Obtener el panel donde estaba el botón
-                    contenedor.remove(btnPortaaviones);                 // Eliminar el botón del panel
-                    contenedor.revalidate();                      // Revalidar el layout
-                    contenedor.repaint();                         // Repaint para refrescar la interfaz
-
-                } else {
-                    System.out.println("No hay espacio suficiente o casillas ocupadas para el portaaviones.");
-                }
             } else {
-                System.out.println("Las coordenadas estan fuera del rango para colocar el portaaviones.");
+                System.out.println("No hay espacio suficiente o casillas ocupadas para el portaaviones.");
             }
         } else {
-            System.out.println("No se ha seleccionado el portaaviones para colocar.");
+            System.out.println("Las coordenadas están fuera del rango para colocar el portaaviones.");
         }
+    } else {
+        System.out.println("No se ha seleccionado el portaaviones para colocar.");
+    }
     }//GEN-LAST:event_btnPortaavionesMouseReleased
     /**
      * Evento que se ejecuta al presionar el botón del mouse sobre
@@ -1959,50 +1967,59 @@ public class ColocarNave2 extends javax.swing.JFrame {
      */
     private void barco1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_barco1MouseReleased
         if (naveSeleccionada != null) {
-            Point puntoEnTablero = SwingUtilities.convertPoint(barco1, evt.getPoint(), panelTablero);
+        Point puntoEnTablero = SwingUtilities.convertPoint(barco1, evt.getPoint(), panelTablero);
 
-            int x = puntoEnTablero.y / 40; // fila
-            int y = puntoEnTablero.x / 40; // columna
+        int x = puntoEnTablero.y / 40; // fila
+        int y = puntoEnTablero.x / 40; // columna
 
-            if (x >= 0 && x < 10 && y >= 0 && y < 10) {
-                if (casillasOcupadas[x][y]) {
-                    barco1.setBounds(35, 300, 40, 40); // Ajustar la posición y tamaño del barco
-                    panelBarcos.add(barco1);
-                    panelBarcos.revalidate();
-                    panelBarcos.repaint();
+        if (x >= 0 && x < 10 && y >= 0 && y < 10) {
+            // Validamos que no haya ninguna nave adyacente o en la misma casilla
+            if (!esValidaColocacionConEspacio(x, y, 1)) {
+                System.out.println("No se puede colocar el barco porque hay otra nave adyacente.");
+                barco1.setBounds(140, 226, 40, 40); // posición original
+                panelBarcos.add(barco1);
+                panelBarcos.revalidate();
+                panelBarcos.repaint();
+                return;
+            }
 
-                    System.out.println("La casilla ya está ocupada.");
-                } else {
-                    Casilla casilla = tablero[x][y];
-                    naveSeleccionada.agregarCasilla(casilla);
-                    casillasOcupadas[x][y] = true; // Marcar la casilla como ocupada
-
-                    JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + y);
-                    casillaButton.setBackground(Color.RED); // Actualiza la interfaz con el color
-
-                    System.out.println("Casilla agregada a la nave " + naveSeleccionada.getNombre()
-                            + " en las coordenadas (" + x + ", " + y + ")");
-                    repaint();
-
-                    // Incrementar contador de barcos
-                    if (naveSeleccionada.getTipo() == TipoNave.BARCO) {
-                        contadorBarcos++;
-                    }
-
-                    naveSeleccionada = null; // Reiniciar la selección del barco
-
-                    // Hacer que la nave desaparezca después de colocarla en el tablero
-                    Container contenedor = barco1.getParent(); // Obtener el panel donde estaba el botón
-                    contenedor.remove(barco1);                 // Eliminar el botón del panel
-                    contenedor.revalidate();                   // Revalidar el layout
-                    contenedor.repaint();                      // Repaint para refrescar la interfaz
-                }
+            if (casillasOcupadas[x][y]) {
+                System.out.println("La casilla ya está ocupada.");
+                barco1.setBounds(140, 226, 40, 40); // posición original
+                panelBarcos.add(barco1);
+                panelBarcos.revalidate();
+                panelBarcos.repaint();
             } else {
-                System.out.println("Las coordenadas están fuera del tablero.");
+                Casilla casilla = tablero[x][y];
+                naveSeleccionada.agregarCasilla(casilla);
+                casillasOcupadas[x][y] = true; // Marcar la casilla como ocupada
+
+                JButton casillaButton = (JButton) panelTablero.getComponent(x * 10 + y);
+                casillaButton.setBackground(Color.RED); // Actualiza la interfaz con el color
+
+                System.out.println("Casilla agregada a la nave " + naveSeleccionada.getNombre()
+                        + " en las coordenadas (" + x + ", " + y + ")");
+                repaint();
+
+                // Incrementar contador de barcos
+                if (naveSeleccionada.getTipo() == TipoNave.BARCO) {
+                    contadorBarcos++;
+                }
+
+                naveSeleccionada = null; // Reiniciar la selección del barco
+
+                // Hacer que la nave desaparezca después de colocarla en el tablero
+                Container contenedor = barco1.getParent(); // Obtener el panel donde estaba el botón
+                contenedor.remove(barco1);                 // Eliminar el botón del panel
+                contenedor.revalidate();                   // Revalidar el layout
+                contenedor.repaint();                      // Repaint para refrescar la interfaz
             }
         } else {
-            System.out.println("No se ha seleccionado un barco para colocar.");
+            System.out.println("Las coordenadas están fuera del tablero.");
         }
+    } else {
+        System.out.println("No se ha seleccionado un barco para colocar.");
+    }
     }//GEN-LAST:event_barco1MouseReleased
     /**
      * Evento que se ejecuta al presionar el botón del mouse sobre el botón
@@ -2152,6 +2169,29 @@ public class ColocarNave2 extends javax.swing.JFrame {
         panelBarcos.repaint();
     }
 
+     
+    private boolean esValidaColocacionConEspacio(int fila, int colInicio, int tamaño) {
+    int filas = casillasOcupadas.length;
+    int columnas = casillasOcupadas[0].length;
+
+    for (int i = 0; i < tamaño; i++) {
+        int c = colInicio + i;
+
+        // Revisa las casillas alrededor (incluye diagonales)
+        for (int f = fila - 1; f <= fila + 1; f++) {
+            for (int cc = c - 1; cc <= c + 1; cc++) {
+                if (f >= 0 && f < filas && cc >= 0 && cc < columnas) {
+                    if (casillasOcupadas[f][cc]) {
+                        return false; // Hay una nave adyacente
+                    }
+                }
+            }
+        }
+    }
+    return true; // No hay naves en la zona
+}
+
+    
 //    /**
 //     * @param args the command line arguments
 //     */

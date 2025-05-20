@@ -13,14 +13,14 @@ import javax.swing.SwingUtilities;
  *
  * @author nomar
  */
-public class FrmInicio2 extends javax.swing.JFrame {
+public class Jugador2 extends javax.swing.JFrame {
 
 
     /**
      * Crea un nuevo formulario FrmInicio2 y llama a initComponents para
      * inicializar todos los componentes gráficos.
      */
-    public FrmInicio2() {
+    public Jugador2() {
         initComponents();
     }
 
@@ -85,7 +85,7 @@ public class FrmInicio2 extends javax.swing.JFrame {
 
         // Abrir las dos ventanas de inicio de sesión
         SwingUtilities.invokeLater(() -> {
-            FrmJugadorDos jugadorDos = new FrmJugadorDos();
+            NomJugador2 jugadorDos = new NomJugador2();
             jugadorDos.setLocation(1200, 250);
             jugadorDos.setVisible(true);
             this.dispose();
@@ -106,10 +106,10 @@ public class FrmInicio2 extends javax.swing.JFrame {
      * @param evt Evento del mouse que dispara el método.
      */
     private void btnAjusteMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAjusteMouseClicked
-        // TODO add your handling code here:
-        FrmAjustes frmAjustes = new FrmAjustes();
-        frmAjustes.setVisible(true);
-        this.dispose();
+//        // TODO add your handling code here:
+//        FrmAjustes frmAjustes = new FrmAjustes();
+//        frmAjustes.setVisible(true);
+//        this.dispose();
     }//GEN-LAST:event_btnAjusteMouseClicked
 
     /**
@@ -129,21 +129,23 @@ public class FrmInicio2 extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FrmInicio2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Jugador2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FrmInicio2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Jugador2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FrmInicio2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Jugador2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FrmInicio2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Jugador2.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new FrmInicio2().setVisible(true);
+                new Jugador2().setVisible(true);
             }
         });
     }
