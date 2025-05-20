@@ -29,6 +29,10 @@ import org.json.JSONObject;
  *
  * @author Carlo
  */
+/**
+ * Clase que implementa un servidor para un juego entre dos jugadores,
+ * gestionando conexiones, intercambio de mensajes y la lógica de turnos.
+ */
 public class SocketServidor {
 
     private ServerSocket serverSocket;
@@ -39,6 +43,13 @@ public class SocketServidor {
     private List<String> coordenadasJugador1;
     private List<String> coordenadasJugador2;
 
+    /**
+     * Inicia el servidor en el puerto especificado y espera la conexión de dos
+     * jugadores.
+     *
+     * @param puerto Puerto donde se escucharán las conexiones entrantes.
+     * @throws IOException si ocurre un error de entrada/salida.
+     */
     public void iniciarServidor(int puerto) throws IOException {
         serverSocket = new ServerSocket(puerto);
         System.out.println("Esperando conexion de los jugadores...");
@@ -47,6 +58,11 @@ public class SocketServidor {
         procesarTableros();
     }
 
+    /**
+     * Acepta las conexiones de los dos jugadores y recibe sus nombres.
+     *
+     * @throws IOException si ocurre un error en la conexión o lectura.
+     */
     private void aceptarConexiones() throws IOException {
         socketJugador1 = serverSocket.accept();
         entradaJugador1 = new BufferedReader(new InputStreamReader(socketJugador1.getInputStream(), "UTF-8"));
@@ -88,11 +104,25 @@ public class SocketServidor {
         salidaJugador2.println(respuesta2.toString());
     }
 
+    /**
+     * Envía un mensaje al jugador a través del PrintWriter especificado.
+     *
+     * @param salida El PrintWriter por el que se enviará el mensaje.
+     * @param mensaje El mensaje a enviar.
+     */
     private void enviarMensaje(PrintWriter salida, Mensaje mensaje) {
         salida.println(mensaje.toString());
         salida.flush();
     }
 
+    /**
+     * Recibe un mensaje desde el BufferedReader especificado.
+     *
+     * @param entrada El BufferedReader desde donde se recibirá el mensaje.
+     * @return Un objeto Mensaje con el tipo y contenido extraído del JSON
+     * recibido.
+     * @throws IOException si ocurre un error de lectura.
+     */
     private Mensaje recibirMensaje(BufferedReader entrada) throws IOException {
         String linea = entrada.readLine();
         if (linea != null) {
@@ -103,6 +133,13 @@ public class SocketServidor {
         }
         return null;
     }
+
+    /**
+     * Procesa la fase inicial donde se reciben los tableros de ambos jugadores,
+     * valida que estén listos y los intercambia para comenzar el juego.
+     *
+     * @throws IOException si ocurre un error de comunicación.
+     */
 
     private void procesarTableros() throws IOException {
 
@@ -158,6 +195,16 @@ public class SocketServidor {
         manejarTurnos(coordenadasJugador1, coordenadasJugador2);
     }
 
+    /**
+     * Controla la lógica de turnos y comunicación entre jugadores durante el
+     * juego.
+     *
+     * @param coordenadasJugador1 Lista con las coordenadas de las naves del
+     * jugador 1.
+     * @param coordenadasJugador2 Lista con las coordenadas de las naves del
+     * jugador 2.
+     * @throws IOException si ocurre un error en la comunicación.
+     */
     private void manejarTurnos(List<String> coordenadasJugador1, List<String> coordenadasJugador2) throws IOException {
         boolean juegoActivo = true;
         int jugadorActual = 1; // 1 para Jugador 1, 2 para Jugador 2
@@ -269,6 +316,18 @@ public class SocketServidor {
         cerrar();
     }
 
+    /**
+     * Envía un mensaje de ataque al jugador 2 indicando las coordenadas del
+     * ataque y si hubo impacto o no.
+     *
+     * @param x Coordenada X del ataque en el tablero.
+     * @param y Coordenada Y del ataque en el tablero.
+     * @param impacto Indica si el ataque impactó en una nave.
+     *
+     * Si la conexión con el jugador 2 no está inicializada, se muestra un error
+     * por consola. En caso de excepción durante el envío, se imprime el stack
+     * trace.
+     */
     public void enviarAtaqueAJugador2(int x, int y, boolean impacto) {
         if (salidaJugador2 == null) {
             System.err.println("Error: conexion con Jugador 2 no inicializada");
@@ -284,6 +343,15 @@ public class SocketServidor {
         }
     }
 
+    /**
+     * Convierte una cadena de texto que representa posiciones ocupadas en el
+     * tablero en una matriz de objetos Casilla, donde las posiciones indicadas
+     * estarán marcadas con el estado de casilla ocupada.
+     *
+     * @param texto Cadena con pares de coordenadas separados por espacios,
+     * indicando las posiciones ocupadas.
+     * @return Matriz 10x10 de Casilla con las posiciones ocupadas configuradas.
+     */
     public Casilla[][] convertirTextoACasillas(String texto) {
         Casilla[][] tablero = new Casilla[10][10];
         for (int i = 0; i < 10; i++) {
@@ -302,6 +370,14 @@ public class SocketServidor {
         return tablero;
     }
 
+    /**
+     * Valida que el tablero tenga exactamente 25 casillas ocupadas, que es la
+     * cantidad requerida para un tablero válido.
+     *
+     * @param tablero Matriz 10x10 de Casilla a validar.
+     * @return true si hay exactamente 25 casillas ocupadas, false en caso
+     * contrario.
+     */
     public boolean validarTablero(Casilla[][] tablero) {
         int ocupadas = 0;
         for (Casilla[] fila : tablero) {
@@ -314,6 +390,16 @@ public class SocketServidor {
         return ocupadas == 25;
     }
 
+    /**
+     * Cierra todas las conexiones de entrada, salida y sockets asociados a
+     * ambos jugadores y al servidor.
+     *
+     * @throws IOException Si ocurre un error al cerrar alguna conexión o
+     * socket.
+     *
+     * Muestra un mensaje en consola al cerrar todas las conexiones
+     * correctamente.
+     */
     public void cerrar() throws IOException {
         if (entradaJugador1 != null) {
             entradaJugador1.close();
