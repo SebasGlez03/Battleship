@@ -10,7 +10,7 @@ import java.io.*;
 
 /**
  *
- * @author Carlo
+ * @author Oley
  */
 public class ReproductorSonido {
     

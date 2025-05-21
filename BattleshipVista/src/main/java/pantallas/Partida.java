@@ -36,37 +36,80 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 /**
+ *  * Clase Partida
+ *
+ * Esta clase representa una partida de batalla naval entre dos jugadores,
+ * implementando una interfaz gráfica y la lógica de juego completa.
  *
  * @author Carlo
  */
 public class Partida extends javax.swing.JFrame {
 
+    /**
+     * Tablero del jugador actual
+     */
     private Casilla[][] tablero;
+    /**
+     * Tablero del jugador enemigo
+     */
     private Casilla[][] tableroEnemigo;
+    /**
+     * Lista de coordenadas ocupadas por los barcos del jugador
+     */
     private List<Point> coordenadasOcupadas = new ArrayList<>();
+    /**
+     * Lista de coordenadas ocupadas por los barcos enemigos
+     */
     private List<Point> coordenadasOcupadasEnemigo = new ArrayList<>();
 
+    /**
+     * Lista de barcos enemigos agrupados por coordenadas conectadas
+     */
     private List<List<Point>> barcosEnemigos = new ArrayList<>();
-    private Set<Point> coordenadasImpactadasEnemigo = new HashSet<>();
 
+    /**
+     * Conjunto de coordenadas impactadas en el tablero enemigo
+     */
+    private Set<Point> coordenadasImpactadasEnemigo = new HashSet<>();
+    /**
+     * Conjunto de coordenadas impactadas en el tablero propio
+     */
     private Set<Point> coordenadasImpactadasPropias = new HashSet<>();
+    /**
+     * Lista de barcos propios agrupados por coordenadas conectadas
+     */
     private List<List<Point>> barcosPropios;
 
+    /**
+     * Conjunto de coordenadas que ya han sido atacadas
+     */
     private Set<Point> coordenadasAtacadas = new HashSet<>();
 
+    /**
+     * Cliente de socket para la comunicación con el servidor
+     */
     private SocketCliente socketCliente;
 
+    // Contadores de barcos enemigos destruidos
     private int portaavionesEnemigosDestruidos = 0;
     private int crucerosEnemigosDestruidos = 0;
     private int submarinosEnemigosDestruidos = 0;
     private int barcosEnemigosDestruidos = 0;
-
+    // Contadores de barcos propios destruidos
     private int portaavionesPropiosDestruidos = 0;
     private int crucerosPropiosDestruidos = 0;
     private int submarinosPropiosDestruidos = 0;
     private int barcosPropiosDestruidos = 0;
 
-    // Constructor que recibe las coordenadas
+    /**
+     * Constructor de la clase Partida. Inicializa los tableros y establece la
+     * comunicación con el servidor.
+     *
+     * @param coordenadas String que contiene las coordenadas de los barcos del
+     * jugador
+     * @param socketCliente Objeto SocketCliente para la comunicación con el
+     * servidor
+     */
     public Partida(String coordenadas, SocketCliente socketCliente) {
 
         this.socketCliente = socketCliente;
@@ -135,6 +178,13 @@ public class Partida extends javax.swing.JFrame {
 
     }
 
+    /**
+     * Realiza un ataque en las coordenadas especificadas del tablero enemigo.
+     *
+     * @param x Coordenada X del ataque (0-9)
+     * @param y Coordenada Y del ataque (0-9)
+     * @return true si el ataque impactó una nave, false si cae en agua
+     */
     private boolean atacar(int x, int y) {
         Casilla casilla = tableroEnemigo[x][y];
         if (casilla != null && casilla.tieneNave() && !casilla.estaImpactada()) {
@@ -144,6 +194,10 @@ public class Partida extends javax.swing.JFrame {
         return false;
     }
 
+    /**
+     * Inicializa el tablero del jugador creando los botones para cada casilla y
+     * configurando su apariencia con imágenes de fondo.
+     */
     private void inicializarTablero() {
         // Solo inicializamos el tablero si no ha sido inicializado antes
         if (panelTablero.getComponentCount() == 0) {
@@ -172,6 +226,10 @@ public class Partida extends javax.swing.JFrame {
         panelTablero.repaint();
     }
 
+    /**
+     * Inicializa el tablero enemigo creando los botones para cada casilla y
+     * configurando su apariencia con imágenes de fondo.
+     */
     private void inicializarTableroEnemigo() {
         if (panelTableroEnemigo.getComponentCount() == 0) {
             for (int i = 0; i < 10; i++) {
@@ -198,6 +256,14 @@ public class Partida extends javax.swing.JFrame {
         panelTableroEnemigo.repaint();
     }
 
+    /**
+     * Muestra el resultado de un ataque en el tablero enemigo, cambiando el
+     * color de la casilla según el resultado.
+     *
+     * @param x Coordenada X del ataque
+     * @param y Coordenada Y del ataque
+     * @param acierto true si el ataque impactó una nave, false si cayó en agua
+     */
     public void mostrarResultadoAtaqueEnemigo(int x, int y, boolean acierto) {
         JButton boton = (JButton) panelTableroEnemigo.getComponent(y * 10 + x);
         if (acierto) {
@@ -207,11 +273,26 @@ public class Partida extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Envía un mensaje de ataque al servidor con las coordenadas especificadas.
+     *
+     * @param x Coordenada X del ataque
+     * @param y Coordenada Y del ataque
+     */
     private void realizarAtaque(int x, int y) {
         Mensaje ataque = new Mensaje("ataque", x + "," + y);
         socketCliente.enviarMensaje(ataque);
     }
 
+    /**
+     * Gestiona un ataque recibido, marcando la casilla correspondiente en el
+     * tablero propio y cambiando su color según el resultado.
+     *
+     * @param x Coordenada X del ataque recibido
+     * @param y Coordenada Y del ataque recibido
+     * @param esAcierto true si el ataque impactó una nave propia, false si cayó
+     * en agua
+     */
     public void recibirAtaque(int x, int y, boolean esAcierto) {
         Casilla casilla = tablero[x][y];
         casilla.estaImpactada();
@@ -224,6 +305,10 @@ public class Partida extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Inicia un hilo que escucha constantemente los mensajes del servidor y los
+     * procesa según su tipo.
+     */
     public void iniciarEscuchaServidor() {
         new Thread(() -> {
             while (true) {
@@ -241,107 +326,94 @@ public class Partida extends javax.swing.JFrame {
         }).start(); // Inicia el hilo
     }
 
+    /**
+     * Procesa un mensaje en un hilo separado.
+     *
+     * @param mensaje El mensaje a procesar
+     */
     private void procesarMensajeAsync(Mensaje mensaje) {
         new Thread(() -> {
             procesarMensaje(mensaje);
         }).start();
     }
 
+    /**
+     * Procesa los diferentes tipos de mensajes recibidos del servidor.
+     *
+     * @param mensaje El mensaje a procesar
+     */
     private void procesarMensaje(Mensaje mensaje) {
-    switch (mensaje.getTipo()) {
-        case "resultado_ataque": {
-            String[] datos = ((String) mensaje.getContenido()).split(",");
-            int x = Integer.parseInt(datos[0]);
-            int y = Integer.parseInt(datos[1]);
-            boolean acierto = Boolean.parseBoolean(datos[2]);
-            Point puntoImpactado = new Point(x, y);
+        switch (mensaje.getTipo()) {
+            case "resultado_ataque": {
+                String[] datos = ((String) mensaje.getContenido()).split(",");
+                int x = Integer.parseInt(datos[0]);
+                int y = Integer.parseInt(datos[1]);
+                boolean acierto = Boolean.parseBoolean(datos[2]);
+                Point puntoImpactado = new Point(x, y);
 
-            SwingUtilities.invokeLater(() -> {
-                JButton boton = (JButton) panelTableroEnemigo.getComponent(puntoImpactado.y * 10 + puntoImpactado.x);
+                SwingUtilities.invokeLater(() -> {
+                    JButton boton = (JButton) panelTableroEnemigo.getComponent(puntoImpactado.y * 10 + puntoImpactado.x);
 
-                if (acierto) {
-                    ReproductorSonido.reproducirSonido("/sounds/impacto.wav");
-                    boton.setBackground(Color.YELLOW);
+                    if (acierto) {
+                        ReproductorSonido.reproducirSonido("/sounds/impacto.wav");
+                        boton.setBackground(Color.YELLOW);
 
-                    if (esBarcoHundido(puntoImpactado)) {
-                        colorearBarcoEnemigoHundido(puntoImpactado);
+                        if (esBarcoHundido(puntoImpactado)) {
+                            colorearBarcoEnemigoHundido(puntoImpactado);
 
-                        // Obtener tipo de barco hundido enemigo
-                        List<Point> barcoHundido = null;
-                        for (List<Point> barco : barcosEnemigos) {
-                            if (barco.contains(puntoImpactado)) {
-                                barcoHundido = barco;
-                                break;
+                            // Obtener tipo de barco hundido enemigo
+                            List<Point> barcoHundido = null;
+                            for (List<Point> barco : barcosEnemigos) {
+                                if (barco.contains(puntoImpactado)) {
+                                    barcoHundido = barco;
+                                    break;
+                                }
                             }
-                        }
-                        int tamaño = barcoHundido != null ? barcoHundido.size() : 0;
-                        String tipoBarco = obtenerTipoBarcoPorTamano(tamaño);
+                            int tamaño = barcoHundido != null ? barcoHundido.size() : 0;
+                            String tipoBarco = obtenerTipoBarcoPorTamano(tamaño);
 
-                        // Incrementar contador de enemigos destruidos
-                        switch (tamaño) {
-                            case 4 -> portaavionesEnemigosDestruidos++;
-                            case 3 -> crucerosEnemigosDestruidos++;
-                            case 2 -> submarinosEnemigosDestruidos++;
-                            case 1 -> barcosEnemigosDestruidos++;
+                            // Incrementar contador de enemigos destruidos
+                            switch (tamaño) {
+                                case 4 ->
+                                    portaavionesEnemigosDestruidos++;
+                                case 3 ->
+                                    crucerosEnemigosDestruidos++;
+                                case 2 ->
+                                    submarinosEnemigosDestruidos++;
+                                case 1 ->
+                                    barcosEnemigosDestruidos++;
+                            }
+
+                            actualizarLabelsNavesDestruidas();
+                            JOptionPane.showMessageDialog(this, "¡Has destruido un " + tipoBarco + " enemigo!");
+                        } else {
+                            JOptionPane.showMessageDialog(this, "¡Impacto!");
                         }
 
-                        actualizarLabelsNavesDestruidas();
-                        JOptionPane.showMessageDialog(this, "¡Has destruido un " + tipoBarco + " enemigo!");
                     } else {
-                        JOptionPane.showMessageDialog(this, "¡Impacto!");
+                        boton.setBackground(Color.BLUE);
+                        ReproductorSonido.reproducirSonido("/sounds/agua.wav");
+                        JOptionPane.showMessageDialog(this, "¡Agua!");
                     }
-
-                } else {
-                    boton.setBackground(Color.BLUE);
-                    ReproductorSonido.reproducirSonido("/sounds/agua.wav");
-                    JOptionPane.showMessageDialog(this, "¡Agua!");
-                }
-            });
-            break;
-        }
-
-        case "ataque_recibido": {
-            String[] datos = ((String) mensaje.getContenido()).split(",");
-            int x = Integer.parseInt(datos[0]);
-            int y = Integer.parseInt(datos[1]);
-            Point puntoImpactado = new Point(x, y);
-
-            boolean esAcierto = coordenadasOcupadas.contains(puntoImpactado);
-
-            if (esAcierto) {
-                tablero[x][y].estaImpactada();
-
-                if (esBarcoPropioHundido(puntoImpactado)) {
-                    colorearBarcoPropioHundido(puntoImpactado);
-
-                    // Obtener tipo de barco hundido propio
-                    List<Point> barcoHundido = null;
-                    for (List<Point> barco : barcosPropios) {
-                        if (barco.contains(puntoImpactado)) {
-                            barcoHundido = barco;
-                            break;
-                        }
-                    }
-                    int tamaño = barcoHundido != null ? barcoHundido.size() : 0;
-                    String tipoBarco = obtenerTipoBarcoPorTamano(tamaño);
-
-                    // Incrementar contador de naves propias destruidas
-                    switch (tamaño) {
-                        case 4 -> portaavionesPropiosDestruidos++;
-                        case 3 -> crucerosPropiosDestruidos++;
-                        case 2 -> submarinosPropiosDestruidos++;
-                        case 1 -> barcosPropiosDestruidos++;
-                    }
-
-                    actualizarLabelsNavesDestruidas();
-                }
+                });
+                break;
             }
 
-            SwingUtilities.invokeLater(() -> {
-                JButton boton = (JButton) panelTablero.getComponent(puntoImpactado.y * 10 + puntoImpactado.x);
+            case "ataque_recibido": {
+                String[] datos = ((String) mensaje.getContenido()).split(",");
+                int x = Integer.parseInt(datos[0]);
+                int y = Integer.parseInt(datos[1]);
+                Point puntoImpactado = new Point(x, y);
+
+                boolean esAcierto = coordenadasOcupadas.contains(puntoImpactado);
 
                 if (esAcierto) {
+                    tablero[x][y].estaImpactada();
+
                     if (esBarcoPropioHundido(puntoImpactado)) {
+                        colorearBarcoPropioHundido(puntoImpactado);
+
+                        // Obtener tipo de barco hundido propio
                         List<Point> barcoHundido = null;
                         for (List<Point> barco : barcosPropios) {
                             if (barco.contains(puntoImpactado)) {
@@ -352,32 +424,68 @@ public class Partida extends javax.swing.JFrame {
                         int tamaño = barcoHundido != null ? barcoHundido.size() : 0;
                         String tipoBarco = obtenerTipoBarcoPorTamano(tamaño);
 
-                        JOptionPane.showMessageDialog(this, "¡Tu " + tipoBarco + " ha sido destruido!");
-                    } else {
-                        boton.setBackground(Color.YELLOW);
-                        JOptionPane.showMessageDialog(this, "¡Has sido impactado!");
+                        // Incrementar contador de naves propias destruidas
+                        switch (tamaño) {
+                            case 4 ->
+                                portaavionesPropiosDestruidos++;
+                            case 3 ->
+                                crucerosPropiosDestruidos++;
+                            case 2 ->
+                                submarinosPropiosDestruidos++;
+                            case 1 ->
+                                barcosPropiosDestruidos++;
+                        }
+
+                        actualizarLabelsNavesDestruidas();
                     }
-                } else {
-                    boton.setBackground(Color.BLUE);
-                    JOptionPane.showMessageDialog(this, "¡Agua!");
                 }
-            });
 
-            Mensaje respuesta = new Mensaje("resultado_ataque", x + "," + y + "," + esAcierto);
-            System.out.println(respuesta);
-            socketCliente.enviarMensaje(respuesta);
-            break;
-        }
+                SwingUtilities.invokeLater(() -> {
+                    JButton boton = (JButton) panelTablero.getComponent(puntoImpactado.y * 10 + puntoImpactado.x);
 
-        case "fin_juego": {
-            String resultado = (String) mensaje.getContenido();
-            mostrarPantallaFinal(resultado);
-            break;
+                    if (esAcierto) {
+                        if (esBarcoPropioHundido(puntoImpactado)) {
+                            List<Point> barcoHundido = null;
+                            for (List<Point> barco : barcosPropios) {
+                                if (barco.contains(puntoImpactado)) {
+                                    barcoHundido = barco;
+                                    break;
+                                }
+                            }
+                            int tamaño = barcoHundido != null ? barcoHundido.size() : 0;
+                            String tipoBarco = obtenerTipoBarcoPorTamano(tamaño);
+
+                            JOptionPane.showMessageDialog(this, "¡Tu " + tipoBarco + " ha sido destruido!");
+                        } else {
+                            boton.setBackground(Color.YELLOW);
+                            JOptionPane.showMessageDialog(this, "¡Has sido impactado!");
+                        }
+                    } else {
+                        boton.setBackground(Color.BLUE);
+                        JOptionPane.showMessageDialog(this, "¡Agua!");
+                    }
+                });
+
+                Mensaje respuesta = new Mensaje("resultado_ataque", x + "," + y + "," + esAcierto);
+                System.out.println(respuesta);
+                socketCliente.enviarMensaje(respuesta);
+                break;
+            }
+
+            case "fin_juego": {
+                String resultado = (String) mensaje.getContenido();
+                mostrarPantallaFinal(resultado);
+                break;
+            }
         }
     }
-}
 
-
+    /**
+     * Devuelve el tipo de barco según su tamaño.
+     *
+     * @param tamaño El tamaño del barco (número de casillas)
+     * @return El nombre del tipo de barco
+     */
     private String obtenerTipoBarcoPorTamano(int tamaño) {
         switch (tamaño) {
             case 4:
@@ -392,26 +500,33 @@ public class Partida extends javax.swing.JFrame {
                 return "Barco desconocido";
         }
     }
-    
+
+    /**
+     * Actualiza las etiquetas que muestran las estadísticas de naves
+     * destruidas.
+     */
     private void actualizarLabelsNavesDestruidas() {
-    labelNavesEnemigasDestruidas.setText("<html>" +
-        "Porta Aviones: " + portaavionesEnemigosDestruidos + "<br>" +
-        "Cruceros: " + crucerosEnemigosDestruidos + "<br>" +
-        "Submarinos: " + submarinosEnemigosDestruidos + "<br>" +
-        "Barcos: " + barcosEnemigosDestruidos +
-        "</html>");
+        labelNavesEnemigasDestruidas.setText("<html>"
+                + "Porta Aviones: " + portaavionesEnemigosDestruidos + "<br>"
+                + "Cruceros: " + crucerosEnemigosDestruidos + "<br>"
+                + "Submarinos: " + submarinosEnemigosDestruidos + "<br>"
+                + "Barcos: " + barcosEnemigosDestruidos
+                + "</html>");
 
-    labelNavesPropiasDestruidas.setText("<html>" +
-        "Porta Aviones: " + portaavionesPropiosDestruidos + "<br>" +
-        "Cruceros: " + crucerosPropiosDestruidos + "<br>" +
-        "Submarinos: " + submarinosPropiosDestruidos + "<br>" +
-        "Barcos: " + barcosPropiosDestruidos +
-        "</html>");
-}
+        labelNavesPropiasDestruidas.setText("<html>"
+                + "Porta Aviones: " + portaavionesPropiosDestruidos + "<br>"
+                + "Cruceros: " + crucerosPropiosDestruidos + "<br>"
+                + "Submarinos: " + submarinosPropiosDestruidos + "<br>"
+                + "Barcos: " + barcosPropiosDestruidos
+                + "</html>");
+    }
 
-
-    
-
+    /**
+     * Procesa un ataque enemigo recibido, marcando la casilla apropiada y
+     * mostrando un mensaje según el resultado.
+     *
+     * @param ataque Punto donde se recibió el ataque
+     */
     public void recibirAtaqueEnemigo(Point ataque) {
         // Marca la casilla como impactada (amarillo)
         JButton boton = (JButton) panelTablero.getComponent(ataque.y * 10 + ataque.x);
@@ -429,6 +544,13 @@ public class Partida extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Verifica si un barco propio está hundido a partir de un punto impactado.
+     *
+     * @param puntoImpactado Punto donde se recibió el impacto
+     * @return true si el barco está completamente hundido, false en caso
+     * contrario
+     */
     private boolean esBarcoPropioHundido(Point puntoImpactado) {
         coordenadasImpactadasPropias.add(puntoImpactado);
 
@@ -442,6 +564,12 @@ public class Partida extends javax.swing.JFrame {
         return false;
     }
 
+    /**
+     * Colorea todas las casillas de un barco propio hundido en rojo. Utiliza un
+     * algoritmo BFS para encontrar todas las partes conectadas del barco.
+     *
+     * @param puntoImpactado Punto de inicio para buscar el barco hundido
+     */
     private void colorearBarcoPropioHundido(Point puntoImpactado) {
         Set<Point> barco = new HashSet<>();
         Queue<Point> cola = new LinkedList<>();
@@ -478,6 +606,12 @@ public class Partida extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Colorea todas las casillas de un barco enemigo hundido en rojo. Utiliza
+     * un algoritmo BFS para encontrar todas las partes conectadas del barco.
+     *
+     * @param puntoImpactado Punto de inicio para buscar el barco hundido
+     */
     private void colorearBarcoEnemigoHundido(Point puntoImpactado) {
         Set<Point> barco = new HashSet<>();
         Queue<Point> cola = new LinkedList<>();
@@ -514,6 +648,11 @@ public class Partida extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Muestra la pantalla final del juego según el resultado.
+     *
+     * @param resultado Mensaje que indica si se ganó o perdió
+     */
     private void mostrarPantallaFinal(String resultado) {
         if (resultado.contains("Has ganado!")) {
             VentanaGanar victoria = new VentanaGanar(this);
@@ -525,7 +664,11 @@ public class Partida extends javax.swing.JFrame {
         }
     }
 
-    // Método para recibir las coordenadas del enemigo
+    /**
+     * Recibe y procesa las coordenadas de los barcos enemigos.
+     *
+     * @param coordenadasEnemigo String con las coordenadas separadas por comas
+     */
     public void recibirCoordenadasEnemigo(String coordenadasEnemigo) {
         coordenadasOcupadasEnemigo = new ArrayList<>();
         barcosEnemigos.clear();
@@ -557,6 +700,13 @@ public class Partida extends javax.swing.JFrame {
         }
     }
 
+    /**
+     * Verifica si un barco enemigo está hundido a partir de un punto impactado.
+     *
+     * @param puntoImpactado Punto donde se registró el impacto
+     * @return true si el barco enemigo está completamente hundido, false en
+     * caso contrario
+     */
     private boolean esBarcoHundido(Point puntoImpactado) {
         coordenadasImpactadasEnemigo.add(puntoImpactado);
 
@@ -570,6 +720,13 @@ public class Partida extends javax.swing.JFrame {
         return false;
     }
 
+    /**
+     * Agrupa las coordenadas recibidas en barcos conectados. Utiliza un
+     * algoritmo BFS para identificar las casillas conectadas.
+     *
+     * @param coords Lista de coordenadas a agrupar
+     * @return Lista de listas donde cada sublista representa un barco
+     */
     private List<List<Point>> agruparBarcos(List<Point> coords) {
         List<List<Point>> barcos = new ArrayList<>();
         Set<Point> sinProcesar = new HashSet<>(coords);
@@ -606,7 +763,11 @@ public class Partida extends javax.swing.JFrame {
         return barcos;
     }
 
-    // Método para recibir las coordenadas del servidor
+/**
+ * Recibe del servidor las coordenadas de los barcos enemigos.
+ * 
+ * @throws IOException Si ocurre un error de comunicación con el servidor
+ */
     public void recibirCoordenadasServidor() throws IOException {
         // Esperar coordenadas del servidor para el tablero enemigo
         Mensaje respuestaEnemigo = socketCliente.recibirMensaje();
@@ -615,7 +776,9 @@ public class Partida extends javax.swing.JFrame {
             recibirCoordenadasEnemigo(coordenadasEnemigo);  // Actualizar el tablero enemigo
         }
     }
-
+/**
+ * Marca visualmente las casillas ocupadas por barcos propios en el tablero.
+ */
     private void marcarCasillasOcupadas() {
         for (Point coord : coordenadasOcupadas) {
             // Coordenadas ocupadas
@@ -631,7 +794,12 @@ public class Partida extends javax.swing.JFrame {
         }
     }
 
-    // Método para convertir las coordenadas en una lista de puntos
+/**
+ * Convierte una cadena de coordenadas en una lista de objetos Point.
+ * 
+ * @param coordenadas Cadena con formato de coordenadas
+ * @return Lista de puntos parseados desde la cadena
+ */
     private List<Point> parseCoordenadas(String coordenadas) {
         List<Point> puntos = new ArrayList<>();
 

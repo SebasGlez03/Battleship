@@ -35,12 +35,30 @@ import org.json.JSONObject;
  */
 public class SocketServidor {
 
+    /**
+     * Socket del servidor que escucha nuevas conexiones.
+     */
     private ServerSocket serverSocket;
+    /**
+     * Socket para la conexión del jugador 1.
+     */
     private Socket socketJugador1, socketJugador2;
+    /**
+     * Socket para la conexión del jugador 2.
+     */
     private BufferedReader entradaJugador1, entradaJugador2;
+    /**
+     * Canal de entrada para mensajes desde el jugador 1.
+     */
     private PrintWriter salidaJugador1, salidaJugador2;
 
+    /**
+     * Canal de entrada para mensajes desde el jugador 2.
+     */
     private List<String> coordenadasJugador1;
+    /**
+     * Canal de salida para enviar mensajes al jugador 2.
+     */
     private List<String> coordenadasJugador2;
 
     /**
@@ -51,6 +69,7 @@ public class SocketServidor {
      * @throws IOException si ocurre un error de entrada/salida.
      */
     public void iniciarServidor(int puerto) throws IOException {
+        // Se crea el socket del servidor
         serverSocket = new ServerSocket(puerto);
         System.out.println("Esperando conexion de los jugadores...");
 
@@ -140,7 +159,6 @@ public class SocketServidor {
      *
      * @throws IOException si ocurre un error de comunicación.
      */
-
     private void procesarTableros() throws IOException {
 
         this.coordenadasJugador1 = coordenadasJugador1;
