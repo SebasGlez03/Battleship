@@ -56,6 +56,16 @@ public class Partida extends javax.swing.JFrame {
 
     private SocketCliente socketCliente;
 
+    private int portaavionesEnemigosDestruidos = 0;
+    private int crucerosEnemigosDestruidos = 0;
+    private int submarinosEnemigosDestruidos = 0;
+    private int barcosEnemigosDestruidos = 0;
+
+    private int portaavionesPropiosDestruidos = 0;
+    private int crucerosPropiosDestruidos = 0;
+    private int submarinosPropiosDestruidos = 0;
+    private int barcosPropiosDestruidos = 0;
+
     // Constructor que recibe las coordenadas
     public Partida(String coordenadas, SocketCliente socketCliente) {
 
@@ -238,107 +248,135 @@ public class Partida extends javax.swing.JFrame {
     }
 
     private void procesarMensaje(Mensaje mensaje) {
-        switch (mensaje.getTipo()) {
-            case "resultado_ataque": {
-                String[] datos = ((String) mensaje.getContenido()).split(",");
-                int x = Integer.parseInt(datos[0]);
-                int y = Integer.parseInt(datos[1]);
-                boolean acierto = Boolean.parseBoolean(datos[2]);
-                Point puntoImpactado = new Point(x, y);
+    switch (mensaje.getTipo()) {
+        case "resultado_ataque": {
+            String[] datos = ((String) mensaje.getContenido()).split(",");
+            int x = Integer.parseInt(datos[0]);
+            int y = Integer.parseInt(datos[1]);
+            boolean acierto = Boolean.parseBoolean(datos[2]);
+            Point puntoImpactado = new Point(x, y);
 
-                SwingUtilities.invokeLater(() -> {
-                    JButton boton = (JButton) panelTableroEnemigo.getComponent(puntoImpactado.y * 10 + puntoImpactado.x);
+            SwingUtilities.invokeLater(() -> {
+                JButton boton = (JButton) panelTableroEnemigo.getComponent(puntoImpactado.y * 10 + puntoImpactado.x);
 
-                    if (acierto) {
-                        ReproductorSonido.reproducirSonido("/sounds/impacto.wav");
-                        boton.setBackground(Color.YELLOW);
+                if (acierto) {
+                    ReproductorSonido.reproducirSonido("/sounds/impacto.wav");
+                    boton.setBackground(Color.YELLOW);
 
-                        if (esBarcoHundido(puntoImpactado)) {
-                            colorearBarcoEnemigoHundido(puntoImpactado);
+                    if (esBarcoHundido(puntoImpactado)) {
+                        colorearBarcoEnemigoHundido(puntoImpactado);
 
-                            // Obtener tamaño del barco hundido para determinar el tipo
-                            List<Point> barcoHundido = null;
-                            for (List<Point> barco : barcosEnemigos) {
-                                if (barco.contains(puntoImpactado)) {
-                                    barcoHundido = barco;
-                                    break;
-                                }
+                        // Obtener tipo de barco hundido enemigo
+                        List<Point> barcoHundido = null;
+                        for (List<Point> barco : barcosEnemigos) {
+                            if (barco.contains(puntoImpactado)) {
+                                barcoHundido = barco;
+                                break;
                             }
-                            int tamaño = barcoHundido != null ? barcoHundido.size() : 0;
-                            String tipoBarco = obtenerTipoBarcoPorTamano(tamaño);
+                        }
+                        int tamaño = barcoHundido != null ? barcoHundido.size() : 0;
+                        String tipoBarco = obtenerTipoBarcoPorTamano(tamaño);
 
-                            JOptionPane.showMessageDialog(this, "¡Has destruido un " + tipoBarco + " enemigo!");
-                        } else {
-//                            ReproductorSonido.reproducirSonido("/sounds/impacto.wav");
-                            JOptionPane.showMessageDialog(this, "¡Impacto!");
+                        // Incrementar contador de enemigos destruidos
+                        switch (tamaño) {
+                            case 4 -> portaavionesEnemigosDestruidos++;
+                            case 3 -> crucerosEnemigosDestruidos++;
+                            case 2 -> submarinosEnemigosDestruidos++;
+                            case 1 -> barcosEnemigosDestruidos++;
                         }
 
-                        
+                        actualizarLabelsNavesDestruidas();
+                        JOptionPane.showMessageDialog(this, "¡Has destruido un " + tipoBarco + " enemigo!");
                     } else {
-                        boton.setBackground(Color.BLUE);
-                        ReproductorSonido.reproducirSonido("/sounds/agua.wav");
-                        JOptionPane.showMessageDialog(this, "¡Agua!");
+                        JOptionPane.showMessageDialog(this, "¡Impacto!");
                     }
-                });
-                break;
+
+                } else {
+                    boton.setBackground(Color.BLUE);
+                    ReproductorSonido.reproducirSonido("/sounds/agua.wav");
+                    JOptionPane.showMessageDialog(this, "¡Agua!");
+                }
+            });
+            break;
+        }
+
+        case "ataque_recibido": {
+            String[] datos = ((String) mensaje.getContenido()).split(",");
+            int x = Integer.parseInt(datos[0]);
+            int y = Integer.parseInt(datos[1]);
+            Point puntoImpactado = new Point(x, y);
+
+            boolean esAcierto = coordenadasOcupadas.contains(puntoImpactado);
+
+            if (esAcierto) {
+                tablero[x][y].estaImpactada();
+
+                if (esBarcoPropioHundido(puntoImpactado)) {
+                    colorearBarcoPropioHundido(puntoImpactado);
+
+                    // Obtener tipo de barco hundido propio
+                    List<Point> barcoHundido = null;
+                    for (List<Point> barco : barcosPropios) {
+                        if (barco.contains(puntoImpactado)) {
+                            barcoHundido = barco;
+                            break;
+                        }
+                    }
+                    int tamaño = barcoHundido != null ? barcoHundido.size() : 0;
+                    String tipoBarco = obtenerTipoBarcoPorTamano(tamaño);
+
+                    // Incrementar contador de naves propias destruidas
+                    switch (tamaño) {
+                        case 4 -> portaavionesPropiosDestruidos++;
+                        case 3 -> crucerosPropiosDestruidos++;
+                        case 2 -> submarinosPropiosDestruidos++;
+                        case 1 -> barcosPropiosDestruidos++;
+                    }
+
+                    actualizarLabelsNavesDestruidas();
+                }
             }
 
-            case "ataque_recibido": {
-                String[] datos = ((String) mensaje.getContenido()).split(",");
-                int x = Integer.parseInt(datos[0]);
-                int y = Integer.parseInt(datos[1]);
-                Point puntoImpactado = new Point(x, y);
-
-                boolean esAcierto = coordenadasOcupadas.contains(puntoImpactado);
+            SwingUtilities.invokeLater(() -> {
+                JButton boton = (JButton) panelTablero.getComponent(puntoImpactado.y * 10 + puntoImpactado.x);
 
                 if (esAcierto) {
-                    tablero[x][y].estaImpactada();
-
                     if (esBarcoPropioHundido(puntoImpactado)) {
-                        colorearBarcoPropioHundido(puntoImpactado);
-                    }
-                }
-
-                SwingUtilities.invokeLater(() -> {
-                    JButton boton = (JButton) panelTablero.getComponent(puntoImpactado.y * 10 + puntoImpactado.x);
-
-                    if (esAcierto) {
-                        if (esBarcoPropioHundido(puntoImpactado)) {
-                            // Obtener tamaño del barco propio hundido para mostrar mensaje
-                            List<Point> barcoHundido = null;
-                            for (List<Point> barco : barcosPropios) {
-                                if (barco.contains(puntoImpactado)) {
-                                    barcoHundido = barco;
-                                    break;
-                                }
+                        List<Point> barcoHundido = null;
+                        for (List<Point> barco : barcosPropios) {
+                            if (barco.contains(puntoImpactado)) {
+                                barcoHundido = barco;
+                                break;
                             }
-                            int tamaño = barcoHundido != null ? barcoHundido.size() : 0;
-                            String tipoBarco = obtenerTipoBarcoPorTamano(tamaño);
-
-                            JOptionPane.showMessageDialog(this, "¡Tu " + tipoBarco + " ha sido destruido!");
-                        } else {
-                            boton.setBackground(Color.YELLOW);
-                            JOptionPane.showMessageDialog(this, "¡Has sido impactado!");
                         }
+                        int tamaño = barcoHundido != null ? barcoHundido.size() : 0;
+                        String tipoBarco = obtenerTipoBarcoPorTamano(tamaño);
+
+                        JOptionPane.showMessageDialog(this, "¡Tu " + tipoBarco + " ha sido destruido!");
                     } else {
-                        boton.setBackground(Color.BLUE);
-                        JOptionPane.showMessageDialog(this, "¡Agua!");
+                        boton.setBackground(Color.YELLOW);
+                        JOptionPane.showMessageDialog(this, "¡Has sido impactado!");
                     }
-                });
+                } else {
+                    boton.setBackground(Color.BLUE);
+                    JOptionPane.showMessageDialog(this, "¡Agua!");
+                }
+            });
 
-                Mensaje respuesta = new Mensaje("resultado_ataque", x + "," + y + "," + esAcierto);
-                System.out.println(respuesta);
-                socketCliente.enviarMensaje(respuesta);
-                break;
-            }
+            Mensaje respuesta = new Mensaje("resultado_ataque", x + "," + y + "," + esAcierto);
+            System.out.println(respuesta);
+            socketCliente.enviarMensaje(respuesta);
+            break;
+        }
 
-            case "fin_juego": {
-                String resultado = (String) mensaje.getContenido();
-                mostrarPantallaFinal(resultado);
-                break;
-            }
+        case "fin_juego": {
+            String resultado = (String) mensaje.getContenido();
+            mostrarPantallaFinal(resultado);
+            break;
         }
     }
+}
+
 
     private String obtenerTipoBarcoPorTamano(int tamaño) {
         switch (tamaño) {
@@ -354,6 +392,25 @@ public class Partida extends javax.swing.JFrame {
                 return "Barco desconocido";
         }
     }
+    
+    private void actualizarLabelsNavesDestruidas() {
+    labelNavesEnemigasDestruidas.setText("<html>" +
+        "Porta Aviones: " + portaavionesEnemigosDestruidos + "<br>" +
+        "Cruceros: " + crucerosEnemigosDestruidos + "<br>" +
+        "Submarinos: " + submarinosEnemigosDestruidos + "<br>" +
+        "Barcos: " + barcosEnemigosDestruidos +
+        "</html>");
+
+    labelNavesPropiasDestruidas.setText("<html>" +
+        "Porta Aviones: " + portaavionesPropiosDestruidos + "<br>" +
+        "Cruceros: " + crucerosPropiosDestruidos + "<br>" +
+        "Submarinos: " + submarinosPropiosDestruidos + "<br>" +
+        "Barcos: " + barcosPropiosDestruidos +
+        "</html>");
+}
+
+
+    
 
     public void recibirAtaqueEnemigo(Point ataque) {
         // Marca la casilla como impactada (amarillo)
@@ -670,6 +727,11 @@ public class Partida extends javax.swing.JFrame {
         jLabel22 = new javax.swing.JLabel();
         jLabel23 = new javax.swing.JLabel();
         jLabel24 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        labelNavesPropiasDestruidas = new javax.swing.JLabel();
+        labelNavesEnemigasDestruidas = new javax.swing.JLabel();
+        jLabel25 = new javax.swing.JLabel();
+        jLabel26 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -1059,7 +1121,7 @@ public class Partida extends javax.swing.JFrame {
                 .addGap(496, 496, 496))
         );
 
-        btnAtacar.setBackground(new java.awt.Color(255, 153, 102));
+        btnAtacar.setBackground(new java.awt.Color(204, 102, 0));
         btnAtacar.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btnAtacar.setForeground(new java.awt.Color(255, 255, 255));
         btnAtacar.setText("ATACAR");
@@ -1085,40 +1147,89 @@ public class Partida extends javax.swing.JFrame {
         jLabel24.setForeground(new java.awt.Color(255, 255, 255));
         jLabel24.setText("TABLERO ENEMIGO");
 
+        jPanel1.setBackground(new java.awt.Color(102, 102, 102));
+
+        labelNavesPropiasDestruidas.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        labelNavesPropiasDestruidas.setForeground(new java.awt.Color(255, 255, 255));
+
+        labelNavesEnemigasDestruidas.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        labelNavesEnemigasDestruidas.setForeground(new java.awt.Color(255, 255, 255));
+
+        jLabel25.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel25.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel25.setText("Mis Naves Destruidas");
+
+        jLabel26.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel26.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel26.setText("Naves Enemigas Destruidas");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(30, 30, 30)
+                        .addComponent(jLabel25))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(labelNavesPropiasDestruidas, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel26)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addComponent(labelNavesEnemigasDestruidas, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(30, 30, 30))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel25)
+                    .addComponent(jLabel26))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(labelNavesPropiasDestruidas, javax.swing.GroupLayout.DEFAULT_SIZE, 126, Short.MAX_VALUE)
+                    .addComponent(labelNavesEnemigasDestruidas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(50, 50, 50))
+        );
+
         javax.swing.GroupLayout panelFondoTableroLayout = new javax.swing.GroupLayout(panelFondoTablero);
         panelFondoTablero.setLayout(panelFondoTableroLayout);
         panelFondoTableroLayout.setHorizontalGroup(
             panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelFondoTableroLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                            .addComponent(jLabel21)
-                            .addGap(103, 103, 103)
-                            .addComponent(jLabel22))
-                        .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                            .addComponent(txtX, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(210, 210, 210)
-                            .addComponent(txtY, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(46, 46, 46)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelFondoTableroLayout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btnAtacar, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(181, 181, 181)))
-                .addGap(96, 96, 96))
-            .addGroup(panelFondoTableroLayout.createSequentialGroup()
-                .addGap(40, 40, 40)
-                .addComponent(panelfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(47, 47, 47)
-                .addComponent(panelfondo2, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(79, Short.MAX_VALUE))
             .addGroup(panelFondoTableroLayout.createSequentialGroup()
                 .addGap(194, 194, 194)
                 .addComponent(jLabel23)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel24)
                 .addGap(242, 242, 242))
+            .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(panelfondo, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                        .addGap(84, 84, 84)
+                        .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(panelfondo2, javax.swing.GroupLayout.PREFERRED_SIZE, 484, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                                .addComponent(jLabel21)
+                                .addGap(103, 103, 103)
+                                .addComponent(jLabel22))
+                            .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                                .addComponent(txtX, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(210, 210, 210)
+                                .addComponent(txtY, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(46, 46, 46))))
+                    .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                        .addGap(283, 283, 283)
+                        .addComponent(btnAtacar, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(131, Short.MAX_VALUE))
         );
         panelFondoTableroLayout.setVerticalGroup(
             panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1128,20 +1239,25 @@ public class Partida extends javax.swing.JFrame {
                     .addComponent(jLabel23)
                     .addComponent(jLabel24))
                 .addGap(18, 18, 18)
-                .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(panelfondo2, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(panelfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 413, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel21)
-                    .addComponent(jLabel22))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtY, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtX, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnAtacar, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(31, 31, 31))
+                .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                        .addComponent(panelfondo2, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel21)
+                            .addComponent(jLabel22))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(panelFondoTableroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtY, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtX, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnAtacar, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37))
+                    .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                        .addComponent(panelfondo, javax.swing.GroupLayout.PREFERRED_SIZE, 413, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(17, 17, 17))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1183,6 +1299,8 @@ public class Partida extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel22;
     private javax.swing.JLabel jLabel23;
     private javax.swing.JLabel jLabel24;
+    private javax.swing.JLabel jLabel25;
+    private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel41;
@@ -1210,6 +1328,9 @@ public class Partida extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel labelNavesEnemigasDestruidas;
+    private javax.swing.JLabel labelNavesPropiasDestruidas;
     private javax.swing.JPanel panelFondoTablero;
     private javax.swing.JPanel panelTablero;
     private javax.swing.JPanel panelTableroEnemigo;

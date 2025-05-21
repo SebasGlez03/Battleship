@@ -334,6 +334,7 @@ public class CrearTablero extends javax.swing.JFrame {
         jLabel21 = new javax.swing.JLabel();
         btnReady = new javax.swing.JButton();
         labelNomJugador = new javax.swing.JLabel();
+        lblEsperaJugador = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -592,7 +593,6 @@ public class CrearTablero extends javax.swing.JFrame {
         panelfondo.setPreferredSize(new java.awt.Dimension(575, 575));
 
         panelTablero.setBackground(new java.awt.Color(0, 0, 0));
-        panelTablero.setForeground(new java.awt.Color(0, 0, 0));
         panelTablero.setPreferredSize(new java.awt.Dimension(400, 400));
         panelTablero.setLayout(new java.awt.GridLayout(1, 0));
 
@@ -792,7 +792,6 @@ public class CrearTablero extends javax.swing.JFrame {
 
         btnReady.setBackground(new java.awt.Color(255, 255, 0));
         btnReady.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btnReady.setForeground(new java.awt.Color(0, 0, 0));
         btnReady.setText("¡READY!");
         btnReady.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnReady.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -804,6 +803,9 @@ public class CrearTablero extends javax.swing.JFrame {
 
         labelNomJugador.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         labelNomJugador.setForeground(new java.awt.Color(255, 255, 255));
+
+        lblEsperaJugador.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblEsperaJugador.setForeground(new java.awt.Color(255, 255, 255));
 
         javax.swing.GroupLayout panelFondoTableroLayout = new javax.swing.GroupLayout(panelFondoTablero);
         panelFondoTablero.setLayout(panelFondoTableroLayout);
@@ -825,8 +827,11 @@ public class CrearTablero extends javax.swing.JFrame {
                         .addComponent(btnReady, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelFondoTableroLayout.createSequentialGroup()
                         .addGap(30, 30, 30)
-                        .addComponent(jLabel21)))
-                .addContainerGap(41, Short.MAX_VALUE))
+                        .addComponent(jLabel21))
+                    .addGroup(panelFondoTableroLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblEsperaJugador, javax.swing.GroupLayout.PREFERRED_SIZE, 174, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(21, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelFondoTableroLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(labelNomJugador, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -845,7 +850,9 @@ public class CrearTablero extends javax.swing.JFrame {
                         .addGap(258, 258, 258)
                         .addComponent(jLabel21, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnReady, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(btnReady, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(lblEsperaJugador, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(panelFondoTableroLayout.createSequentialGroup()
                         .addGap(85, 85, 85)
                         .addComponent(panelBarcos, javax.swing.GroupLayout.PREFERRED_SIZE, 413, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -936,6 +943,7 @@ public class CrearTablero extends javax.swing.JFrame {
                 Mensaje confirmacion = socketCliente.recibirMensaje();
                 if (confirmacion != null && "CONFIRMACION_TABLERO_RECIBIDO".equals(confirmacion.getContenido())) {
                     System.out.println("Confirmación del servidor recibida.");
+                    lblEsperaJugador.setText("Esperando Jugador...");
 
                     // Esperar notificación de que ambos tableros están listos
                     Mensaje notificacion = socketCliente.recibirMensaje();
@@ -2161,6 +2169,7 @@ public class CrearTablero extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel labelNomJugador;
+    private javax.swing.JLabel lblEsperaJugador;
     private javax.swing.JPanel panelBarcos;
     private javax.swing.JPanel panelFondoTablero;
     private javax.swing.JPanel panelTablero;
